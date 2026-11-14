@@ -2,22 +2,21 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Led, Rocker, Screen, Sleeve, Vinyl } from "@/components/ui";
-import { closeRoom } from "@/lib/net";
-import { cleanCode, formatCode, isValidCode } from "@/lib/roomCode";
-import { clearSession, HOST_KEY, loadSession } from "@/lib/session";
+import { clearSession, HOST_KEY } from "@/lib/session";
 
 type Mode = "pass" | "lan";
 
 const MODE_INFO: Record<Mode, { led: "green" | "off"; text: string }> = {
   pass: { led: "off", text: "One phone, passed around the table." },
-  lan: { led: "green", text: "Everyone on their own phone, on the same Wi-Fi or hotspot. Join with the 8-character code or QR; the game runs directly over your network." },
+  lan: {
+    led: "green",
+    text: "Everyone on their own phone, on the same Wi-Fi or hotspot. The host shows an invite QR, each player scans it and shows a reply QR back. No setup, no server: phones talk directly over your network.",
+  },
 };
 
 export default function Home() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("pass");
-  const [code, setCode] = useState("");
-  const clean = cleanCode(code);
 
   return (
     <Screen
@@ -30,36 +29,13 @@ export default function Home() {
           <>
             <Button
               onClick={() => {
-                // A new room ends the one this tab was hosting.
-                const old = loadSession<{ boot: { code: string; secret: string } }>(HOST_KEY);
-                if (old?.boot) closeRoom(old.boot.code, old.boot.secret);
-                clearSession(HOST_KEY);
+                clearSession(HOST_KEY); // a new room replaces the one this tab was hosting
                 router.push("/room");
               }}
             >
-              Create room
+              Host a room
             </Button>
-            <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (isValidCode(clean)) router.push(`/join/${clean}`);
-              }}
-            >
-              <input
-                value={formatCode(clean)}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="VNL7-K92P"
-                aria-label="Room code"
-                autoCapitalize="characters"
-                autoComplete="off"
-                className="min-w-0 flex-1 rounded-xl border-2 border-edge bg-field px-3 font-mono text-xl uppercase tracking-widest"
-              />
-              <Button variant="secondary" className="!w-auto" disabled={!isValidCode(clean)}>
-                Join
-              </Button>
-            </form>
-            {clean.length === 8 && !isValidCode(clean) && <p className="text-sm text-crimson">Codes never use 0, O, 1, I or L.</p>}
+            <p className="text-center text-xs text-ink/60">Joining? Scan the host&apos;s invite QR with your camera.</p>
           </>
         )
       }

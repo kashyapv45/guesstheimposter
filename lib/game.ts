@@ -63,6 +63,7 @@ export type Action =
 export type Secret = { role: Role; word: string | null; category: string | null };
 
 export const COLORS = ["#D95D39", "#E9B44C", "#2A9D8F", "#8E5572", "#3D5A80", "#7FB069", "#E07A5F", "#6D597A", "#BC4749", "#457B9D", "#F2CC8F", "#264653"];
+export const MAX_PLAYERS = 16;
 export const POINTS = { crew: 1, imposter: 2, mrwhite: 3 };
 
 export function newGame(settings: Settings = DEFAULT_SETTINGS): GameState {
@@ -127,7 +128,7 @@ export function reduce(s: GameState, a: Action): GameState {
       const name = a.name.trim().slice(0, 20) || "Player";
       if (s.players.some((p) => p.id === a.id))
         return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, name, connected: true } : p)) };
-      if (s.players.length >= 16) return s; // late joiners sit out until the next deal
+      if (s.players.length >= MAX_PLAYERS) return s; // late joiners sit out until the next deal
       const color = COLORS[s.players.length % COLORS.length];
       return { ...s, players: [...s.players, { id: a.id, name, color, score: 0, connected: true }] };
     }

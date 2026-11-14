@@ -4,16 +4,15 @@
 
 | Mode | How it works | Best for |
 |---|---|---|
-| Local Wi-Fi | Join handshake via `/api/signal` (Upstash Redis / Redis on Vercel, 1-hour idle TTL); then a LAN-only WebRTC link (no STUN/TURN), so game traffic stays on the shared Wi-Fi or hotspot. | Parties, everyone on one Wi-Fi or hotspot |
+| Local Wi-Fi | QR pairing: host invite QR (lz-string compressed WebRTC offer) → guest reply QR (answer) → LAN-only WebRTC DataChannel (no STUN/TURN). No server at all. Up to 16 players. | Parties, everyone on one Wi-Fi or hotspot |
 | Pass & Play | Local React state + localStorage. | One phone around a table |
 
-Everything stays inside one Vercel project: no Pusher, Ably or Firebase.
+Fully static on Vercel: no API routes, no database, no third-party realtime service.
 
-## 2. 8-character room codes
+## 2. Room identity
 
-- Alphabet without 0, O, 1, I, L: `ABCDEFGHJKMNPQRSTUVWXYZ23456789`
-- Shown as two blocks, `VNL7-K92P`, styled as a record catalog number (`CAT. NO. VNL7-K92P`).
-- Tap to copy the join link (`/join/VNL7K92P`); flip the sleeve to show a QR code.
+- Each room gets an 8-character catalog number (`VNL7-K92P`, alphabet without 0, O, 1, I, L), shown on the host's sleeve and in the invite link.
+- Joining is by QR pairing, not by typing the code.
 
 ## 3. Midnight Hi-Fi UI (mobile-first)
 
@@ -29,7 +28,7 @@ Everything stays inside one Vercel project: no Pusher, Ably or Firebase.
 - Imposters auto-scale (1 for 3–5, 2 for 6–8, 3 for 9+) with manual override.
 - Imposter visibility: category only, related decoy word, or hardcore blind.
 - Optional Mr. White: blank label, wins by guessing the word after being voted out.
-- Sessions: host room and guest seat live in sessionStorage and expire after 1 hour without play; a refresh within that hour rejoins with the same role. Creating a new room ends the old one.
+- Sessions: host room and guest seat live in sessionStorage and expire after 1 hour without play. A dropped guest re-pairs with a new invite and keeps their seat and role. Hosting a new room replaces the old one.
 
 ## 5. Word engine
 
@@ -41,4 +40,4 @@ Everything stays inside one Vercel project: no Pusher, Ably or Firebase.
 
 1. Word engine & build linter: Next.js + TypeScript + Tailwind, `validate-words`, `useWordDeck`, curated JSON crates.
 2. Hi-Fi UI & Pass & Play: panels, press-and-hold reveal, flip-clock timer, full single-device loop.
-3. Room codes & Local Wi-Fi: code generator + QR join link, LAN-only WebRTC with server handshake, automatic reconnect.
+3. Local Wi-Fi: QR pairing (invite + reply), LAN-only WebRTC, re-pairing keeps seats, 1-hour session expiry.
