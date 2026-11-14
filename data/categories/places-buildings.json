@@ -1,0 +1,31 @@
+{
+  "id": "places-buildings",
+  "name": "Places & Buildings",
+  "words": {
+    "Fun & Special Places": {
+      "easy": ["Ski Resort", "Circus Tent", "Fairground", "Carnival", "Golf Course", "Tennis Court", "Basketball Court", "Football Field", "Boxing Ring", "Dog Park", "Bus Station", "Ferris Wheel", "Pub", "Trampoline Park", "Water Slide", "Hotel Lobby"],
+      "medium": ["Racetrack", "Driving Range", "Rest Stop", "Truck Stop", "Subway Station", "Ferry Terminal", "Heliport", "Duty-Free Shop", "Ballroom", "Banquet Hall", "Wedding Chapel", "Throne Room", "Watchtower", "Clock Tower", "Bell Tower", "Drawbridge", "Moat", "Bank Vault", "Tomb", "Crypt", "Ancient Ruins", "Shrine", "Bed and Breakfast", "Community Center", "Sports Bar", "Karaoke Bar", "Juice Bar", "Cat Cafe", "Internet Cafe", "Safari Park", "Prison Cell", "Rodeo Arena"],
+      "spicy": ["Ice Hotel", "Capsule Hotel", "Underwater Hotel", "Recycling Center", "Sewer", "Hall of Mirrors", "Interrogation Room", "Situation Room", "Oval Office", "Mission Control", "Youth Club", "Train Yard"]
+    },
+    "Around Town": {
+      "easy": ["School", "Hospital", "Library", "Museum", "Airport", "Train Station", "Police Station", "Fire Station", "Post Office", "Bank", "Church", "Castle", "Prison", "Zoo", "Stadium", "Supermarket", "Restaurant", "Hotel", "Movie Theater", "Playground", "Park", "Swimming Pool", "Gym", "Farm", "Bakery", "Pharmacy", "Shopping Mall"],
+      "medium": ["Aquarium", "Courthouse", "Town Hall", "Embassy", "University", "Kindergarten", "Concert Hall", "Theatre", "Opera House", "Art Gallery", "Planetarium", "Observatory", "Bowling Alley", "Arcade", "Casino", "Nightclub", "Barbershop", "Laundromat", "Car Wash", "Gas Station", "Parking Garage", "Food Court", "Ice Rink", "Skate Park", "Amusement Park", "Water Park", "Botanical Garden", "Cemetery", "Mosque", "Temple", "Synagogue", "Cathedral", "Monastery", "Hostel", "Motel", "Campsite", "Petting Zoo", "Bookstore", "Toy Store", "Pet Shop", "Flower Shop", "Coffee Shop", "Diner", "Pizzeria", "Ice Cream Parlor", "Skyscraper"],
+      "spicy": ["Lighthouse", "Windmill", "Bunker", "Pagoda", "Mausoleum", "Palace", "Catacombs", "Dungeon", "Greenhouse", "Barn", "Silo", "Stable", "Morgue", "Pawn Shop", "Tattoo Parlor", "Nail Salon", "Spa", "Sauna", "Haunted House", "Wax Museum", "Drive-In Theater", "Thrift Store", "Flea Market", "Farmers Market", "Vineyard", "Brewery", "Factory", "Warehouse", "Power Plant", "Oil Rig", "Dam", "Bridge", "Tunnel", "Harbor", "Marina", "Pier", "Boardwalk", "Pyramid"]
+    },
+    "Rooms": {
+      "easy": ["Kitchen", "Bedroom", "Bathroom", "Living Room", "Garage", "Attic", "Basement", "Garden", "Balcony", "Backyard", "Classroom"],
+      "medium": ["Porch", "Pantry", "Laundry Room", "Closet", "Hallway", "Dining Room", "Nursery", "Home Office", "Patio", "Shed", "Rooftop", "Guest Room", "Sunroom", "Cafeteria", "Locker Room", "Waiting Room", "Elevator", "Escalator"],
+      "spicy": ["Panic Room", "Wine Cellar", "Man Cave", "Crawl Space", "Loft", "Conservatory", "Foyer", "Secret Passage", "Home Theater", "Pool House", "Gazebo", "Chimney", "Teachers' Lounge", "Operating Room", "Emergency Room", "Courtroom", "Control Tower"]
+    },
+    "Homes": {
+      "easy": ["Apartment", "Mansion", "Cottage", "Cabin", "Tent", "Igloo", "Treehouse"],
+      "medium": ["Bungalow", "Penthouse", "Farmhouse", "Hut", "Villa", "Dormitory", "Trailer Park", "Boarding School"],
+      "spicy": ["Yurt", "Teepee", "Retirement Home", "Orphanage", "Lighthouse Cottage", "Castle Tower", "Mud Hut"]
+    },
+    "Work & Outdoors": {
+      "easy": ["Office", "Construction Site", "Parking Lot", "Village", "Highway"],
+      "medium": ["Laboratory", "Recording Studio", "TV Studio", "Military Base", "Town Square", "Ghost Town", "Back Alley", "Newsroom"],
+      "spicy": ["Fire Escape", "Junkyard", "Quarry", "Shipyard", "Space Center", "Server Room"]
+    }
+  }
+}

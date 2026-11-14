@@ -1,0 +1,36 @@
+{
+  "id": "foods-drinks",
+  "name": "Foods & Drinks",
+  "words": {
+    "Fruits": {
+      "easy": ["Apple", "Banana", "Orange", "Strawberry", "Grapes", "Watermelon", "Pineapple", "Mango", "Cherry", "Lemon", "Peach", "Pear", "Kiwi", "Coconut", "Blueberry"],
+      "medium": ["Raspberry", "Pomegranate", "Papaya", "Plum", "Apricot", "Grapefruit", "Lime", "Avocado", "Fig", "Cranberry", "Blackberry", "Cantaloupe", "Tangerine", "Nectarine"],
+      "spicy": ["Dragon Fruit", "Lychee", "Passion Fruit", "Durian", "Jackfruit", "Persimmon", "Guava", "Starfruit", "Gooseberry", "Kumquat", "Quince", "Rambutan"]
+    },
+    "Vegetables": {
+      "easy": ["Carrot", "Potato", "Tomato", "Broccoli", "Corn", "Onion", "Cucumber", "Lettuce", "Pumpkin", "Mushroom", "Peas", "Garlic", "Cabbage", "Bell Pepper", "Spinach"],
+      "medium": ["Cauliflower", "Celery", "Eggplant", "Zucchini", "Asparagus", "Beetroot", "Radish", "Sweet Potato", "Kale", "Brussels Sprouts", "Green Beans", "Artichoke", "Leek", "Ginger"],
+      "spicy": ["Okra", "Turnip", "Parsnip", "Fennel", "Bok Choy", "Butternut Squash", "Jalapeño", "Rhubarb", "Kohlrabi", "Watercress", "Shallot", "Horseradish"]
+    },
+    "Dishes": {
+      "easy": ["Pizza", "Burger", "Hot Dog", "Spaghetti", "Sandwich", "French Fries", "Taco", "Sushi", "Soup", "Salad", "Pancake", "Waffle", "Omelette", "Fried Chicken", "Popcorn", "Mac and Cheese", "Lasagna", "Burrito", "Noodles", "Steak"],
+      "medium": ["Ramen", "Paella", "Curry", "Dumplings", "Nachos", "Quesadilla", "Risotto", "Fish and Chips", "Kebab", "Falafel", "Hummus", "Meatballs", "Pad Thai", "Fried Rice", "Caesar Salad", "Grilled Cheese", "Lobster Roll", "Chili Con Carne", "Croissant", "Bagel", "Pretzel", "Spring Roll", "Shepherd's Pie"],
+      "spicy": ["Poutine", "Biryani", "Pho", "Ceviche", "Goulash", "Moussaka", "Bibimbap", "Tagine", "Pierogi", "Gnocchi", "Enchilada", "Fondue", "Shakshuka", "Jambalaya", "Bouillabaisse", "Dim Sum", "Tamale", "Empanada", "Carbonara", "Beef Wellington", "Eggs Benedict"]
+    },
+    "Desserts & Snacks": {
+      "easy": ["Ice Cream", "Chocolate", "Cake", "Cookie", "Donut", "Cupcake", "Brownie", "Candy", "Lollipop", "Apple Pie", "Muffin", "Cheesecake", "Pudding", "Jelly", "Marshmallow", "Cotton Candy", "Potato Chips"],
+      "medium": ["Tiramisu", "Churros", "Macaron", "Crème Brûlée", "Banana Split", "Milkshake", "Popsicle", "Gummy Bears", "Fudge", "Toffee", "Caramel", "Cinnamon Roll", "Peanut Butter", "Granola Bar", "Trail Mix", "S'mores"],
+      "spicy": ["Pavlova", "Baklava", "Cannoli", "Mochi", "Éclair", "Profiterole", "Panna Cotta", "Gelato", "Sorbet", "Strudel", "Meringue", "Flan", "Baked Alaska", "Gingerbread", "Biscotti", "Soufflé"]
+    },
+    "Drinks": {
+      "easy": ["Water", "Milk", "Coffee", "Tea", "Orange Juice", "Lemonade", "Hot Chocolate", "Smoothie", "Soda", "Iced Tea"],
+      "medium": ["Espresso", "Cappuccino", "Latte", "Bubble Tea", "Coconut Water", "Green Tea", "Iced Coffee", "Root Beer", "Ginger Ale", "Cider", "Kombucha", "Eggnog", "Sparkling Water", "Mocha"],
+      "spicy": ["Matcha", "Chai", "Mojito", "Margarita", "Piña Colada", "Sangria", "Champagne", "Wine", "Beer", "Whiskey", "Sake", "Americano", "Macchiato", "Horchata", "Lassi"]
+    },
+    "Pantry & Ingredients": {
+      "easy": ["Bread", "Cheese", "Egg", "Butter", "Rice", "Pasta", "Honey", "Salt", "Sugar", "Flour", "Ketchup", "Jam", "Cereal", "Yogurt", "Bacon", "Sausage", "Ham"],
+      "medium": ["Mayonnaise", "Mustard", "Olive Oil", "Vinegar", "Soy Sauce", "Cinnamon", "Oatmeal", "Tofu", "Salami", "Tortilla", "Maple Syrup", "Whipped Cream", "Cream Cheese", "Mozzarella", "Cheddar", "Parmesan", "Baguette", "Pita Bread", "Salsa", "Barbecue Sauce"],
+      "spicy": ["Saffron", "Wasabi", "Pesto", "Guacamole", "Tahini", "Sriracha", "Truffle", "Caviar", "Anchovy", "Brie", "Sourdough", "Prosciutto", "Paprika", "Nutmeg", "Vanilla", "Miso", "Kimchi", "Sauerkraut", "Ghee", "Couscous", "Quinoa"]
+    }
+  }
+}

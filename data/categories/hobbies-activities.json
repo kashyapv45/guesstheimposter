@@ -1,0 +1,36 @@
+{
+  "id": "hobbies-activities",
+  "name": "Hobbies & Activities",
+  "words": {
+    "Social & Seasonal": {
+      "easy": ["Sunbathing", "People Watching", "Window Shopping", "Road Trip", "Sightseeing", "Barbecue", "Snowball Fight", "Water Balloon Fight", "Pumpkin Carving", "Easter Egg Hunt", "Trick-or-Treating", "Dinner Party", "Brunch", "House Party", "Talent Show", "Garage Sale", "Bake Sale", "Spa Day", "Cloud Watching", "Daydreaming"],
+      "medium": ["Potluck", "Karaoke Night", "Tailgating", "Pub Crawl", "Car Boot Sale", "Makeover", "Manicure", "Hair Braiding", "Restaurant Hopping", "Dog Training", "Pet Sitting", "Snowshoeing", "Cross-Country Skiing", "Chalk Art", "Rock Painting", "Shell Collecting", "Letter Writing", "Bird Feeding", "Debate Club", "Chess Club", "Reading Comics", "Word Searches"],
+      "spicy": ["Trainspotting", "Plane Spotting", "Memorizing Pi", "Learning Sign Language", "Writing Fan Fiction", "Ice Sculpting", "Sand Art", "Drone Flying", "RC Cars", "Car Restoration", "Car Detailing", "Composting", "Bullet Journaling", "Food Blogging"]
+    },
+    "Skills & Making": {
+      "easy": ["Blogging", "Digital Art", "Coding", "Robotics", "Flower Arranging", "Meal Prep", "Pasta Making", "Chocolate Making", "Cocktail Mixing", "Learning a Language"],
+      "medium": ["Cross-Stitch", "Needlepoint", "Weaving", "Soap Making", "Canning", "Pickling", "Sourdough Baking", "Sushi Rolling", "Pressed Flowers", "Birdhouse Building", "Model Building"],
+      "spicy": ["Felting", "Spinning Yarn", "Perfume Making", "Fermenting", "Bonsai Pruning", "Cheese Making", "Kintsugi", "Marbling Paper"]
+    },
+    "Arts & Crafts": {
+      "easy": ["Painting", "Drawing", "Knitting", "Baking", "Cooking", "Singing", "Dancing", "Photography", "Journaling", "Coloring", "Origami", "Scrapbooking", "Pottery"],
+      "medium": ["Sewing", "Crochet", "Embroidery", "Calligraphy", "Sculpting", "Woodworking", "Candle Making", "Jewelry Making", "Quilting", "Graffiti", "Cake Decorating", "Stand-Up Comedy", "Songwriting", "Podcasting", "Vlogging", "Cosplay", "Face Painting", "Tie-Dye", "Collage", "Juggling"],
+      "spicy": ["Glassblowing", "Bookbinding", "Macramé", "Stained Glass", "Whittling", "Ikebana", "Latte Art", "Puppetry", "Miniature Painting", "Model Trains", "Ship in a Bottle", "Leatherworking", "Basket Weaving", "Taxidermy", "Decoupage", "Paint by Numbers"]
+    },
+    "Outdoors": {
+      "easy": ["Camping", "Hiking", "Fishing", "Gardening", "Picnic", "Bird Watching", "Kite Flying", "Building Sandcastles", "Stargazing", "Roller Skating", "Sledding", "Building a Snowman"],
+      "medium": ["Kayaking", "Horseback Riding", "Geocaching", "Snorkeling", "Scuba Diving", "Mountain Biking", "Foraging", "Metal Detecting", "Beachcombing", "Trail Running", "Backpacking", "Whale Watching", "Treasure Hunt", "Sailing", "Ice Fishing", "Fruit Picking", "Bonfire"],
+      "spicy": ["Spelunking", "Orienteering", "Falconry", "Bouldering", "Storm Chasing", "Beekeeping", "Ziplining", "Paragliding", "Canyoning", "Fly Fishing", "Tree Climbing", "Mushroom Hunting", "Glamping", "Ice Climbing"]
+    },
+    "At Home": {
+      "easy": ["Reading", "Gaming", "Movie Night", "Board Game Night", "Sleepover", "Pillow Fight", "Building a Fort", "Yoga", "Meditation", "Napping", "Bubble Bath", "Online Shopping"],
+      "medium": ["Pilates", "Lego Building", "Stamp Collecting", "Coin Collecting", "Trading Cards", "Escape Room", "Binge-Watching", "Speedcubing", "Magic Tricks", "Fantasy Football", "Book Club", "Pen Pal", "Thrifting", "Trivia Night", "Wine Tasting", "Coupon Clipping", "Houseplants"],
+      "spicy": ["Ham Radio", "Astrology", "Tarot Reading", "Genealogy", "Lucid Dreaming", "Speedrunning", "Competitive Eating", "Ant Farm", "Aquascaping", "Home Brewing", "Model Rocketry", "Lock Picking", "Urban Exploring", "Antique Hunting", "Vinyl Collecting", "Fishkeeping"]
+    },
+    "Fitness & Social": {
+      "easy": ["Jogging", "Jump Rope", "Hula Hoop", "Ballet", "Mini Golf", "Volunteering", "Laser Tag", "Paintball"],
+      "medium": ["Ultimate Frisbee", "Line Dancing", "Zumba", "Breakdancing", "Salsa Dancing", "Ballroom Dancing", "Tap Dancing", "Aerobics", "Spin Class", "Tai Chi", "Roller Derby", "Go-Karting", "Belly Dancing", "Cheerleading"],
+      "spicy": ["Pole Fitness", "Aerial Silks", "Slacklining", "Acroyoga", "Disc Golf", "Kickball League", "Swing Dancing", "Fire Spinning", "Square Dancing", "Hula Dancing"]
+    }
+  }
+}

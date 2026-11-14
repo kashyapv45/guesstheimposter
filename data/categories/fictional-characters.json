@@ -1,0 +1,26 @@
+{
+  "id": "fictional-characters",
+  "name": "Fictional Characters",
+  "words": {
+    "Superheroes & Villains": {
+      "easy": ["Batman", "Superman", "Spider-Man", "Wonder Woman", "Iron Man", "The Hulk", "Captain America", "Thor", "The Joker", "Black Panther", "Catwoman", "Aquaman", "The Flash"],
+      "medium": ["Deadpool", "Captain Marvel", "Doctor Strange", "Thanos", "Loki", "Groot", "Harley Quinn", "Green Lantern", "Ant-Man", "Venom", "Magneto", "Storm", "Lex Luthor", "Supergirl", "Hawkeye", "Daredevil", "Green Goblin", "Bane", "The Riddler", "Mystique"],
+      "spicy": ["Rorschach", "Doctor Doom", "Silver Surfer", "Moon Knight", "Nightwing", "Galactus", "Two-Face", "Poison Ivy", "Scarlet Witch", "Juggernaut", "Mr. Freeze", "Hellboy", "Beast Boy", "Darkseid", "Red Skull", "Ultron", "Doctor Octopus"]
+    },
+    "Cartoons & Animation": {
+      "easy": ["Mickey Mouse", "Bugs Bunny", "SpongeBob", "Homer Simpson", "Bart Simpson", "Scooby-Doo", "Shrek", "Elsa", "Olaf", "Woody", "Buzz Lightyear", "Nemo", "Dory", "Simba", "Pikachu", "Mario", "Peppa Pig", "Bluey", "Minion", "Garfield", "Snoopy", "Winnie the Pooh", "Donald Duck", "Goofy"],
+      "medium": ["Patrick Star", "Squidward", "Daffy Duck", "Tweety", "Road Runner", "Wile E. Coyote", "Fred Flintstone", "Popeye", "Pink Panther", "Sonic the Hedgehog", "Luigi", "Princess Peach", "Bowser", "Yoshi", "Kirby", "Princess Zelda", "Stitch", "Moana", "Mulan", "Aladdin", "Ariel", "Rapunzel", "Cinderella", "Snow White", "Lightning McQueen", "Mike Wazowski", "Gru", "Shaggy", "Dora the Explorer", "Tigger", "Eeyore", "Charlie Brown", "Bambi", "Dumbo", "Pinocchio", "Tinker Bell", "Peter Pan", "Captain Hook", "Ursula", "Maleficent"],
+      "spicy": ["Rick Sanchez", "Bender", "Stewie Griffin", "Eric Cartman", "Johnny Bravo", "Courage the Cowardly Dog", "Totoro", "No-Face", "Gromit", "Marge Simpson", "Lisa Simpson", "Mr. Burns", "Ned Flanders", "Sandy Cheeks", "Mr. Krabs", "Pumbaa", "Timon", "Rafiki", "Baloo", "Mowgli", "Genie", "Jafar", "Megamind", "Kim Possible", "Ben 10", "Aang", "Zuko", "Jake the Dog", "Steven Universe", "Perry the Platypus"]
+    },
+    "Books & Film": {
+      "easy": ["Harry Potter", "Hermione Granger", "Darth Vader", "Yoda", "Luke Skywalker", "Sherlock Holmes", "James Bond", "Dracula", "Frankenstein", "Santa Claus", "Tooth Fairy", "Easter Bunny", "Robin Hood", "Willy Wonka", "Mary Poppins", "Indiana Jones", "Jack Sparrow", "Gandalf", "Frodo"],
+      "medium": ["Ron Weasley", "Dumbledore", "Voldemort", "Hagrid", "Severus Snape", "Gollum", "Legolas", "Aragorn", "Chewbacca", "Princess Leia", "Han Solo", "R2-D2", "C-3PO", "Obi-Wan Kenobi", "Katniss Everdeen", "Edward Cullen", "Hannibal Lecter", "Alice in Wonderland", "Mad Hatter", "Cheshire Cat", "Wicked Witch of the West", "Tin Man", "Scarecrow", "Cowardly Lion", "Dorothy", "Pippi Longstocking", "Matilda", "Paddington Bear", "Tarzan", "Zorro", "King Kong", "Godzilla", "Freddy Krueger", "The Grinch", "The Cat in the Hat", "Pennywise"],
+      "spicy": ["Atticus Finch", "Holden Caulfield", "Jay Gatsby", "Captain Ahab", "Don Quixote", "Dorian Gray", "Ebenezer Scrooge", "Oliver Twist", "Huckleberry Finn", "Tom Sawyer", "Sauron", "Bilbo Baggins", "Samwise Gamgee", "Boba Fett", "Darth Maul", "Kylo Ren", "Jabba the Hutt", "Emperor Palpatine", "Hercule Poirot", "Miss Marple", "Jack Skellington", "Beetlejuice", "Edward Scissorhands", "Norman Bates", "Mrs. Doubtfire", "Ferris Bueller", "Marty McFly", "Doc Brown", "Ellen Ripley", "Lara Croft", "Master Chief", "Kratos", "Geralt of Rivia", "Walter White", "Jon Snow", "Daenerys Targaryen", "Eleven", "Michael Scott", "Sheldon Cooper", "Wednesday Addams", "Mr. Bean"]
+    },
+    "Myths & Creatures": {
+      "easy": ["Unicorn", "Dragon", "Mermaid", "Vampire", "Werewolf", "Zombie", "Ghost", "Fairy", "Witch", "Wizard", "Elf", "Troll", "Goblin", "Yeti", "Bigfoot", "Hercules", "Zeus", "Mummy"],
+      "medium": ["Loch Ness Monster", "Phoenix", "Pegasus", "Centaur", "Minotaur", "Medusa", "Cyclops", "Kraken", "Griffin", "Leprechaun", "Gnome", "Ogre", "Grim Reaper", "Cupid", "Poseidon", "Hades", "Athena", "Odin", "Merlin", "King Arthur"],
+      "spicy": ["Hydra", "Banshee", "Chupacabra", "Apollo", "Anubis", "Pandora", "Achilles", "Odysseus", "Icarus", "Valkyrie", "Kitsune", "Golem", "Basilisk", "Cerberus"]
+    }
+  }
+}

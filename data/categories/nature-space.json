@@ -1,0 +1,36 @@
+{
+  "id": "nature-space",
+  "name": "Nature & Space",
+  "words": {
+    "Little Things Outdoors": {
+      "easy": ["Sunrise", "Sunset", "Wave", "Mud", "Seed", "Petal", "Spider Web", "Bird Nest", "Beehive", "Anthill", "Tree Stump", "Autumn Leaves"],
+      "medium": ["Tide", "Whirlpool", "Snowdrift", "Ice Cave", "Waterhole", "Rapids", "Driftwood", "Thorn", "Pollen", "Root", "Sandbar", "Tree Rings"],
+      "spicy": ["Sap", "Equinox", "Solstice", "Molehill", "Bamboo Grove", "Cloud Forest"]
+    },
+    "Weather": {
+      "easy": ["Rain", "Snow", "Rainbow", "Thunder", "Lightning", "Tornado", "Hurricane", "Cloud", "Fog", "Hail", "Snowflake", "Icicle", "Puddle"],
+      "medium": ["Blizzard", "Drought", "Heatwave", "Monsoon", "Tsunami", "Earthquake", "Avalanche", "Flood", "Frost", "Drizzle", "Sleet", "Thunderstorm", "Dew", "Breeze", "Sandstorm", "Wildfire", "Landslide"],
+      "spicy": ["Northern Lights", "Waterspout", "Dust Devil", "Mirage", "Typhoon", "Whiteout", "Black Ice", "Polar Vortex", "El Niño", "Ball Lightning", "Hoarfrost", "Solar Halo"]
+    },
+    "Landforms & Water": {
+      "easy": ["Mountain", "Volcano", "Beach", "Ocean", "River", "Lake", "Island", "Desert", "Forest", "Jungle", "Waterfall", "Cave", "Hill", "Pond", "Glacier", "Iceberg", "Canyon"],
+      "medium": ["Valley", "Cliff", "Swamp", "Coral Reef", "Oasis", "Lagoon", "Peninsula", "Sand Dune", "Geyser", "Hot Spring", "Rainforest", "Tundra", "Savanna", "Meadow", "Fjord", "Plateau", "Marsh", "Bay", "Creek", "Tide Pool", "Archipelago", "Prairie"],
+      "spicy": ["Stalactite", "Stalagmite", "Sinkhole", "Atoll", "Mangrove", "Estuary", "Crater", "Bog", "Butte", "Mesa", "Tributary", "Quicksand", "Permafrost", "Salt Flat", "Ravine", "Gorge"]
+    },
+    "Plants": {
+      "easy": ["Tree", "Flower", "Rose", "Sunflower", "Cactus", "Grass", "Palm Tree", "Daisy", "Tulip", "Leaf", "Acorn", "Pine Cone", "Seaweed", "Moss", "Bamboo", "Oak Tree"],
+      "medium": ["Lavender", "Orchid", "Lily", "Dandelion", "Ivy", "Fern", "Clover", "Venus Flytrap", "Bonsai", "Lotus", "Maple Tree", "Pine Tree", "Willow Tree", "Christmas Tree", "Daffodil", "Poppy", "Thistle", "Cherry Blossom", "Aloe Vera", "Vine", "Hibiscus", "Magnolia"],
+      "spicy": ["Redwood", "Baobab", "Wisteria", "Hydrangea", "Chrysanthemum", "Mistletoe", "Holly", "Lichen", "Tumbleweed", "Algae", "Eucalyptus", "Carnation", "Marigold", "Peony", "Jasmine", "Corpse Flower", "Pitcher Plant", "Snapdragon"]
+    },
+    "Space": {
+      "easy": ["Sun", "Moon", "Star", "Earth", "Mars", "Jupiter", "Saturn", "Comet", "Meteor", "Asteroid", "Galaxy", "Black Hole", "UFO", "Shooting Star"],
+      "medium": ["Mercury", "Venus", "Uranus", "Neptune", "Pluto", "Milky Way", "Solar Eclipse", "Constellation", "Supernova", "Nebula", "Satellite", "International Space Station", "Big Dipper", "North Star", "Meteor Shower", "Moon Landing", "Gravity", "Orbit", "Solar System", "Wormhole"],
+      "spicy": ["Quasar", "Pulsar", "Dark Matter", "Exoplanet", "Red Giant", "White Dwarf", "Kuiper Belt", "Asteroid Belt", "Big Bang", "Lunar Eclipse", "Sunspot", "Solar Flare", "Light-Year", "Orion's Belt", "Andromeda", "Halley's Comet", "Mars Rover", "Hubble Telescope", "Space Junk", "Zero Gravity", "Neutron Star"]
+    },
+    "Rocks & Gems": {
+      "easy": ["Gold", "Silver", "Diamond", "Ruby", "Crystal", "Fossil", "Lava", "Pebble", "Pearl", "Seashell"],
+      "medium": ["Emerald", "Sapphire", "Amber", "Magma", "Boulder", "Geode", "Quartz", "Granite", "Coal", "Volcanic Ash"],
+      "spicy": ["Obsidian", "Amethyst", "Opal", "Jade", "Topaz", "Meteorite", "Pumice", "Limestone", "Copper Ore", "Petrified Wood"]
+    }
+  }
+}

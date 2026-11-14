@@ -1,0 +1,26 @@
+{
+  "id": "movies-tv",
+  "name": "Movies & TV",
+  "words": {
+    "Classics & Crowd-Pleasers": {
+      "easy": ["Finding Dory", "School of Rock", "The Parent Trap", "Freaky Friday", "Hocus Pocus", "Space Jam", "The Mask", "Free Willy", "Power Rangers", "Teenage Mutant Ninja Turtles", "The Flintstones", "Looney Tunes", "Tom and Jerry", "Teletubbies", "Full House", "Hannah Montana", "Star Trek", "The Muppet Show", "Love Island", "The Voice", "America's Got Talent", "Wheel of Fortune"],
+      "medium": ["Cheaper by the Dozen", "Ace Ventura", "Dumb and Dumber", "Bruce Almighty", "Liar Liar", "The Hangover", "Superbad", "Bridesmaids", "Clueless", "Napoleon Dynamite", "Speed", "Die Hard", "Predator", "RoboCop", "Independence Day", "Armageddon", "Gremlins", "The Goonies", "The Breakfast Club", "Babe", "John Wick", "Kill Bill", "Scream", "Halloween", "A Quiet Place", "The Sixth Sense", "Barney & Friends", "Saved by the Bell", "The Fresh Prince of Bel-Air", "Baywatch", "iCarly", "Keeping Up with the Kardashians", "Jeopardy!", "Dancing with the Stars", "The Amazing Race", "Planet Earth"],
+      "spicy": ["Stand by Me", "Close Encounters of the Third Kind", "2001: A Space Odyssey", "A Clockwork Orange", "Black Swan", "Arrival", "Her", "The Silence of the Lambs", "Gilligan's Island", "Pimp My Ride", "Ferris Bueller's Day Off"]
+    },
+    "Animated Movies": {
+      "easy": ["Frozen", "The Lion King", "Toy Story", "Finding Nemo", "Cars", "Up", "Coco", "Inside Out", "Zootopia", "Encanto", "Monsters, Inc.", "The Incredibles", "Despicable Me", "Kung Fu Panda", "Ice Age", "Tangled", "Ratatouille", "WALL-E"],
+      "medium": ["Spirited Away", "Coraline", "How to Train Your Dragon", "The Little Mermaid", "Beauty and the Beast", "Lilo & Stitch", "Brave", "Luca", "Turning Red", "Wreck-It Ralph", "Big Hero 6", "The Lego Movie", "Happy Feet", "Hotel Transylvania", "Chicken Run", "Cloudy with a Chance of Meatballs", "The Secret Life of Pets", "Sing", "The Jungle Book", "101 Dalmatians", "A Bug's Life", "The Emperor's New Groove"],
+      "spicy": ["My Neighbor Totoro", "Howl's Moving Castle", "Princess Mononoke", "Fantasia", "The Iron Giant", "Fantastic Mr. Fox", "Isle of Dogs", "Akira", "The Nightmare Before Christmas", "Corpse Bride", "Ponyo", "Kubo and the Two Strings", "The Prince of Egypt", "Anastasia", "The Land Before Time", "Watership Down"]
+    },
+    "Live-Action Movies": {
+      "easy": ["Titanic", "Jaws", "Star Wars", "Jurassic Park", "Home Alone", "Ghostbusters", "The Matrix", "Avatar", "Back to the Future", "E.T.", "The Avengers", "Barbie", "Grease", "Rocky", "Mean Girls", "The Wizard of Oz", "Top Gun", "Mission: Impossible", "Pirates of the Caribbean", "Charlie and the Chocolate Factory"],
+      "medium": ["Inception", "Gladiator", "The Godfather", "Forrest Gump", "Pulp Fiction", "The Terminator", "Interstellar", "Raiders of the Lost Ark", "Jumanji", "Men in Black", "The Lord of the Rings", "The Hunger Games", "Twilight", "Transformers", "The Fast and the Furious", "Mamma Mia!", "The Sound of Music", "Dirty Dancing", "The Karate Kid", "The Truman Show", "Night at the Museum", "The Princess Bride", "Pitch Perfect", "Legally Blonde", "The Notebook", "La La Land", "Oppenheimer", "Dune"],
+      "spicy": ["Casablanca", "Psycho", "The Shining", "Citizen Kane", "Schindler's List", "Fight Club", "Parasite", "Whiplash", "The Shawshank Redemption", "Gone with the Wind", "Alien", "Blade Runner", "Goodfellas", "Amélie", "Memento", "The Big Lebowski", "Fargo", "Rear Window", "Vertigo", "Apocalypse Now", "The Exorcist", "Get Out", "Everything Everywhere All at Once", "Mad Max: Fury Road", "The Grand Budapest Hotel", "Slumdog Millionaire", "Groundhog Day"]
+    },
+    "TV Shows": {
+      "easy": ["Friends", "The Simpsons", "Stranger Things", "Game of Thrones", "The Office", "Breaking Bad", "Squid Game", "Wednesday", "Sesame Street", "Paw Patrol", "Doctor Who", "The Big Bang Theory", "Family Guy", "American Idol", "Shark Tank", "MasterChef", "Survivor"],
+      "medium": ["Grey's Anatomy", "How I Met Your Mother", "Modern Family", "Seinfeld", "The Crown", "Money Heist", "The Mandalorian", "Sherlock", "Lost", "Glee", "Gossip Girl", "The Walking Dead", "Brooklyn Nine-Nine", "Avatar: The Last Airbender", "Rick and Morty", "South Park", "Futurama", "Dexter", "The Bachelor", "Big Brother", "Who Wants to Be a Millionaire?", "The Great British Bake Off", "Ted Lasso", "Bridgerton", "The Witcher", "House of the Dragon", "Euphoria", "Black Mirror", "The Boys", "Suits", "Prison Break"],
+      "spicy": ["The Sopranos", "The Wire", "Twin Peaks", "Mad Men", "Succession", "Fleabag", "Better Call Saul", "The X-Files", "Arrested Development", "Downton Abbey", "Peaky Blinders", "Narcos", "The Bear", "Severance", "The Twilight Zone", "Fawlty Towers", "M*A*S*H", "Cheers", "Frasier", "Top Gear", "Gilmore Girls", "Dark", "Chernobyl", "Westworld", "The Last of Us"]
+    }
+  }
+}

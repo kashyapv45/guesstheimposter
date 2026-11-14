@@ -1,0 +1,36 @@
+{
+  "id": "everyday-objects",
+  "name": "Everyday Objects",
+  "words": {
+    "Kitchen": {
+      "easy": ["Spoon", "Fork", "Knife", "Plate", "Bowl", "Cup", "Mug", "Kettle", "Toaster", "Frying Pan", "Fridge", "Oven", "Microwave", "Blender", "Teapot", "Spatula", "Whisk", "Napkin", "Straw", "Lunchbox"],
+      "medium": ["Colander", "Ladle", "Rolling Pin", "Cheese Grater", "Can Opener", "Corkscrew", "Chopsticks", "Cutting Board", "Oven Mitt", "Measuring Cup", "Salt Shaker", "Pepper Grinder", "Ice Cube Tray", "Dish Rack", "Thermos", "Egg Timer", "Apron", "Coaster", "Placemat", "Dishwasher"],
+      "spicy": ["Mortar and Pestle", "Garlic Press", "Pizza Cutter", "Nutcracker", "Melon Baller", "Sieve", "Butter Dish", "Gravy Boat", "Egg Cup", "Toothpick", "Cookie Cutter", "Funnel", "Lazy Susan"]
+    },
+    "Bathroom": {
+      "easy": ["Toothbrush", "Toothpaste", "Towel", "Soap", "Shampoo", "Mirror", "Comb", "Hairbrush", "Bathtub", "Toilet Paper", "Sponge", "Razor", "Shower Cap", "Rubber Duck"],
+      "medium": ["Hair Dryer", "Bath Mat", "Plunger", "Loofah", "Nail Clippers", "Tweezers", "Cotton Swab", "Dental Floss", "Mouthwash", "Shower Curtain", "Toilet Brush", "Bathrobe", "Deodorant", "Perfume", "Sunscreen", "Lip Balm"],
+      "spicy": ["Pumice Stone", "Curling Iron", "Hair Straightener", "Shaving Cream", "Bath Bomb", "Nail File", "Eyelash Curler", "Hand Sanitizer", "Makeup Brush", "Retainer"]
+    },
+    "Living Room & Bedroom": {
+      "easy": ["Chair", "Table", "Sofa", "Bed", "Lamp", "Pillow", "Blanket", "Clock", "Rug", "Curtains", "Bookshelf", "Television", "Remote Control", "Candle", "Vase", "Picture Frame", "Doormat"],
+      "medium": ["Armchair", "Bean Bag", "Coffee Table", "Rocking Chair", "Wardrobe", "Dresser", "Nightstand", "Bunk Bed", "Hammock", "Ceiling Fan", "Coat Hanger", "Coat Rack", "Fireplace", "Alarm Clock", "Mattress", "Cushion", "Footstool"],
+      "spicy": ["Chandelier", "Grandfather Clock", "Lava Lamp", "Futon", "Ottoman", "Room Divider", "Wind Chime", "Dreamcatcher", "Snow Globe", "Hourglass", "Music Box"]
+    },
+    "Office & School": {
+      "easy": ["Pencil", "Pen", "Eraser", "Ruler", "Scissors", "Notebook", "Backpack", "Stapler", "Glue Stick", "Crayon", "Marker", "Calculator", "Envelope", "Stamp", "Paperclip"],
+      "medium": ["Highlighter", "Sticky Note", "Pencil Sharpener", "Sticky Tape", "Hole Punch", "Binder", "Clipboard", "Whiteboard", "Chalk", "Globe", "Protractor", "Compass", "Rubber Band", "Thumbtack", "Folder", "Calendar", "Bookmark"],
+      "spicy": ["Paper Shredder", "Letter Opener", "Fountain Pen", "Rubber Stamp", "Inkwell", "Easel", "Typewriter", "Index Card", "Pencil Case", "Desk Lamp"]
+    },
+    "Tools & Garage": {
+      "easy": ["Hammer", "Screwdriver", "Saw", "Ladder", "Shovel", "Rake", "Bucket", "Broom", "Flashlight", "Wrench", "Watering Can", "Wheelbarrow", "Garden Hose", "Rope", "Padlock", "Key"],
+      "medium": ["Drill", "Pliers", "Tape Measure", "Toolbox", "Paintbrush", "Paint Roller", "Mop", "Dustpan", "Vacuum Cleaner", "Extension Cord", "Lawn Mower", "Garden Shears", "Sandpaper", "Duct Tape", "Super Glue", "Flowerpot", "Mousetrap", "Fly Swatter", "Umbrella"],
+      "spicy": ["Chisel", "Crowbar", "Spirit Level", "Soldering Iron", "Sledgehammer", "Pickaxe", "Chainsaw", "Blowtorch", "Allen Key", "Staple Gun", "Leaf Blower", "Pressure Washer", "Jumper Cables", "Fire Extinguisher", "Smoke Detector"]
+    },
+    "Clothing & Accessories": {
+      "easy": ["Hat", "Sock", "Shoe", "Glove", "Scarf", "Jacket", "T-Shirt", "Jeans", "Dress", "Pajamas", "Sunglasses", "Watch", "Belt", "Wallet", "Ring", "Necklace", "Raincoat", "Boots", "Sneakers", "Hoodie"],
+      "medium": ["Bow Tie", "Necktie", "Beanie", "Baseball Cap", "Flip-Flops", "Slippers", "Mittens", "Earrings", "Bracelet", "Purse", "Suitcase", "Handbag", "Overalls", "Sweater", "Swimsuit", "Tuxedo", "Cardigan", "Leggings", "Shorts", "Vest"],
+      "spicy": ["Monocle", "Cufflinks", "Suspenders", "Top Hat", "Beret", "Sombrero", "Kimono", "Poncho", "Fanny Pack", "Tiara", "Locket", "Brooch", "High Heels", "Clogs", "Kilt", "Bandana", "Fedora", "Turtleneck"]
+    }
+  }
+}

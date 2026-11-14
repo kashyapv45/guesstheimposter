@@ -1,0 +1,36 @@
+{
+  "id": "animals",
+  "name": "Animals",
+  "words": {
+    "Pets & Farm": {
+      "easy": ["Dog", "Cat", "Hamster", "Rabbit", "Goldfish", "Parrot", "Horse", "Cow", "Pig", "Sheep", "Goat", "Chicken", "Duck", "Donkey", "Pony", "Guinea Pig", "Mouse"],
+      "medium": ["Llama", "Alpaca", "Goose", "Rooster", "Ferret", "Chinchilla", "Gerbil", "Budgie", "Ox", "Lamb", "Mule", "Hedgehog", "Tortoise"],
+      "spicy": ["Yak", "Water Buffalo", "Bison", "Axolotl", "Sugar Glider", "Cockatiel"]
+    },
+    "Wild Land Animals": {
+      "easy": ["Lion", "Tiger", "Elephant", "Giraffe", "Zebra", "Monkey", "Bear", "Wolf", "Fox", "Deer", "Kangaroo", "Panda", "Koala", "Gorilla", "Hippo", "Rhino", "Camel", "Squirrel"],
+      "medium": ["Cheetah", "Leopard", "Jaguar", "Polar Bear", "Raccoon", "Skunk", "Moose", "Beaver", "Chimpanzee", "Orangutan", "Sloth", "Hyena", "Lemur", "Otter", "Porcupine", "Badger", "Meerkat", "Armadillo", "Antelope", "Reindeer", "Wild Boar", "Bat", "Mole", "Chipmunk", "Coyote", "Hare"],
+      "spicy": ["Okapi", "Wombat", "Pangolin", "Tapir", "Aardvark", "Red Panda", "Lynx", "Wolverine", "Mongoose", "Gazelle", "Wildebeest", "Warthog", "Capybara", "Platypus", "Tasmanian Devil", "Snow Leopard", "Ocelot", "Baboon", "Gibbon", "Ibex", "Elk", "Opossum", "Bobcat", "Impala", "Mandrill"]
+    },
+    "Sea Creatures": {
+      "easy": ["Shark", "Whale", "Dolphin", "Octopus", "Jellyfish", "Crab", "Lobster", "Starfish", "Seahorse", "Turtle", "Seal", "Clownfish", "Shrimp"],
+      "medium": ["Sea Lion", "Walrus", "Squid", "Stingray", "Orca", "Swordfish", "Pufferfish", "Eel", "Manatee", "Narwhal", "Oyster", "Clam", "Salmon", "Tuna", "Sea Urchin", "Hammerhead Shark"],
+      "spicy": ["Beluga Whale", "Anglerfish", "Barracuda", "Manta Ray", "Sea Cucumber", "Cuttlefish", "Hermit Crab", "Blue Whale", "Sea Otter", "Piranha", "Catfish", "Trout", "Sardine", "Mackerel", "Plankton"]
+    },
+    "Birds": {
+      "easy": ["Owl", "Eagle", "Penguin", "Flamingo", "Swan", "Pigeon", "Crow", "Peacock", "Ostrich", "Seagull", "Robin", "Woodpecker", "Hummingbird", "Toucan"],
+      "medium": ["Pelican", "Vulture", "Falcon", "Hawk", "Stork", "Heron", "Kingfisher", "Magpie", "Raven", "Sparrow", "Canary", "Emu", "Puffin", "Blue Jay", "Cardinal", "Dove"],
+      "spicy": ["Albatross", "Condor", "Cassowary", "Kookaburra", "Pheasant", "Quail", "Nightingale", "Cockatoo", "Macaw", "Kiwi Bird", "Dodo", "Osprey", "Hornbill", "Lyrebird"]
+    },
+    "Reptiles & Amphibians": {
+      "easy": ["Snake", "Frog", "Crocodile", "Alligator", "Lizard", "Chameleon", "Toad"],
+      "medium": ["Iguana", "Gecko", "Cobra", "Python", "Rattlesnake", "Salamander", "Komodo Dragon", "Tadpole", "Newt"],
+      "spicy": ["Anaconda", "Boa Constrictor", "Gila Monster", "Monitor Lizard", "Black Mamba", "Tree Frog", "Poison Dart Frog"]
+    },
+    "Insects & Bugs": {
+      "easy": ["Bee", "Butterfly", "Ant", "Spider", "Ladybug", "Mosquito", "Housefly", "Snail", "Earthworm", "Caterpillar", "Grasshopper", "Dragonfly"],
+      "medium": ["Beetle", "Cockroach", "Scorpion", "Wasp", "Moth", "Firefly", "Centipede", "Termite", "Flea", "Slug", "Tarantula", "Praying Mantis"],
+      "spicy": ["Stick Insect", "Cicada", "Dung Beetle", "Silkworm", "Tick", "Earwig", "Hornet", "Millipede", "Black Widow", "Locust", "Leech"]
+    }
+  }
+}

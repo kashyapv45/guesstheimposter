@@ -1,0 +1,36 @@
+{
+  "id": "brands-tech",
+  "name": "Brands & Tech",
+  "words": {
+    "More Brands": {
+      "easy": ["Venmo", "Tinder", "The North Face", "Under Armour", "New Balance"],
+      "medium": ["Canva", "Slack", "Dropbox", "Lululemon", "Timberland", "Supreme", "Burberry"],
+      "spicy": ["Notion", "Figma"]
+    },
+    "Gadgets": {
+      "easy": ["Smartphone", "Laptop", "Tablet", "Headphones", "Smartwatch", "Game Console", "Computer Mouse", "Keyboard", "Printer", "Camera", "Charger", "USB Stick", "Earbuds", "Selfie Stick", "Webcam", "Drone", "Robot"],
+      "medium": ["Smart Speaker", "VR Headset", "E-Reader", "Power Bank", "Router", "Hard Drive", "Projector", "Graphics Card", "3D Printer", "Fitness Tracker", "Smart Fridge", "Robot Vacuum", "Dashcam", "GPS", "Satellite Dish", "Walkie-Talkie", "Floppy Disk", "Joystick", "Game Controller", "Hoverboard", "Electric Toothbrush"],
+      "spicy": ["Motherboard", "Microchip", "Server", "Modem", "Pager", "Fax Machine", "Tamagotchi", "Polaroid Camera", "Barcode Scanner", "QR Code", "Solar Panel", "Metal Detector", "Night Vision Goggles", "Hologram", "Smart Glasses", "Stylus", "Trackpad", "Blu-ray"]
+    },
+    "Apps & Internet": {
+      "easy": ["Google", "YouTube", "Instagram", "TikTok", "Facebook", "WhatsApp", "Netflix", "Wi-Fi", "Emoji", "Selfie", "Email", "Password", "Spotify", "Snapchat", "Wikipedia"],
+      "medium": ["Twitter", "Reddit", "Zoom", "Pinterest", "LinkedIn", "Discord", "Twitch", "Uber", "Airbnb", "PayPal", "Google Maps", "Siri", "Alexa", "ChatGPT", "Photoshop", "PowerPoint", "Excel", "Hashtag", "Meme", "Podcast", "Livestream", "Bitcoin", "Spam", "Captcha", "App Store", "Duolingo", "Shazam"],
+      "spicy": ["Firewall", "Algorithm", "Blockchain", "Malware", "Phishing", "Bluetooth", "Dark Web", "Pop-up Ad", "Clickbait", "VPN", "Screenshot", "Blue Screen of Death", "Error 404", "Airplane Mode", "Autocorrect", "Spreadsheet", "GIF", "Hacker", "Linux", "Cloud Storage"]
+    },
+    "Tech & Car Companies": {
+      "easy": ["Amazon", "Microsoft", "Samsung", "Nintendo", "PlayStation", "Xbox", "Tesla", "Ferrari", "Toyota", "Sony"],
+      "medium": ["BMW", "Mercedes-Benz", "Lamborghini", "Porsche", "Volkswagen", "Honda", "Intel", "Dell", "Nokia", "Canon", "GoPro", "Sega", "Atari", "Kodak", "Dyson", "eBay", "Etsy", "FedEx", "Visa", "Mastercard"],
+      "spicy": ["Rolls-Royce", "Bugatti", "Harley-Davidson", "Vespa", "Duracell", "Nvidia", "IBM", "DHL", "Shein", "Zamboni"]
+    },
+    "Food & Drink Brands": {
+      "easy": ["Coca-Cola", "Pepsi", "McDonald's", "Starbucks", "KFC", "Burger King", "Subway", "Oreo", "Nutella", "Pringles", "Doritos", "Kit Kat", "M&M's", "Pizza Hut", "Domino's"],
+      "medium": ["Toblerone", "Haribo", "Red Bull", "Heinz", "Kellogg's", "Cheerios", "Skittles", "Tic Tac", "Jell-O", "Mentos", "Hershey's", "Ben & Jerry's", "Dunkin'", "Taco Bell", "Chick-fil-A", "Wendy's", "Fanta", "Sprite", "Gatorade"],
+      "spicy": ["Häagen-Dazs", "Dr Pepper", "Monster Energy", "Evian", "Heineken", "Guinness", "Lay's", "Cadbury", "Ferrero Rocher", "Krispy Kreme"]
+    },
+    "Fashion, Toys & Retail": {
+      "easy": ["Nike", "Adidas", "Disney", "Lego", "IKEA", "Walmart", "Hello Kitty", "Crayola", "Play-Doh", "Nerf", "Hot Wheels"],
+      "medium": ["Puma", "Converse", "Vans", "Levi's", "Ray-Ban", "Zara", "H&M", "Gucci", "Chanel", "Rolex", "Target", "Colgate", "Gillette", "Kleenex", "Velcro", "Frisbee", "Tupperware", "Ziploc", "Fisher-Price", "Build-A-Bear"],
+      "spicy": ["Louis Vuitton", "Prada", "Versace", "Hermès", "Tiffany & Co.", "Crocs", "Birkenstock", "Dr. Martens", "Jacuzzi", "Post-it", "Sharpie", "Polly Pocket", "Etch A Sketch", "Lite-Brite"]
+    }
+  }
+}

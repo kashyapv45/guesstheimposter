@@ -1,0 +1,36 @@
+{
+  "id": "historical-figures",
+  "name": "Historical Figures",
+  "words": {
+    "Wild West & Outlaws": {
+      "easy": ["Billy the Kid", "Al Capone", "Bonnie and Clyde", "Pocahontas"],
+      "medium": ["Sitting Bull", "Geronimo", "Jesse James", "Wyatt Earp", "Buffalo Bill", "Davy Crockett", "Annie Oakley"],
+      "spicy": ["Ned Kelly", "Calamity Jane", "Butch Cassidy", "Doc Holliday"]
+    },
+    "Rulers & Leaders": {
+      "easy": ["Abraham Lincoln", "George Washington", "Napoleon Bonaparte", "Cleopatra", "Julius Caesar", "Queen Elizabeth II", "Martin Luther King Jr.", "Nelson Mandela", "Mahatma Gandhi", "Winston Churchill", "John F. Kennedy", "Alexander the Great", "Genghis Khan", "King Henry VIII", "Queen Victoria"],
+      "medium": ["Joan of Arc", "Barack Obama", "Theodore Roosevelt", "Franklin D. Roosevelt", "Charlemagne", "Attila the Hun", "Marie Antoinette", "Catherine the Great", "Peter the Great", "Tutankhamun", "Ramses II", "Queen Elizabeth I", "Fidel Castro", "Che Guevara", "Simón Bolívar", "Princess Diana", "Mao Zedong", "Nero", "Spartacus", "Hannibal", "Kublai Khan", "Ivan the Terrible", "Richard the Lionheart", "Thomas Jefferson", "Vladimir Lenin"],
+      "spicy": ["Hammurabi", "Hatshepsut", "Saladin", "Montezuma", "Suleiman the Magnificent", "Boudica", "Cyrus the Great", "Ashoka", "William the Conqueror", "Otto von Bismarck", "Toussaint Louverture", "Haile Selassie", "Mansa Musa", "Shaka Zulu", "Akbar", "Pericles", "Charles de Gaulle", "Indira Gandhi", "Golda Meir", "Eva Perón", "Margaret Thatcher", "Hirohito", "Leonidas", "Vlad the Impaler", "Rasputin", "Anne Boleyn"]
+    },
+    "Scientists & Inventors": {
+      "easy": ["Albert Einstein", "Isaac Newton", "Thomas Edison", "Leonardo da Vinci", "Marie Curie", "Charles Darwin", "Galileo Galilei", "Wright Brothers", "Alexander Graham Bell", "Nikola Tesla", "Stephen Hawking", "Benjamin Franklin"],
+      "medium": ["Ada Lovelace", "Louis Pasteur", "Alan Turing", "Nicolaus Copernicus", "Archimedes", "Pythagoras", "Florence Nightingale", "Sigmund Freud", "Gregor Mendel", "Johannes Gutenberg", "Henry Ford", "Steve Jobs", "Bill Gates", "Alfred Nobel", "James Watt", "Edward Jenner", "Alexander Fleming", "Hippocrates", "Carl Sagan", "Jane Goodall"],
+      "spicy": ["Johannes Kepler", "Michael Faraday", "Dmitri Mendeleev", "Euclid", "Tycho Brahe", "Grace Hopper", "Katherine Johnson", "Srinivasa Ramanujan", "Niels Bohr", "Max Planck", "Robert Oppenheimer", "Enrico Fermi", "Hedy Lamarr", "Rosalind Franklin", "Antoine Lavoisier", "Carl Linnaeus", "Avicenna", "Al-Khwarizmi", "Emmy Noether", "Richard Feynman", "Tim Berners-Lee", "Ernest Rutherford"]
+    },
+    "Explorers & Adventurers": {
+      "easy": ["Christopher Columbus", "Marco Polo", "Neil Armstrong", "Amelia Earhart", "Captain James Cook"],
+      "medium": ["Ferdinand Magellan", "Vasco da Gama", "Lewis and Clark", "Roald Amundsen", "Edmund Hillary", "Yuri Gagarin", "Ernest Shackleton", "Leif Erikson", "Sacagawea", "Buzz Aldrin", "Jacques Cousteau", "Hernán Cortés", "Francis Drake", "Blackbeard"],
+      "spicy": ["Ibn Battuta", "Zheng He", "Tenzing Norgay", "Valentina Tereshkova", "Robert Falcon Scott", "David Livingstone", "Henry Hudson", "Ponce de León", "Amerigo Vespucci", "Matthew Henson", "Bartolomeu Dias", "Abel Tasman", "Sally Ride", "John Cabot", "Walter Raleigh"]
+    },
+    "Artists, Writers & Icons": {
+      "easy": ["William Shakespeare", "Pablo Picasso", "Vincent van Gogh", "Wolfgang Amadeus Mozart", "Ludwig van Beethoven", "Walt Disney", "Charlie Chaplin", "Marilyn Monroe", "Frida Kahlo", "Michelangelo", "Muhammad Ali", "Pelé", "Michael Jordan", "Babe Ruth"],
+      "medium": ["Jane Austen", "Charles Dickens", "Mark Twain", "Claude Monet", "Salvador Dalí", "Rembrandt", "Andy Warhol", "Johann Sebastian Bach", "Agatha Christie", "Edgar Allan Poe", "Ernest Hemingway", "Oscar Wilde", "Harry Houdini", "Bruce Lee", "Coco Chanel", "Audrey Hepburn", "Jesse Owens", "Roald Dahl", "Dr. Seuss", "J.R.R. Tolkien", "Homer", "Hans Christian Andersen", "Beatrix Potter", "Anne Frank", "Helen Keller"],
+      "spicy": ["Leo Tolstoy", "Fyodor Dostoevsky", "Virginia Woolf", "Mary Shelley", "Emily Dickinson", "Edvard Munch", "Gustav Klimt", "Caravaggio", "Henri Matisse", "Johannes Vermeer", "Pyotr Tchaikovsky", "Antonio Vivaldi", "Frédéric Chopin", "Igor Stravinsky", "Molière", "Dante Alighieri", "Rumi", "Hokusai", "Georgia O'Keeffe", "Maya Angelou", "Billie Holiday", "Josephine Baker"]
+    },
+    "Thinkers & Activists": {
+      "easy": ["Socrates", "Plato", "Aristotle", "Confucius", "Rosa Parks", "Mother Teresa", "Harriet Tubman", "Malala Yousafzai"],
+      "medium": ["Karl Marx", "Susan B. Anthony", "Frederick Douglass", "Emmeline Pankhurst", "Sun Tzu", "Niccolò Machiavelli", "Friedrich Nietzsche", "Voltaire", "Cesar Chavez", "Eleanor Roosevelt"],
+      "spicy": ["Simone de Beauvoir", "René Descartes", "Immanuel Kant", "Jean-Jacques Rousseau", "Mary Wollstonecraft", "Sojourner Truth", "Diogenes", "Marcus Aurelius", "Thomas Paine", "Lao Tzu"]
+    }
+  }
+}

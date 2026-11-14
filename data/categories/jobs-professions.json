@@ -1,0 +1,46 @@
+{
+  "id": "jobs-professions",
+  "name": "Jobs & Professions",
+  "words": {
+    "More Jobs": {
+      "easy": ["Garbage Collector", "Shop Assistant", "Sports Coach", "Cowboy", "Pirate", "Knight", "Ninja", "Ice Cream Man", "Music Teacher", "Dance Teacher"],
+      "medium": ["Optician", "Dental Hygienist", "Speech Therapist", "Personal Shopper", "Travel Agent", "Car Salesman", "Telemarketer", "Call Center Agent", "Bank Teller", "Paralegal", "Web Designer", "Game Developer", "Video Editor", "Sound Engineer", "Camera Operator", "TV Presenter", "Radio Host", "Talk Show Host", "Game Show Host", "Sports Commentator", "Editor", "Publisher", "Museum Curator", "Zoologist", "Botanist", "Nutritionist", "Yoga Instructor", "Driving Instructor", "Street Performer", "Circus Acrobat", "Ringmaster", "Fortune Teller", "Crane Operator", "Chauffeur", "Valet", "Pool Cleaner"],
+      "spicy": ["Lion Tamer", "Snake Charmer", "Bounty Hunter", "Smokejumper", "Oil Rig Worker", "Gravedigger", "Town Crier", "Court Jester", "Royal Guard", "Bellhop", "Doorman", "Usher", "Cinema Projectionist", "Lollipop Lady", "Mall Santa", "Food Taster", "Perfumer"]
+    },
+    "Health": {
+      "easy": ["Doctor", "Nurse", "Dentist", "Veterinarian", "Paramedic"],
+      "medium": ["Surgeon", "Pharmacist", "Therapist", "Midwife", "Physiotherapist", "Pediatrician", "Psychologist"],
+      "spicy": ["Anesthesiologist", "Chiropractor", "Dermatologist", "Orthodontist", "Radiologist", "Coroner", "Optometrist", "Podiatrist"]
+    },
+    "Public Service": {
+      "easy": ["Firefighter", "Police Officer", "Teacher", "Postman", "Soldier", "Lifeguard", "Judge"],
+      "medium": ["Lawyer", "Detective", "Librarian", "School Principal", "Crossing Guard", "Security Guard", "Park Ranger", "Politician", "Mayor", "Spy", "Sheriff", "Social Worker"],
+      "spicy": ["Diplomat", "Ambassador", "Prosecutor", "Bailiff", "Customs Officer", "Forensic Scientist", "Bodyguard", "Air Traffic Controller"]
+    },
+    "Food & Hospitality": {
+      "easy": ["Chef", "Baker", "Waiter", "Butcher", "Farmer", "Barista", "Cashier"],
+      "medium": ["Bartender", "Receptionist", "Housekeeper", "Delivery Driver", "Food Critic", "Fisherman", "Beekeeper", "Wedding Planner"],
+      "spicy": ["Sommelier", "Pastry Chef", "Butler", "Concierge", "Fishmonger", "Cheesemaker", "Brewer"]
+    },
+    "Trades & Crafts": {
+      "easy": ["Builder", "Plumber", "Electrician", "Carpenter", "Mechanic", "Painter", "Gardener", "Janitor"],
+      "medium": ["Welder", "Locksmith", "Roofer", "Bricklayer", "Tailor", "Hairdresser", "Barber", "Window Cleaner", "Exterminator", "Handyman"],
+      "spicy": ["Blacksmith", "Glassblower", "Cobbler", "Upholsterer", "Chimney Sweep", "Stonemason", "Taxidermist", "Watchmaker", "Plasterer"]
+    },
+    "Creative & Media": {
+      "easy": ["Artist", "Singer", "Actor", "Dancer", "Photographer", "Writer", "Clown", "Magician"],
+      "medium": ["Film Director", "DJ", "Fashion Designer", "Journalist", "News Anchor", "Cartoonist", "Comedian", "Architect", "Sculptor", "Model", "YouTuber", "Tattoo Artist", "Stuntman", "Animator", "Graphic Designer", "Influencer"],
+      "spicy": ["Puppeteer", "Ventriloquist", "Mime", "Choreographer", "Orchestra Conductor", "Voice Actor", "Makeup Artist", "Florist", "Interior Designer", "Translator", "Poet", "Illustrator", "Ghostwriter", "Calligrapher"]
+    },
+    "Transport & Outdoors": {
+      "easy": ["Pilot", "Bus Driver", "Taxi Driver", "Astronaut", "Sailor", "Flight Attendant", "Truck Driver"],
+      "medium": ["Train Conductor", "Ship Captain", "Tour Guide", "Courier", "Ski Instructor", "Lumberjack", "Miner", "Deep Sea Diver", "Zookeeper", "Race Car Driver", "Dog Walker"],
+      "spicy": ["Cartographer", "Lighthouse Keeper", "Harbor Pilot", "Jockey", "Caddie", "Shepherd", "Forest Ranger"]
+    },
+    "Science, Business & Tech": {
+      "easy": ["Scientist", "Banker", "Programmer", "Secretary", "Engineer", "Babysitter"],
+      "medium": ["Accountant", "Data Analyst", "Economist", "Real Estate Agent", "Insurance Agent", "Chemist", "Biologist", "Astronomer", "Archaeologist", "Professor", "Marine Biologist", "Inventor", "Personal Trainer", "Referee", "Nanny", "Pet Groomer", "Priest", "Life Coach"],
+      "spicy": ["Actuary", "Geologist", "Meteorologist", "Paleontologist", "Volcanologist", "Auctioneer", "Stockbroker", "Notary", "Statistician", "Cryptographer", "Entomologist", "Ethical Hacker", "Undertaker", "Monk", "Nun"]
+    }
+  }
+}

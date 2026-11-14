@@ -1,0 +1,31 @@
+{
+  "id": "sports-games",
+  "name": "Sports & Games",
+  "words": {
+    "Party, Arcade & Casino": {
+      "easy": ["Sack Race", "Egg-and-Spoon Race", "Three-Legged Race", "Relay Race", "Arm Wrestling", "Thumb Wrestling", "Pinball", "Claw Machine", "Whac-A-Mole", "Snap", "Ring Toss"],
+      "medium": ["Snooker", "Rodeo", "Bull Riding", "Mixed Martial Arts", "Esports", "Spikeball", "Cornhole", "Horseshoes", "Musical Statues", "Sardines", "Mafia", "Hearts", "Spades", "Skee-Ball", "Roulette", "Slot Machine", "Murder Mystery Party"],
+      "spicy": ["Jousting", "Barrel Racing", "Euchre", "Craps", "Baccarat", "Sword Fighting", "Chess Boxing", "Wife Carrying", "Cheese Rolling", "Toe Wrestling"]
+    },
+    "Ball Sports": {
+      "easy": ["Soccer", "Basketball", "Baseball", "Tennis", "Golf", "Volleyball", "Bowling", "American Football", "Rugby", "Ping Pong", "Ice Hockey", "Cricket", "Dodgeball", "Darts"],
+      "medium": ["Badminton", "Handball", "Water Polo", "Polo", "Softball", "Lacrosse", "Squash", "Netball", "Field Hockey", "Billiards", "Beach Volleyball", "Kickball", "Croquet"],
+      "spicy": ["Hurling", "Racquetball", "Pickleball", "Curling", "Bocce", "Quidditch", "Aussie Rules", "Gaelic Football", "Kabaddi", "Underwater Hockey"]
+    },
+    "Individual & Olympic": {
+      "easy": ["Swimming", "Marathon", "Boxing", "Karate", "Skiing", "Surfing", "Skateboarding", "Gymnastics", "Wrestling", "Ice Skating", "Cycling", "Diving", "Snowboarding", "Archery"],
+      "medium": ["Fencing", "Judo", "Taekwondo", "Weightlifting", "High Jump", "Long Jump", "Pole Vault", "Triathlon", "Rowing", "Javelin", "Shot Put", "Figure Skating", "Kickboxing", "Sumo Wrestling", "Rock Climbing", "Horse Racing", "Motocross", "Formula One", "BMX", "Water Skiing", "Hurdles", "Discus", "Skydiving"],
+      "spicy": ["Biathlon", "Bobsled", "Luge", "Decathlon", "Hammer Throw", "Synchronized Swimming", "Dressage", "Steeplechase", "Parkour", "Ski Jumping", "Speed Skating", "Kendo", "Capoeira", "Muay Thai", "Jiu-Jitsu", "Rhythmic Gymnastics", "Trampolining", "Modern Pentathlon", "Show Jumping", "Kitesurfing", "Windsurfing", "Wakeboarding", "Bungee Jumping"]
+    },
+    "Board, Card & Party Games": {
+      "easy": ["Chess", "Checkers", "Monopoly", "Scrabble", "Uno", "Jenga", "Twister", "Poker", "Snakes and Ladders", "Tic-Tac-Toe", "Hide and Seek", "Tag", "Musical Chairs", "Bingo", "Dominoes", "Connect Four", "Battleship", "Go Fish", "Jigsaw Puzzle", "Hangman"],
+      "medium": ["Clue", "Backgammon", "Mahjong", "Solitaire", "Blackjack", "Yahtzee", "Pictionary", "Charades", "Sudoku", "Crossword", "Trivial Pursuit", "Risk", "Operation", "Guess Who?", "Hungry Hungry Hippos", "Candy Land", "Catan", "Rock Paper Scissors", "Truth or Dare", "Simon Says", "Hopscotch", "Marbles", "Rubik's Cube", "Foosball", "Air Hockey", "Tug of War", "Duck Duck Goose", "Leapfrog", "Limbo"],
+      "spicy": ["Cribbage", "Rummy", "Old Maid", "Crazy Eights", "Codenames", "Dungeons & Dragons", "Ticket to Ride", "Carcassonne", "Exploding Kittens", "Stratego", "Mastermind", "Boggle", "Othello", "Mancala", "Cat's Cradle", "Tiddlywinks", "Pick-Up Sticks", "Shuffleboard", "Beer Pong", "Freeze Tag", "Red Light, Green Light"]
+    },
+    "Video Games": {
+      "easy": ["Minecraft", "Tetris", "Pac-Man", "Fortnite", "Mario Kart", "Pokémon Go", "Roblox", "Angry Birds", "Candy Crush", "Among Us", "Super Mario Bros.", "FIFA", "Call of Duty", "Grand Theft Auto", "The Sims"],
+      "medium": ["Animal Crossing", "The Legend of Zelda", "Street Fighter", "Space Invaders", "Guitar Hero", "Just Dance", "Wii Sports", "Overwatch", "League of Legends", "World of Warcraft", "Halo", "Fall Guys", "Flappy Bird", "Subway Surfers", "Rocket League", "Frogger", "Donkey Kong", "Mortal Kombat", "Super Smash Bros.", "Clash of Clans", "Pong"],
+      "spicy": ["Dark Souls", "Elden Ring", "Portal", "Half-Life", "Doom", "Asteroids", "Galaga", "Stardew Valley", "Hollow Knight", "Undertale", "Cuphead", "Red Dead Redemption", "BioShock", "Skyrim", "Final Fantasy", "Metal Gear Solid", "Resident Evil", "Silent Hill", "Dance Dance Revolution", "Baldur's Gate", "Celeste", "Tomb Raider"]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "music-instruments",
+  "name": "Music & Instruments",
+  "words": {
+    "More Music": {
+      "easy": ["Katy Perry", "Miley Cyrus", "Britney Spears", "Selena Gomez", "Spice Girls", "Backstreet Boys", "One Direction", "Love Song", "Theme Song", "Snare Drum", "Bass Drum", "Album Cover"],
+      "medium": ["Post Malone", "Imagine Dragons", "Maroon 5", "Green Day", "Arctic Monkeys", "Red Hot Chili Peppers", "U2", "NSYNC", "Destiny's Child", "Guns N' Roses", "Linkin Park", "Blackpink", "Nicki Minaj", "Jay-Z", "Tupac Shakur", "Crowd Surfing", "Stage Dive", "Setlist", "Headbanging", "Lip Sync", "Power Ballad", "One-Hit Wonder", "Cover Band", "Battle of the Bands", "Record Label", "Grammy Award", "Backstage Pass", "Hi-Hat", "Conga Drum", "Keytar", "Handbells", "Vuvuzela", "Slide Whistle"],
+      "spicy": ["Sabrina Carpenter", "Chappell Roan", "SZA", "Doja Cat", "Cardi B", "Travis Scott", "50 Cent", "The Notorious B.I.G.", "Earworm", "Tribute Band", "Mic Drop", "Light Show", "Roadie", "Drum Machine", "Loop Pedal", "Washboard", "Jaw Harp", "Bugle"]
+    },
+    "Instruments": {
+      "easy": ["Guitar", "Piano", "Drums", "Violin", "Trumpet", "Flute", "Saxophone", "Harmonica", "Ukulele", "Tambourine", "Xylophone", "Microphone", "Recorder", "Triangle", "Harp"],
+      "medium": ["Cello", "Clarinet", "Trombone", "Tuba", "Banjo", "Accordion", "Bagpipes", "Bass Guitar", "Electric Guitar", "Double Bass", "French Horn", "Oboe", "Maracas", "Bongos", "Cymbals", "Organ", "Synthesizer", "Viola", "Castanets", "Kazoo", "Steel Drum", "Gong", "Cowbell"],
+      "spicy": ["Harpsichord", "Glockenspiel", "Bassoon", "Sitar", "Didgeridoo", "Theremin", "Mandolin", "Piccolo", "Lute", "Lyre", "Hurdy-Gurdy", "Marimba", "Djembe", "Tabla", "Pan Flute", "Timpani", "Sousaphone", "Balalaika", "Ocarina", "Melodica", "Kalimba"]
+    },
+    "Genres": {
+      "easy": ["Rock", "Pop", "Jazz", "Hip Hop", "Country", "Rap", "Classical", "Disco", "Reggae", "Blues", "Heavy Metal", "Opera", "Lullaby"],
+      "medium": ["Punk", "Funk", "Soul", "Gospel", "Techno", "House Music", "K-Pop", "R&B", "Reggaeton", "Grunge", "Folk", "Indie", "EDM", "Bluegrass", "Ska", "Rock and Roll", "Broadway", "Barbershop Quartet", "Swing", "Motown"],
+      "spicy": ["Flamenco", "Bossa Nova", "Afrobeat", "Dubstep", "Lo-fi", "Emo", "Shoegaze", "Sea Shanty", "Polka", "Mariachi", "Tango", "Yodeling", "Gregorian Chant", "A Cappella", "Ragtime", "Trap", "Drum and Bass", "Synthwave", "Calypso"]
+    },
+    "Music Stuff": {
+      "easy": ["Concert", "Band", "Choir", "Song", "Karaoke", "Music Video", "Radio", "Album", "Lyrics", "Headliner"],
+      "medium": ["Orchestra", "Turntable", "Vinyl Record", "Metronome", "Sheet Music", "Duet", "Chorus", "Remix", "Playlist", "Music Festival", "Mosh Pit", "Encore", "Boy Band", "World Tour", "Guitar Pick", "Drumsticks", "Cassette Tape", "Jukebox", "Amplifier", "Soundcheck", "Harmony", "Rhythm", "Melody", "Tempo"],
+      "spicy": ["Crescendo", "Falsetto", "Overture", "Symphony", "Sonata", "Aria", "Requiem", "Riff", "Treble Clef", "Tuning Fork", "Baton", "Mixtape", "Ballad", "Anthem", "Serenade", "Jingle", "Beatbox", "Air Guitar", "Autotune", "Gramophone", "Boombox", "Walkman", "Mixing Desk", "Vibrato"]
+    },
+    "Artists & Bands": {
+      "easy": ["The Beatles", "Michael Jackson", "Elvis Presley", "Taylor Swift", "Beyoncé", "Madonna", "ABBA", "Ed Sheeran", "Lady Gaga", "Bruno Mars", "Rihanna", "Justin Bieber", "Adele", "Eminem"],
+      "medium": ["The Rolling Stones", "Bob Marley", "Freddie Mercury", "Billie Eilish", "BTS", "Coldplay", "Ariana Grande", "Shakira", "Snoop Dogg", "Dolly Parton", "Elton John", "David Bowie", "Whitney Houston", "Stevie Wonder", "Nirvana", "Harry Styles", "Frank Sinatra", "Johnny Cash", "AC/DC", "Metallica", "Daft Punk", "Bob Dylan"],
+      "spicy": ["Jimi Hendrix", "Aretha Franklin", "Louis Armstrong", "Kurt Cobain", "Janis Joplin", "Pink Floyd", "Led Zeppelin", "The Weeknd", "Kendrick Lamar", "Bad Bunny", "Dua Lipa", "Olivia Rodrigo", "Lizzo", "Celine Dion", "Bon Jovi", "Gorillaz", "Ray Charles", "Tina Turner", "Fleetwood Mac", "Radiohead"]
+    }
+  }
+}

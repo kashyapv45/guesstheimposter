@@ -1,0 +1,31 @@
+{
+  "id": "countries-landmarks",
+  "name": "Countries & Landmarks",
+  "words": {
+    "More Countries": {
+      "easy": ["Pakistan", "Iran", "Venezuela", "Taiwan", "North Korea"],
+      "medium": ["Bangladesh", "Iraq", "Afghanistan", "Syria", "Zimbabwe", "Malaysia", "Cyprus", "Serbia", "Bulgaria"],
+      "spicy": ["Rwanda", "Uganda", "Papua New Guinea", "Tonga", "Samoa", "Slovakia", "Albania", "Lithuania", "Latvia"]
+    },
+    "Countries": {
+      "easy": ["France", "Italy", "Spain", "Japan", "China", "Brazil", "Mexico", "Canada", "Australia", "India", "Egypt", "Germany", "England", "Russia", "United States", "Greece", "Ireland", "Scotland", "Turkey", "Argentina"],
+      "medium": ["Portugal", "Netherlands", "Sweden", "Norway", "Switzerland", "Thailand", "Vietnam", "South Korea", "Kenya", "Nigeria", "Peru", "Chile", "Colombia", "Cuba", "Jamaica", "Iceland", "New Zealand", "South Africa", "Morocco", "Poland", "Austria", "Belgium", "Denmark", "Finland", "Philippines", "Indonesia", "Saudi Arabia", "Israel", "Ukraine", "Wales"],
+      "spicy": ["Mongolia", "Nepal", "Bhutan", "Fiji", "Croatia", "Czech Republic", "Hungary", "Romania", "Ethiopia", "Ghana", "Tanzania", "Uruguay", "Bolivia", "Cambodia", "Sri Lanka", "Maldives", "Luxembourg", "Monaco", "Vatican City", "Malta", "Estonia", "Kazakhstan", "Jordan", "Lebanon", "Qatar", "Bahamas", "Costa Rica", "Ecuador", "Panama", "Senegal"]
+    },
+    "Cities": {
+      "easy": ["Paris", "London", "New York", "Tokyo", "Rome", "Los Angeles", "Sydney", "Dubai", "Las Vegas", "Hollywood", "Venice", "Barcelona", "Berlin", "Hong Kong"],
+      "medium": ["Amsterdam", "Istanbul", "Rio de Janeiro", "San Francisco", "Chicago", "Toronto", "Moscow", "Cairo", "Singapore", "Bangkok", "Mumbai", "Seoul", "Beijing", "Athens", "Vienna", "Prague", "Miami", "Edinburgh", "Dublin", "Mexico City", "Kyoto", "Lisbon", "Cape Town", "Buenos Aires", "Melbourne", "Vancouver", "Munich", "Milan", "Seattle", "Boston", "New Orleans", "Nashville", "Montreal"],
+      "spicy": ["Marrakech", "Reykjavik", "Havana", "Kathmandu", "Timbuktu", "Zanzibar", "Jerusalem", "Florence", "Monte Carlo", "St. Petersburg", "Shanghai", "Dubrovnik", "Santorini", "Naples", "Osaka", "Delhi"]
+    },
+    "Regions & States": {
+      "easy": ["Texas", "California", "Florida", "Hawaii", "Alaska", "Antarctica", "Bali"],
+      "medium": ["Sicily", "Tasmania", "Siberia", "Greenland", "Caribbean", "Scandinavia", "Tuscany", "Himalayas", "Alps", "Silicon Valley", "Bermuda Triangle", "Rocky Mountains"],
+      "spicy": ["Patagonia", "Bavaria", "Transylvania", "Andes", "Sahara Desert", "Amazon Rainforest", "Outback", "Normandy", "Provence", "Lapland"]
+    },
+    "Landmarks": {
+      "easy": ["Eiffel Tower", "Statue of Liberty", "Great Wall of China", "Big Ben", "Pyramids of Giza", "Colosseum", "Taj Mahal", "Mount Everest", "Niagara Falls", "Grand Canyon", "Golden Gate Bridge", "Leaning Tower of Pisa", "Disneyland", "Sydney Opera House", "Mount Rushmore", "Stonehenge"],
+      "medium": ["Machu Picchu", "Christ the Redeemer", "Buckingham Palace", "Tower Bridge", "Times Square", "Empire State Building", "Hollywood Sign", "Acropolis", "Great Sphinx of Giza", "Kremlin", "Burj Khalifa", "Louvre", "Arc de Triomphe", "Sagrada Família", "Notre-Dame", "White House", "Central Park", "Great Barrier Reef", "Mount Fuji", "Amazon River", "Petra", "Angkor Wat", "Victoria Falls", "Easter Island", "Loch Ness", "Brooklyn Bridge", "Las Vegas Strip", "Hoover Dam", "Berlin Wall"],
+      "spicy": ["Chichen Itza", "Forbidden City", "Neuschwanstein Castle", "Alhambra", "Mont Saint-Michel", "Hagia Sophia", "Kilimanjaro", "Uluru", "Galápagos Islands", "Dead Sea", "Matterhorn", "Yellowstone", "Pompeii", "Versailles", "Trevi Fountain", "Golden Temple", "Terracotta Army", "Cliffs of Moher", "Table Mountain", "Iguazu Falls", "Hollywood Walk of Fame", "Space Needle", "CN Tower", "Gateway Arch", "Brandenburg Gate", "Windsor Castle", "Tower of London", "Westminster Abbey", "Panama Canal"]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "vehicles-transport",
+  "name": "Vehicles & Transport",
+  "words": {
+    "More Wheels": {
+      "easy": ["Skateboard", "Roller Skates", "Wheelchair", "Stroller", "Electric Car", "Bumper Cars", "Mail Truck", "Delivery Van", "Tour Bus", "Mountain Bike", "Pogo Stick", "Surfboard", "Spaceship"],
+      "medium": ["Police Motorcycle", "Party Bus", "Shuttle Bus", "Horse Trailer", "Car Transporter", "Semi-Truck", "Tanker Truck", "Logging Truck", "Cherry Picker", "Backhoe", "Recycling Truck", "Hybrid Car", "Self-Driving Car", "Hatchback", "Station Wagon", "SUV", "Muscle Car", "Classic Car", "Stock Car", "Rally Car", "Pedal Car", "Longboard", "Electric Bike", "Cargo Bike", "Toboggan", "Hot Dog Cart", "Moving Walkway", "Bodyboard"],
+      "spicy": ["Snowcat", "Baggage Cart", "Fire Boat", "Police Boat", "Pontoon Boat", "Riverboat", "Ocean Liner", "Steamship", "Swan Boat", "Attack Helicopter", "Air Ambulance", "Water Bomber", "Moon Buggy", "Time Machine", "Pumpkin Carriage", "Hogwarts Express", "Mystery Machine", "Millennium Falcon", "Ghost Ship", "Police Helicopter", "Coast Guard Cutter", "Fixie"]
+    },
+    "Road": {
+      "easy": ["Car", "Bus", "Truck", "Bicycle", "Motorcycle", "Taxi", "Scooter", "Ambulance", "Fire Truck", "Police Car", "School Bus", "Tractor", "Van", "Limousine", "Ice Cream Truck", "Garbage Truck"],
+      "medium": ["Pickup Truck", "Convertible", "Minivan", "Jeep", "Double-Decker Bus", "Tow Truck", "Bulldozer", "Excavator", "Cement Mixer", "Forklift", "Dump Truck", "Golf Cart", "Go-Kart", "Monster Truck", "Camper Van", "Tank", "Segway", "Unicycle", "Tricycle", "Tandem Bicycle", "Electric Scooter", "Moped", "Quad Bike", "Race Car", "Sports Car", "Rickshaw", "Hearse", "Armored Car", "Snowplow", "Steamroller", "Street Sweeper", "Tuk-Tuk", "Food Truck"],
+      "spicy": ["Penny-Farthing", "Sidecar", "Dune Buggy", "Lowrider", "Batmobile", "Combine Harvester", "Snowmobile", "Ford Model T", "Horse-Drawn Carriage", "Stagecoach", "Chariot", "Dog Sled", "Sleigh", "Covered Wagon", "Popemobile", "Recumbent Bike", "Mobility Scooter", "Hot Rod", "DeLorean", "Shopping Cart"]
+    },
+    "Rail": {
+      "easy": ["Train", "Tram", "Roller Coaster"],
+      "medium": ["Bullet Train", "Steam Locomotive", "Monorail", "Cable Car", "Freight Train", "Metro Train", "Ski Lift"],
+      "spicy": ["Funicular", "Trolleybus", "Maglev", "Handcar", "Caboose", "Orient Express"]
+    },
+    "Water": {
+      "easy": ["Boat", "Ship", "Sailboat", "Canoe", "Kayak", "Submarine", "Yacht", "Cruise Ship", "Pirate Ship", "Raft", "Jet Ski", "Ferry", "Rowboat", "Speedboat"],
+      "medium": ["Gondola", "Tugboat", "Aircraft Carrier", "Fishing Boat", "Houseboat", "Paddle Steamer", "Lifeboat", "Catamaran", "Pedal Boat", "Banana Boat", "Hovercraft", "Warship", "Oil Tanker", "Container Ship", "Dinghy", "Paddleboard"],
+      "spicy": ["Viking Longship", "Galleon", "Trireme", "Dhow", "Icebreaker", "Narrowboat", "Barge", "Clipper Ship", "Coracle", "Ironclad", "Noah's Ark", "Water Taxi", "Trawler", "Amphibious Vehicle"]
+    },
+    "Air & Space": {
+      "easy": ["Airplane", "Helicopter", "Hot Air Balloon", "Rocket", "Blimp", "Space Shuttle", "Fighter Jet"],
+      "medium": ["Glider", "Biplane", "Jumbo Jet", "Cargo Plane", "Crop Duster", "Hang Glider", "Jetpack", "Concorde", "Seaplane", "Private Jet", "Air Force One"],
+      "spicy": ["Zeppelin", "Gyrocopter", "Stealth Bomber", "Paraglider", "Lunar Module", "Space Capsule", "Flying Car", "Wingsuit", "Flying Carpet", "Witch's Broomstick"]
+    },
+    "On the Road & Journey": {
+      "easy": ["Traffic Light", "Steering Wheel", "Seatbelt", "Bus Stop", "Passport", "Parachute", "Life Jacket", "Anchor", "Car Horn"],
+      "medium": ["Speed Bump", "Roundabout", "Toll Booth", "License Plate", "Spare Tire", "Windshield Wiper", "Parking Ticket", "Zebra Crossing", "Rearview Mirror", "Boarding Pass", "Jet Lag", "Turbulence", "Propeller", "Runway", "Airbag"],
+      "spicy": ["Cruise Control", "Hubcap", "Exhaust Pipe", "Black Box", "Baggage Claim", "Emergency Brake", "Cattle Grid", "Jumbo Jet Wing"]
+    }
+  }
+}
