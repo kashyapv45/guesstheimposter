@@ -5,7 +5,7 @@
 //   POST {kind:"answer", secret, peer, sdp} host replies
 //   GET  ?peer=...                          guest collects its answer
 //   GET                                     { exists }
-import { kv } from "@/lib/kv";
+import { kv, kvKind } from "@/lib/kv";
 import { isValidCode } from "@/lib/roomCode";
 
 const ROOM_TTL = 4 * 60 * 60;
@@ -15,9 +15,13 @@ const MAX_PENDING = 32;
 
 type Ctx = { params: Promise<{ code: string }> };
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
+// On Vercel each request may hit a different instance, so memory can't hold rooms: say so instead of "room not found".
+const noSharedStore = () => kvKind === "memory" && !!process.env.VERCEL && fail("no-store", 503);
 
 export async function GET(req: Request, { params }: Ctx) {
   const { code } = await params;
+  const off = noSharedStore();
+  if (off) return off;
   if (!isValidCode(code)) return fail("bad code");
   const q = new URL(req.url).searchParams;
   const peer = q.get("peer");
@@ -43,6 +47,8 @@ export async function GET(req: Request, { params }: Ctx) {
 
 export async function POST(req: Request, { params }: Ctx) {
   const { code } = await params;
+  const off = noSharedStore();
+  if (off) return off;
   if (!isValidCode(code)) return fail("bad code");
   let body: { kind?: unknown; secret?: unknown; peer?: unknown; sdp?: unknown };
   try {

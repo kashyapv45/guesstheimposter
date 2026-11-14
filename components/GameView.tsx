@@ -9,7 +9,7 @@ export function PlayerList({ state, links }: { state: GameState; links?: Record<
     <ul className="space-y-2">
       {state.players.map((p) => (
         <li key={p.id} className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-full border-2 border-charcoal" style={{ background: p.color }} />
+          <span className="h-4 w-4 rounded-full border-2 border-edge" style={{ background: p.color }} />
           <span className="flex-1 truncate font-bold">{p.name}</span>
           {links && (links[p.id] || !p.connected) && (
             <Led
@@ -25,7 +25,7 @@ export function PlayerList({ state, links }: { state: GameState; links?: Record<
 
 export function GameView({ state, secret, me, isHost, act }: { state: GameState; secret: Secret | null; me: string; isHost: boolean; act: (a: Action) => void }) {
   const name = (id: string) => state.players.find((p) => p.id === id)?.name ?? "?";
-  const color = state.players.find((p) => p.id === me)?.color ?? "#D95D39";
+  const color = state.players.find((p) => p.id === me)?.color ?? "#F59E0B";
   const round = state.round;
 
   if (state.phase === "lobby" || !round)
@@ -92,7 +92,7 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
         <Sleeve title="Clue order">
           <ol className="space-y-1">
             {round.order.map((id, i) => (
-              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-mustard font-bold" : ""}`}>
+              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-amber font-bold text-chassis" : ""}`}>
                 {i + 1}. {name(id)}
                 {id === me && " (you)"}
               </li>

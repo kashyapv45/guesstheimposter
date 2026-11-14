@@ -5,12 +5,11 @@
 | Mode | How it works | Best for |
 |---|---|---|
 | Online room | Host's room lives in Upstash Redis / Vercel KV (4-hour TTL), used only to pass the WebRTC handshake. Gameplay then flows peer-to-peer. | Friends on different networks / cellular |
-| Local Wi-Fi | WebRTC DataChannels over the local router (sub-10ms). Handshake via `/api/signal` if the Wi-Fi has internet, otherwise a QR code handshake (lz-string compressed SDP). | Parties, weak cell signal, hotspots |
+| Local Wi-Fi | Same handshake via `/api/signal`; on one Wi-Fi the WebRTC link then runs directly over the router (sub-10ms). | Parties, one shared Wi-Fi or hotspot |
 | Pass & Play | Local React state + localStorage. No network. | One phone around a table |
 
 The whole architecture stays inside one Vercel project: no Pusher, Ably or Firebase. Vercel functions + Upstash/Vercel KV (or an in-memory store for single-process personal hosting) just pass the handshake text.
 
-**Offline QR handshake:** host shows a QR containing the join link + compressed offer → guest scans with the phone camera → guest shows an answer QR → host scans it → connected over the LAN.
 
 ## 2. 8-character room codes
 
@@ -18,17 +17,17 @@ The whole architecture stays inside one Vercel project: no Pusher, Ably or Fireb
 - Shown as two blocks, `VNL7-K92P`, styled as a record catalog number (`CAT. NO. VNL7-K92P`).
 - Tap to copy the join link (`/join/VNL7K92P`); flip the sleeve to show a QR code.
 
-## 3. Retro vinyl UI (mobile-first)
+## 3. Midnight Hi-Fi UI (mobile-first)
 
-- Colors: Warm Cream `#F4EFE6` + paper grain, Charcoal `#1E1E1E`, Kraft `#D8C3A5`, Burnt Orange `#D95D39`, Mustard `#E9B44C`, Teal `#2A9D8F`.
+- Brushed obsidian chassis `#121214`, amber vacuum-tube glow `#F59E0B`, emerald status LEDs `#10B981`, crimson imposter alert `#EF4444`; chrome tonearm over the spinning record.
 - Type: Fraunces (headers), Space Grotesk (body), JetBrains Mono (codes, timers).
 - Primary controls in the bottom 35% of the screen.
-- Press-and-hold the spinning record label to see your word; release hides it.
-- Connection mode switch (Pass & Play / Online / Local Wi-Fi) with LED: green = direct LAN, amber = via internet.
+- Press-and-hold the spinning record label to see your word; the imposter's label glows crimson. Release hides it.
+- Rocker switches: network (Pass & Play / Cloud / Local Wi-Fi), timer, imposter hint. LED: emerald = direct LAN, amber = via internet.
 
 ## 4. Game features
 
-- Timer: off, discussion countdown (60–300s), or per-player clue timer (15–45s). Groove progress ring + flip-clock, needle scratch at 5s, mute toggle.
+- Timer: off, discussion countdown (60–300s), or per-player clue timer (15–45s). Groove progress ring + flip-clock, turns crimson for the last 5s.
 - Imposters auto-scale (1 for 3–5, 2 for 6–8, 3 for 9+) with manual override.
 - Imposter visibility: category only, related decoy word, or hardcore blind.
 - Optional Mr. White: blank label, wins by guessing the word after being voted out.
@@ -43,5 +42,5 @@ The whole architecture stays inside one Vercel project: no Pusher, Ably or Fireb
 ## 6. Roadmap
 
 1. Word engine & build linter: Next.js + TypeScript + Tailwind, `validate-words`, `useWordDeck`, curated JSON crates.
-2. Vinyl UI & Pass & Play: sleeves, press-and-hold reveal, flip-clock timer, full single-device loop, PWA.
-3. Room codes, online sync & Local Wi-Fi: code generator + QR join, WebRTC transport with server or QR handshake, automatic reconnect.
+2. Hi-Fi UI & Pass & Play: panels, press-and-hold reveal, flip-clock timer, full single-device loop.
+3. Room codes, Cloud & Local Wi-Fi: code generator + QR join link, WebRTC transport with server handshake, automatic reconnect.

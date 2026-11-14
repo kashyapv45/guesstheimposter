@@ -1,28 +1,23 @@
 "use client";
 // One transport for Online and Local Wi-Fi: WebRTC DataChannels in a star around the host.
-// The handshake goes through /api/signal (needs internet once) or through QR codes (no internet at all).
-// Once connected, devices on the same Wi-Fi talk directly over the LAN.
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+// The handshake goes through /api/signal; once connected, devices on the same Wi-Fi talk directly over the LAN.
 import type { Action, GameState, Secret } from "./game";
 import { randomId } from "./roomCode";
 
 export type HostMsg = { type: "state"; state: GameState; secret: Secret | null };
 export type GuestMsg = { type: "hello"; token: string; name: string } | { type: "action"; action: Action };
-export type GuestStatus = "idle" | "connecting" | "connected" | "reconnecting" | "missing" | "failed";
+export type GuestStatus = "idle" | "connecting" | "connected" | "reconnecting" | "missing" | "nostore" | "failed";
 
 // shortcut: STUN only, no TURN relay; a few strict mobile/corporate NATs can't connect online. Add a TURN server if that bites.
-const ICE: RTCConfiguration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+const ICE: RTCConfiguration = { iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }] };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const api = (code: string) => `/api/signal/${code}`;
-
-export const pack = (sdp: string) => compressToEncodedURIComponent(sdp);
-export const unpack = (s: string) => decompressFromEncodedURIComponent(s.trim()) || "";
 
 // Non-trickle ICE: wait for candidates so one message carries the whole handshake.
 async function gathered(pc: RTCPeerConnection) {
   if (pc.iceGatheringState === "complete") return;
   await new Promise<void>((resolve) => {
-    const t = setTimeout(resolve, 3000); // no internet => STUN never answers; go with local candidates
+    const t = setTimeout(resolve, 3000); // don't wait forever on a slow STUN server
     pc.addEventListener("icegatheringstatechange", () => {
       if (pc.iceGatheringState === "complete") {
         clearTimeout(t);
@@ -90,10 +85,10 @@ export class HostNet {
     this.on = on;
   }
 
-  async register(): Promise<"ok" | "taken" | "offline"> {
+  async register(): Promise<"ok" | "taken" | "nostore" | "offline"> {
     try {
       const r = await fetch(api(this.code), { method: "POST", body: JSON.stringify({ kind: "create", secret: this.secret }) });
-      return r.ok ? "ok" : r.status === 409 ? "taken" : "offline";
+      return r.ok ? "ok" : r.status === 409 ? "taken" : r.status === 503 ? "nostore" : "offline";
     } catch {
       return "offline";
     }
@@ -108,7 +103,7 @@ export class HostNet {
         const { offers } = (await r.json()) as { offers: Record<string, string> };
         for (const [peer, sdp] of Object.entries(offers)) void this.handleOffer(peer, sdp);
       } catch {
-        /* offline: QR handshakes still work */
+        /* network blip: next poll retries */
       }
     };
     void poll();
@@ -164,20 +159,6 @@ export class HostNet {
     return p ? isDirectLan(p.pc).catch(() => false) : Promise.resolve(false);
   }
 
-  // Offline handshake, step 1: host shows this offer as a QR (inside the join link).
-  async createInvite() {
-    const pc = new RTCPeerConnection(ICE);
-    this.attach(pc, pc.createDataChannel("game"));
-    return { pc, packed: pack(await makeOffer(pc)) };
-  }
-
-  // Offline handshake, step 3: host scans the guest's answer QR.
-  async acceptInvite(pc: RTCPeerConnection, packedAnswer: string) {
-    const sdp = unpack(packedAnswer);
-    if (!sdp.startsWith("v=")) throw new Error("That isn't a reply code from this game.");
-    await pc.setRemoteDescription({ type: "answer", sdp });
-  }
-
   close() {
     this.closed = true;
     if (this.timer) clearInterval(this.timer);
@@ -192,7 +173,6 @@ export class GuestNet {
   private dc: RTCDataChannel | null = null;
   private pc: RTCPeerConnection | null = null;
   private closed = false;
-  private viaServer = false;
   private code: string;
   private token: string;
   private name: string;
@@ -206,7 +186,6 @@ export class GuestNet {
   }
 
   async connectViaServer() {
-    this.viaServer = true;
     let attempts = 0;
     while (!this.closed) {
       this.on.status(attempts++ ? "reconnecting" : "connecting");
@@ -214,7 +193,8 @@ export class GuestNet {
         await this.attempt();
         return;
       } catch (e) {
-        if ((e as Error).message === "missing") return this.on.status("missing");
+        const why = (e as Error).message;
+        if (why === "missing" || why === "nostore") return this.on.status(why);
         await sleep(2000);
       }
     }
@@ -228,6 +208,7 @@ export class GuestNet {
       const sdp = await makeOffer(pc);
       const r = await fetch(api(this.code), { method: "POST", body: JSON.stringify({ kind: "offer", peer, sdp }) });
       if (r.status === 404) throw new Error("missing");
+      if (r.status === 503) throw new Error("nostore");
       if (!r.ok) throw new Error("signal");
       let answer: string | null = null;
       for (let i = 0; i < 30 && !answer && !this.closed; i++) {
@@ -245,21 +226,6 @@ export class GuestNet {
     }
   }
 
-  // Offline handshake, step 2: guest opened the host's QR link and shows its answer as a QR.
-  async connectViaInvite(packedOffer: string): Promise<string> {
-    this.on.status("connecting");
-    const pc = new RTCPeerConnection(ICE);
-    pc.ondatachannel = (e) => {
-      opened(e.channel, 120_000).then(
-        () => this.wire(pc, e.channel),
-        () => this.on.status("failed"),
-      );
-    };
-    const sdp = unpack(packedOffer);
-    if (!sdp.startsWith("v=")) throw new Error("bad invite");
-    return pack(await answerOffer(pc, sdp));
-  }
-
   private wire(pc: RTCPeerConnection, dc: RTCDataChannel) {
     this.pc = pc;
     this.dc = dc;
@@ -271,9 +237,7 @@ export class GuestNet {
       }
     };
     dc.onclose = () => {
-      if (this.closed) return;
-      if (this.viaServer) void this.connectViaServer();
-      else this.on.status("failed");
+      if (!this.closed) void this.connectViaServer();
     };
     dc.send(JSON.stringify({ type: "hello", token: this.token, name: this.name } satisfies GuestMsg));
     this.on.status("connected");

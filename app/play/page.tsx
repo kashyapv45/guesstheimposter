@@ -34,7 +34,7 @@ export default function PassAndPlay() {
         title="Pass & Play"
         actions={
           <>
-            {error && <p className="text-sm text-orange">{error}</p>}
+            {error && <p className="text-sm text-crimson">{error}</p>}
             <Button disabled={s.players.length < 3 || !s.settings.categories.length} onClick={start}>
               {s.players.length < 3 ? `Add ${3 - s.players.length} more player${s.players.length === 2 ? "" : "s"}` : s.roundNo ? "Drop the needle: next round" : "Drop the needle"}
             </Button>
@@ -47,17 +47,17 @@ export default function PassAndPlay() {
           <ul className="mb-3 space-y-2">
             {s.players.map((p) => (
               <li key={p.id} className="flex items-center gap-2">
-                <span className="h-4 w-4 rounded-full border-2 border-charcoal" style={{ background: p.color }} />
+                <span className="h-4 w-4 rounded-full border-2 border-edge" style={{ background: p.color }} />
                 <span className="flex-1 truncate font-bold">{p.name}</span>
-                <button aria-label={`Remove ${p.name}`} onClick={() => dispatch({ type: "leave", id: p.id })} className="h-10 w-10 rounded-lg border-2 border-charcoal bg-cream">
+                <button aria-label={`Remove ${p.name}`} onClick={() => dispatch({ type: "leave", id: p.id })} className="h-10 w-10 rounded-lg border-2 border-edge bg-field">
                   ✕
                 </button>
               </li>
             ))}
           </ul>
           <form className="flex gap-2" onSubmit={(e) => (e.preventDefault(), addPlayer())}>
-            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={20} placeholder="Player name" aria-label="Player name" className="min-w-0 flex-1 rounded-lg border-2 border-charcoal bg-cream px-3 py-2" />
-            <button disabled={!name.trim()} className="rounded-lg border-2 border-charcoal bg-charcoal px-4 font-bold text-cream disabled:opacity-40">
+            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={20} placeholder="Player name" aria-label="Player name" className="min-w-0 flex-1 rounded-lg border-2 border-edge bg-field px-3 py-2" />
+            <button disabled={!name.trim()} className="rounded-lg border-2 border-edge bg-well px-4 font-bold text-ink disabled:opacity-40">
               Add
             </button>
           </form>
@@ -140,7 +140,7 @@ export default function PassAndPlay() {
         <Sleeve title="Clue order">
           <ol className="space-y-1">
             {round.order.map((id, i) => (
-              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-mustard font-bold" : ""}`}>
+              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-amber font-bold text-chassis" : ""}`}>
                 {i + 1}. {playerName(id)}
               </li>
             ))}

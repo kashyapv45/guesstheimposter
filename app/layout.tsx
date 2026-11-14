@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-import { SwRegister } from "@/components/SwRegister";
 import "./globals.css";
 
 const serif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F4EFE6",
+  themeColor: "#121214",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -25,7 +24,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
       <body className="font-sans antialiased">
-        <SwRegister />
         {children}
       </body>
     </html>

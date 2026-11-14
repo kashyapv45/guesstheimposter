@@ -7,9 +7,9 @@ import { cleanCode, formatCode, isValidCode } from "@/lib/roomCode";
 type Mode = "pass" | "online" | "lan";
 
 const MODE_INFO: Record<Mode, { led: "green" | "amber" | "off"; text: string }> = {
-  pass: { led: "off", text: "One phone, passed around the table. No internet needed." },
-  online: { led: "amber", text: "Everyone on their own phone, anywhere. Join with an 8-character code." },
-  lan: { led: "green", text: "Same Wi-Fi or hotspot. Phones talk directly. Works with no internet using QR codes." },
+  pass: { led: "off", text: "One phone, passed around the table." },
+  online: { led: "amber", text: "Everyone on their own phone, anywhere. Join with the 8-character code or QR." },
+  lan: { led: "green", text: "Everyone on the same Wi-Fi or hotspot. After joining, phones talk directly over your router for the fastest play." },
 };
 
 export default function Home() {
@@ -42,19 +42,19 @@ export default function Home() {
                 aria-label="Room code"
                 autoCapitalize="characters"
                 autoComplete="off"
-                className="min-w-0 flex-1 rounded-xl border-2 border-charcoal bg-cream px-3 font-mono text-xl uppercase tracking-widest"
+                className="min-w-0 flex-1 rounded-xl border-2 border-edge bg-field px-3 font-mono text-xl uppercase tracking-widest"
               />
               <Button variant="secondary" className="!w-auto" disabled={!isValidCode(clean)}>
                 Join
               </Button>
             </form>
-            {clean.length === 8 && !isValidCode(clean) && <p className="text-sm text-orange">Codes never use 0, O, 1, I or L.</p>}
+            {clean.length === 8 && !isValidCode(clean) && <p className="text-sm text-crimson">Codes never use 0, O, 1, I or L.</p>}
           </>
         )
       }
     >
       <div className="flex justify-center py-2">
-        <Vinyl size={200} label={<span className="font-serif text-xs font-black leading-tight text-cream">WHO&apos;S<br />THE<br />FAKE?</span>} />
+        <Vinyl size={200} label={<span className="font-serif text-xs font-black leading-tight text-chassis">WHO&apos;S<br />THE<br />IMPOSTER?</span>} />
       </div>
       <Sleeve title="How to play">
         <p>Everyone gets the same secret word, except the imposter. Take turns giving one-word clues, then vote out whoever seems to be bluffing.</p>
@@ -66,7 +66,7 @@ export default function Home() {
           onChange={setMode}
           options={[
             { value: "pass", label: "Pass & Play" },
-            { value: "online", label: "Online" },
+            { value: "online", label: "Cloud" },
             { value: "lan", label: "Local Wi-Fi" },
           ]}
         />
