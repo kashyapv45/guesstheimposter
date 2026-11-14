@@ -2,14 +2,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Led, Rocker, Screen, Sleeve, Vinyl } from "@/components/ui";
+import { closeRoom } from "@/lib/net";
 import { cleanCode, formatCode, isValidCode } from "@/lib/roomCode";
+import { clearSession, HOST_KEY, loadSession } from "@/lib/session";
 
-type Mode = "pass" | "online" | "lan";
+type Mode = "pass" | "lan";
 
-const MODE_INFO: Record<Mode, { led: "green" | "amber" | "off"; text: string }> = {
+const MODE_INFO: Record<Mode, { led: "green" | "off"; text: string }> = {
   pass: { led: "off", text: "One phone, passed around the table." },
-  online: { led: "amber", text: "Everyone on their own phone, anywhere. Join with the 8-character code or QR." },
-  lan: { led: "green", text: "Everyone on the same Wi-Fi or hotspot. After joining, phones talk directly over your router for the fastest play." },
+  lan: { led: "green", text: "Everyone on their own phone, on the same Wi-Fi or hotspot. Join with the 8-character code or QR; the game runs directly over your network." },
 };
 
 export default function Home() {
@@ -27,7 +28,17 @@ export default function Home() {
           <Button onClick={() => router.push("/play")}>Start Pass &amp; Play</Button>
         ) : (
           <>
-            <Button onClick={() => router.push(`/room?mode=${mode}`)}>Create room</Button>
+            <Button
+              onClick={() => {
+                // A new room ends the one this tab was hosting.
+                const old = loadSession<{ boot: { code: string; secret: string } }>(HOST_KEY);
+                if (old?.boot) closeRoom(old.boot.code, old.boot.secret);
+                clearSession(HOST_KEY);
+                router.push("/room");
+              }}
+            >
+              Create room
+            </Button>
             <form
               className="flex gap-2"
               onSubmit={(e) => {
@@ -66,7 +77,6 @@ export default function Home() {
           onChange={setMode}
           options={[
             { value: "pass", label: "Pass & Play" },
-            { value: "online", label: "Cloud" },
             { value: "lan", label: "Local Wi-Fi" },
           ]}
         />

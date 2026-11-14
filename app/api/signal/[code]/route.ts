@@ -1,5 +1,6 @@
-// WebRTC handshake mailbox. Only SDP text passes through here; gameplay goes peer-to-peer.
-//   POST {kind:"create", secret}            host claims the room (4h TTL)
+// WebRTC handshake mailbox. Only SDP text passes through here; gameplay goes phone-to-phone over the local Wi-Fi.
+//   POST {kind:"create", secret}            host claims (or keeps alive) the room: 1h TTL, refreshed while playing
+//   POST {kind:"close", secret}             host ends the room
 //   POST {kind:"offer", peer, sdp}          guest leaves an offer
 //   GET  ?secret=...                        host collects pending offers
 //   POST {kind:"answer", secret, peer, sdp} host replies
@@ -8,7 +9,7 @@
 import { kv, kvKind } from "@/lib/kv";
 import { isValidCode } from "@/lib/roomCode";
 
-const ROOM_TTL = 4 * 60 * 60;
+const ROOM_TTL = 60 * 60; // 1 hour without activity
 const ID = /^[a-z0-9]{8,40}$/;
 const MAX_SDP = 20_000;
 const MAX_PENDING = 32;
@@ -64,6 +65,14 @@ export async function POST(req: Request, { params }: Ctx) {
     const existing = await kv.get(roomKey);
     if (existing && existing !== secret) return fail("code taken", 409);
     await kv.set(roomKey, secret, ROOM_TTL);
+    return Response.json({ ok: true });
+  }
+
+  if (kind === "close") {
+    if (typeof secret === "string" && (await kv.get(roomKey)) === secret) {
+      await kv.del(roomKey);
+      await kv.del(`offers:${code}`);
+    }
     return Response.json({ ok: true });
   }
 

@@ -1,15 +1,16 @@
 "use client";
-// One transport for Online and Local Wi-Fi: WebRTC DataChannels in a star around the host.
-// The handshake goes through /api/signal; once connected, devices on the same Wi-Fi talk directly over the LAN.
+// Local Wi-Fi play: WebRTC DataChannels in a star around the host's phone.
+// The join handshake (a few KB of text) goes through /api/signal. The connection itself uses no
+// ICE servers, so only local network addresses are offered: the game runs directly over the shared
+// Wi-Fi or hotspot, or doesn't connect at all. It never goes through the internet.
 import type { Action, GameState, Secret } from "./game";
 import { randomId } from "./roomCode";
 
 export type HostMsg = { type: "state"; state: GameState; secret: Secret | null };
 export type GuestMsg = { type: "hello"; token: string; name: string } | { type: "action"; action: Action };
-export type GuestStatus = "idle" | "connecting" | "connected" | "reconnecting" | "missing" | "nostore" | "failed";
+export type GuestStatus = "idle" | "connecting" | "connected" | "reconnecting" | "missing" | "nostore" | "lanfail";
 
-// shortcut: STUN only, no TURN relay; a few strict mobile/corporate NATs can't connect online. Add a TURN server if that bites.
-const ICE: RTCConfiguration = { iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }] };
+const LAN_ONLY: RTCConfiguration = { iceServers: [] };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const api = (code: string) => `/api/signal/${code}`;
 
@@ -17,7 +18,7 @@ const api = (code: string) => `/api/signal/${code}`;
 async function gathered(pc: RTCPeerConnection) {
   if (pc.iceGatheringState === "complete") return;
   await new Promise<void>((resolve) => {
-    const t = setTimeout(resolve, 3000); // don't wait forever on a slow STUN server
+    const t = setTimeout(resolve, 3000);
     pc.addEventListener("icegatheringstatechange", () => {
       if (pc.iceGatheringState === "complete") {
         clearTimeout(t);
@@ -40,29 +41,25 @@ async function answerOffer(pc: RTCPeerConnection, sdp: string) {
   return pc.localDescription!.sdp;
 }
 
-function opened(dc: RTCDataChannel, ms: number) {
+// Resolves when the channel opens; rejects if the phones can't reach each other on the local network.
+function opened(pc: RTCPeerConnection, dc: RTCDataChannel, ms: number) {
   if (dc.readyState === "open") return Promise.resolve();
   return new Promise<void>((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error("timeout")), ms);
+    const fail = () => {
+      clearTimeout(t);
+      reject(new Error("lanfail"));
+    };
+    const t = setTimeout(fail, ms);
     dc.addEventListener("open", () => (clearTimeout(t), resolve()), { once: true });
+    pc.addEventListener("iceconnectionstatechange", () => {
+      if (pc.iceConnectionState === "failed") fail();
+    });
   });
 }
 
-// Green LED: the selected ICE pair uses a local (host) candidate, i.e. traffic stays on the LAN.
-export async function isDirectLan(pc: RTCPeerConnection): Promise<boolean> {
-  const stats = await pc.getStats();
-  let pairId: string | undefined;
-  stats.forEach((r) => {
-    if (r.type === "transport" && r.selectedCandidatePairId) pairId = r.selectedCandidatePairId;
-  });
-  let pair: RTCIceCandidatePairStats | undefined;
-  stats.forEach((r) => {
-    if (r.type === "candidate-pair" && (pairId ? r.id === pairId : r.nominated && r.state === "succeeded")) pair = r;
-  });
-  if (!pair) return false;
-  const local = stats.get(pair.localCandidateId);
-  const remote = stats.get(pair.remoteCandidateId);
-  return local?.candidateType === "host" && remote?.candidateType === "host";
+// Ends a room on the server (best effort; it also expires on its own after 1 hour idle).
+export function closeRoom(code: string, secret: string) {
+  void fetch(api(code), { method: "POST", body: JSON.stringify({ kind: "close", secret }), keepalive: true }).catch(() => {});
 }
 
 type HostEvents = {
@@ -111,7 +108,7 @@ export class HostNet {
   }
 
   private async handleOffer(peer: string, sdp: string) {
-    const pc = new RTCPeerConnection(ICE);
+    const pc = new RTCPeerConnection(LAN_ONLY);
     pc.ondatachannel = (e) => this.attach(pc, e.channel);
     const answer = await answerOffer(pc, sdp);
     await fetch(api(this.code), { method: "POST", body: JSON.stringify({ kind: "answer", secret: this.secret, peer, sdp: answer }) });
@@ -154,11 +151,6 @@ export class HostNet {
     if (p?.dc.readyState === "open") p.dc.send(JSON.stringify(msg));
   }
 
-  lanStatus(token: string) {
-    const p = this.peers.get(token);
-    return p ? isDirectLan(p.pc).catch(() => false) : Promise.resolve(false);
-  }
-
   close() {
     this.closed = true;
     if (this.timer) clearInterval(this.timer);
@@ -185,7 +177,7 @@ export class GuestNet {
     this.on = on;
   }
 
-  async connectViaServer() {
+  async connect() {
     let attempts = 0;
     while (!this.closed) {
       this.on.status(attempts++ ? "reconnecting" : "connecting");
@@ -194,14 +186,14 @@ export class GuestNet {
         return;
       } catch (e) {
         const why = (e as Error).message;
-        if (why === "missing" || why === "nostore") return this.on.status(why);
+        if (why === "missing" || why === "nostore" || why === "lanfail") return this.on.status(why);
         await sleep(2000);
       }
     }
   }
 
   private async attempt() {
-    const pc = new RTCPeerConnection(ICE);
+    const pc = new RTCPeerConnection(LAN_ONLY);
     const dc = pc.createDataChannel("game");
     const peer = randomId();
     try {
@@ -218,7 +210,7 @@ export class GuestNet {
       }
       if (!answer) throw new Error("timeout");
       await pc.setRemoteDescription({ type: "answer", sdp: answer });
-      await opened(dc, 15_000);
+      await opened(pc, dc, 15_000);
       this.wire(pc, dc);
     } catch (e) {
       pc.close();
@@ -237,7 +229,7 @@ export class GuestNet {
       }
     };
     dc.onclose = () => {
-      if (!this.closed) void this.connectViaServer();
+      if (!this.closed) void this.connect();
     };
     dc.send(JSON.stringify({ type: "hello", token: this.token, name: this.name } satisfies GuestMsg));
     this.on.status("connected");

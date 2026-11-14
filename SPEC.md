@@ -1,15 +1,13 @@
 # Guess The Imposter — Spec (v2)
 
-## 1. Multiplayer architecture (3 play modes)
+## 1. Play modes
 
 | Mode | How it works | Best for |
 |---|---|---|
-| Online room | Host's room lives in Upstash Redis / Vercel KV (4-hour TTL), used only to pass the WebRTC handshake. Gameplay then flows peer-to-peer. | Friends on different networks / cellular |
-| Local Wi-Fi | Same handshake via `/api/signal`; on one Wi-Fi the WebRTC link then runs directly over the router (sub-10ms). | Parties, one shared Wi-Fi or hotspot |
-| Pass & Play | Local React state + localStorage. No network. | One phone around a table |
+| Local Wi-Fi | Join handshake via `/api/signal` (Upstash Redis / Redis on Vercel, 1-hour idle TTL); then a LAN-only WebRTC link (no STUN/TURN), so game traffic stays on the shared Wi-Fi or hotspot. | Parties, everyone on one Wi-Fi or hotspot |
+| Pass & Play | Local React state + localStorage. | One phone around a table |
 
-The whole architecture stays inside one Vercel project: no Pusher, Ably or Firebase. Vercel functions + Upstash/Vercel KV (or an in-memory store for single-process personal hosting) just pass the handshake text.
-
+Everything stays inside one Vercel project: no Pusher, Ably or Firebase.
 
 ## 2. 8-character room codes
 
@@ -23,7 +21,7 @@ The whole architecture stays inside one Vercel project: no Pusher, Ably or Fireb
 - Type: Fraunces (headers), Space Grotesk (body), JetBrains Mono (codes, timers).
 - Primary controls in the bottom 35% of the screen.
 - Press-and-hold the spinning record label to see your word; the imposter's label glows crimson. Release hides it.
-- Rocker switches: network (Pass & Play / Cloud / Local Wi-Fi), timer, imposter hint. LED: emerald = direct LAN, amber = via internet.
+- Rocker switches: mode (Pass & Play / Local Wi-Fi), timer, imposter hint. Emerald LED = player connected on the Wi-Fi.
 
 ## 4. Game features
 
@@ -31,7 +29,7 @@ The whole architecture stays inside one Vercel project: no Pusher, Ably or Fireb
 - Imposters auto-scale (1 for 3–5, 2 for 6–8, 3 for 9+) with manual override.
 - Imposter visibility: category only, related decoy word, or hardcore blind.
 - Optional Mr. White: blank label, wins by guessing the word after being voted out.
-- Reconnect: each guest keeps a session token in sessionStorage; a refresh rejoins the room with the same role.
+- Sessions: host room and guest seat live in sessionStorage and expire after 1 hour without play; a refresh within that hour rejoins with the same role. Creating a new room ends the old one.
 
 ## 5. Word engine
 
@@ -43,4 +41,4 @@ The whole architecture stays inside one Vercel project: no Pusher, Ably or Fireb
 
 1. Word engine & build linter: Next.js + TypeScript + Tailwind, `validate-words`, `useWordDeck`, curated JSON crates.
 2. Hi-Fi UI & Pass & Play: panels, press-and-hold reveal, flip-clock timer, full single-device loop.
-3. Room codes, Cloud & Local Wi-Fi: code generator + QR join link, WebRTC transport with server handshake, automatic reconnect.
+3. Room codes & Local Wi-Fi: code generator + QR join link, LAN-only WebRTC with server handshake, automatic reconnect.

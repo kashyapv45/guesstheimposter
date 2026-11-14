@@ -6,15 +6,11 @@ import { Button, Screen, Sleeve, Vinyl } from "@/components/ui";
 import type { GameState, Secret } from "@/lib/game";
 import { GuestNet, type GuestStatus } from "@/lib/net";
 import { cleanCode, formatCode, isValidCode, randomId } from "@/lib/roomCode";
+import { guestKey, loadSession, saveSession } from "@/lib/session";
 
 type Saved = { token: string; name: string };
-const savedFor = (code: string): Saved | null => {
-  try {
-    return JSON.parse(sessionStorage.getItem(`imposter:guest:${code}`) ?? "null");
-  } catch {
-    return null;
-  }
-};
+// Our seat in a room, forgotten after 1 hour without activity.
+const savedFor = (code: string) => loadSession<Saved>(guestKey(code));
 
 export default function JoinClient() {
   const [code, setCode] = useState("");
@@ -27,9 +23,7 @@ export default function JoinClient() {
   const connect = (c: string, n: string) => {
     const token = savedFor(c)?.token ?? randomId();
     setMe(token);
-    try {
-      sessionStorage.setItem(`imposter:guest:${c}`, JSON.stringify({ token, name: n } satisfies Saved));
-    } catch {}
+    saveSession<Saved>(guestKey(c), { token, name: n });
     if (location.pathname !== `/join/${c}`) history.replaceState(null, "", `/join/${c}`);
     net.current?.close();
     const g = new GuestNet(c, token, n, {
@@ -37,7 +31,7 @@ export default function JoinClient() {
       status: setStatus,
     });
     net.current = g;
-    void g.connectViaServer();
+    void g.connect();
   };
 
   // Code comes from the URL; a saved name means we rejoin after a refresh.
@@ -54,27 +48,30 @@ export default function JoinClient() {
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (view && status !== "failed" && status !== "missing" && status !== "nostore")
+  if (view && status !== "missing" && status !== "nostore" && status !== "lanfail")
     return (
       <>
         {status === "reconnecting" && <p className="sticky top-0 z-10 bg-amber py-1 text-center font-mono text-xs uppercase text-chassis">Reconnecting…</p>}
-        <GameView state={view.state} secret={view.secret} me={me} isHost={false} act={(a) => net.current?.send(a)} />
+        <GameView state={view.state} secret={view.secret} me={me} isHost={false} act={(a) => {
+            net.current?.send(a);
+            saveSession<Saved>(guestKey(code), { token: me, name }); // activity keeps the seat
+          }} />
       </>
     );
 
-  if (status === "idle" || status === "missing" || status === "nostore" || status === "failed") {
+  if (status === "idle" || status === "missing" || status === "nostore" || status === "lanfail") {
     const valid = isValidCode(code);
     const problem =
       status === "missing"
-        ? "No room with that code. Check it with your host. Rooms close after 4 hours."
-        : status === "nostore"
-          ? "Online rooms aren't set up on this server yet. The host needs to connect a Redis store in Vercel and redeploy."
-          : status === "failed"
-            ? "Couldn't reach the host. Check you're online and the host still has the room open."
-            : null;
+        ? "No room with that code. Check it with your host. Rooms close after 1 hour without play."
+        : status === "lanfail"
+          ? "Couldn't reach the host's phone. Connect to the same Wi-Fi or hotspot as the host (not mobile data or a guest network), then try again."
+          : status === "nostore"
+          ? "Rooms can't open yet: this site has no Redis store for the join handshake. Connect Upstash Redis in Vercel and redeploy."
+          : null;
     return (
       <Screen
-        title={status === "idle" ? "Join a room" : status === "missing" ? "Room not found" : "Couldn't connect"}
+        title={status === "idle" ? "Join a room" : status === "missing" ? "Room not found" : status === "lanfail" ? "Not on the host's Wi-Fi" : "Couldn't connect"}
         kicker={valid ? `Cat. No. ${formatCode(code)}` : "Enter the code"}
         actions={
           <Button

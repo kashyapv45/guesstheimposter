@@ -2,15 +2,14 @@
 
 Midnight Hi-Fi vinyl party game. Everyone gets the same secret word, except the imposter. Give one-word clues, then vote out the bluffer.
 
-Three ways to play:
+Two ways to play:
 
 | Mode | How | Needs |
 |---|---|---|
 | **Pass & Play** | One phone passed around | Just the website |
-| **Cloud** | 8-char room code (`VNL7-K92P`) or QR link | Internet + a Redis store on the server |
-| **Local Wi-Fi** | Same as Cloud; on one Wi-Fi the phones then talk directly over the router | Same as Cloud |
+| **Local Wi-Fi** | Everyone on their own phone, joining with an 8-char code (`VNL7-K92P`) or QR | Everyone on one Wi-Fi or hotspot, plus a Redis store on the site for the join handshake |
 
-Online and Local Wi-Fi use the same transport: **WebRTC DataChannels** in a star around the host's phone. The server only passes the handshake text (`/api/signal/[code]`). Gameplay then runs peer-to-peer, and on the same Wi-Fi it stays on the LAN (emerald LED in the lobby; amber = via internet). No Pusher, Ably or Firebase.
+Local Wi-Fi uses **WebRTC DataChannels** in a star around the host's phone. Joining passes a few KB of handshake text through `/api/signal/[code]`. The connection itself is LAN-only (no STUN or TURN servers), so game traffic never leaves your Wi-Fi or hotspot. A guest on another network gets a "connect to the host's Wi-Fi" message. No Pusher, Ably or Firebase.
 
 ## Run
 
@@ -25,10 +24,10 @@ npm run build      # runs validate-words first
 ## Deploy to Vercel
 
 1. Import the repo into Vercel.
-2. **Required for Cloud / online rooms:** Project → Storage → connect **Upstash Redis** (sets `KV_REST_API_URL` + `KV_REST_API_TOKEN`) or **Redis** (sets `REDIS_URL`). Either works. Rooms expire after 4 hours.
+2. **Required for Local Wi-Fi rooms:** Project → Storage → connect **Upstash Redis** (sets `KV_REST_API_URL` + `KV_REST_API_TOKEN`) or **Redis** (sets `REDIS_URL`). Either works. Rooms expire after 1 hour without play.
 3. **Redeploy** after connecting storage, since environment variables only apply to new deployments.
 
-Without a store, the host screen says "Online rooms aren't set up on this server yet" instead of guests getting "Room not found". Pass & Play still works. The in-memory fallback is only for local dev or `next start` on one machine.
+Without a store, the host screen says rooms can't open yet and how to fix it, instead of guests getting "Room not found". Pass & Play still works. The in-memory fallback is only for local dev or `next start` on one machine.
 
 ## Words
 
@@ -49,5 +48,5 @@ Played words are tracked per device in `localStorage` with a persistent Fisher-Y
 
 ## Known limits
 
-- STUN only, no TURN relay: a few strict mobile or corporate networks can't connect in Online mode. Add a TURN server to `ICE` in `lib/net.ts` if needed.
+- Local Wi-Fi only: phones must share one Wi-Fi or hotspot. Guest networks with client isolation block phone-to-phone traffic.
 - The host's phone holds the game. If the host refreshes, the same tab restores the room and guests reconnect automatically. If the host closes the tab, the room ends (no host migration).

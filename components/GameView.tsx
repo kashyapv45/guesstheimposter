@@ -4,19 +4,14 @@ import type { Action, GameState, Secret } from "@/lib/game";
 import { ResultView, Scoreboard } from "./panels";
 import { Button, Led, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
-export function PlayerList({ state, links }: { state: GameState; links?: Record<string, "lan" | "cloud"> }) {
+export function PlayerList({ state, showLinks }: { state: GameState; showLinks?: boolean }) {
   return (
     <ul className="space-y-2">
       {state.players.map((p) => (
         <li key={p.id} className="flex items-center gap-2">
           <span className="h-4 w-4 rounded-full border-2 border-edge" style={{ background: p.color }} />
           <span className="flex-1 truncate font-bold">{p.name}</span>
-          {links && (links[p.id] || !p.connected) && (
-            <Led
-              color={!p.connected ? "off" : links[p.id] === "lan" ? "green" : "amber"}
-              label={!p.connected ? "disconnected" : links[p.id] === "lan" ? "direct over Wi-Fi" : links[p.id] === "cloud" ? "via internet" : "this device"}
-            />
-          )}
+          {showLinks && <Led color={p.connected ? "green" : "off"} label={p.connected ? "connected on Wi-Fi" : "disconnected"} />}
         </li>
       ))}
     </ul>
