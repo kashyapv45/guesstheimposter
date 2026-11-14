@@ -54,7 +54,7 @@ export default function Home() {
       }
     >
       <div className="flex justify-center py-2">
-        <Vinyl size={200} label={<span className="font-serif text-xs font-black leading-tight text-chassis">WHO&apos;S<br />THE<br />IMPOSTER?</span>} />
+        <Vinyl size={220} label={<span className="font-serif text-[10px] font-black leading-[1.15] tracking-tight text-chassis">WHO&apos;S<br />THE<br />IMPOSTER?</span>} />
       </div>
       <Sleeve title="How to play">
         <p>Everyone gets the same secret word, except the imposter. Take turns giving one-word clues, then vote out whoever seems to be bluffing.</p>
