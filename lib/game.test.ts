@@ -1,8 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { draw, reshuffle, type DeckStore } from "./deck.ts";
-import { newGame, reduce, viewFor, type Action, type GameState } from "./game.ts";
-import { cleanCode, isValidCode, newRoomCode } from "./roomCode.ts";
+import { newGame, reduce, type Action, type GameState } from "./game.ts";
 
 const secret = { word: "Espresso", category: "foods-drinks", categoryName: "Foods & Drinks", decoy: "Latte" };
 
@@ -71,22 +70,7 @@ test("Mr. White wins by guessing the word", () => {
   const mw = ids(s, "mrwhite")[0];
   const caught = voteAll(s, (v) => (v === mw ? s.players.find((p) => p.id !== mw)!.id : mw));
   assert.equal(caught.awaitingGuess, true);
-  assert.equal(viewFor(caught, "p0").state.round!.word, ""); // word still hidden from remote players
   const won = reduce(caught, { type: "guess", id: mw, word: "espresso" });
   assert.equal(won.outcome!.winner, "mrwhite");
   assert.equal(won.players.find((p) => p.id === mw)!.score, 3);
-});
-
-test("remote view hides other roles and vote targets", () => {
-  const s = reduce(game(4), { type: "vote", voter: "p0", target: "p1" });
-  const v = viewFor(s, "p2");
-  assert.deepEqual(v.state.round!.roles, {});
-  assert.equal(v.state.votes.p0, "?");
-  assert.equal(viewFor(s, "p0").state.votes.p0, "p1");
-});
-
-test("room codes are 8 unambiguous characters", () => {
-  for (let i = 0; i < 200; i++) assert.ok(isValidCode(newRoomCode()));
-  assert.equal(cleanCode("vnl7-k92p"), "VNL7K92P");
-  assert.equal(isValidCode("VNL0K92P"), false);
 });

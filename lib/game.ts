@@ -1,4 +1,4 @@
-// Pure game rules. Pass & Play runs this locally; online/Wi-Fi rooms run it on the host only.
+// Pure game rules for Pass & Play.
 import { shuffle } from "./deck.ts";
 
 export type Role = "crew" | "imposter" | "mrwhite";
@@ -194,16 +194,4 @@ export function secretFor(round: Round, hint: HintMode, id: string): Secret | nu
   if (role === "crew") return { role, word: round.word, category: round.categoryName };
   if (role === "mrwhite") return { role, word: null, category: null };
   return { role, word: hint === "decoy" ? round.decoy : null, category: hint === "blind" ? null : round.categoryName };
-}
-
-// What one remote player may see: their own secret, no one else's role, anonymous votes.
-export function viewFor(s: GameState, id: string): { state: GameState; secret: Secret | null } {
-  if (!s.round) return { state: s, secret: null };
-  const secret = secretFor(s.round, s.settings.hint, id);
-  if (s.phase === "result" && !s.awaitingGuess) return { state: s, secret };
-  const votes = Object.fromEntries(Object.keys(s.votes).map((v) => [v, v === id ? s.votes[v] : "?"]));
-  return {
-    state: { ...s, votes, round: { ...s.round, word: "", decoy: "", category: "", categoryName: "", roles: {} } },
-    secret,
-  };
 }

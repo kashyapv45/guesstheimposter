@@ -1,49 +1,104 @@
 @import "tailwindcss";
 
-/* Midnight Hi-Fi: brushed obsidian chassis, amber tube glow, emerald status LEDs, crimson imposter alert */
+/* Components only use these tokens; each UI kit below sets their values. */
 @theme inline {
-  --color-chassis: #121214;
-  --color-panel: #1b1b1f;
-  --color-well: #0b0b0d;
-  --color-field: #0f0f12;
-  --color-edge: #2c2c33;
-  --color-ink: #ece8e1;
-  --color-amber: #f59e0b;
-  --color-emerald: #10b981;
-  --color-crimson: #ef4444;
+  --color-chassis: var(--chassis); /* page background */
+  --color-panel: var(--panel); /* cards */
+  --color-well: var(--well); /* deep inset panels */
+  --color-well-ink: var(--well-ink); /* text on wells */
+  --color-field: var(--field); /* inputs, list rows */
+  --color-edge: var(--edge); /* borders */
+  --color-ink: var(--ink); /* text */
+  --color-amber: var(--amber); /* primary accent */
+  --color-emerald: var(--emerald); /* positive / switches */
+  --color-crimson: var(--crimson); /* imposter, errors */
   --font-serif: var(--font-fraunces), Georgia, serif;
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
+/* Midnight Hi-Fi (default): brushed obsidian, amber tube glow, emerald LEDs */
+:root,
+[data-theme="hifi"] {
+  color-scheme: dark;
+  --chassis: #121214;
+  --panel: #1b1b1f;
+  --panel-hi: #212126;
+  --well: #0b0b0d;
+  --well-ink: #ece8e1;
+  --field: #0f0f12;
+  --edge: #2c2c33;
+  --ink: #ece8e1;
+  --amber: #f59e0b;
+  --emerald: #10b981;
+  --crimson: #ef4444;
+  --glow: 245 158 11;
+  --grain: 0.04;
+}
+
+/* Retro Vinyl: cream sleeve, kraft card, charcoal jacket, burnt orange */
+[data-theme="retro"] {
+  color-scheme: light;
+  --chassis: #f4efe6;
+  --panel: #d8c3a5;
+  --panel-hi: #e0ceb3;
+  --well: #1e1e1e;
+  --well-ink: #f4efe6;
+  --field: #f4efe6;
+  --edge: #1e1e1e;
+  --ink: #1e1e1e;
+  --amber: #d95d39;
+  --emerald: #2a9d8f;
+  --crimson: #c0392b;
+  --glow: 217 93 57;
+  --grain: 0.08;
+}
+
+/* Neon Arcade: midnight purple, cyan glow, magenta alert */
+[data-theme="neon"] {
+  color-scheme: dark;
+  --chassis: #0d0221;
+  --panel: #1a0b3d;
+  --panel-hi: #24114f;
+  --well: #07011a;
+  --well-ink: #f3e8ff;
+  --field: #12062e;
+  --edge: #3b1d6e;
+  --ink: #f3e8ff;
+  --amber: #00e5ff;
+  --emerald: #39ff14;
+  --crimson: #ff2d95;
+  --glow: 0 229 255;
+  --grain: 0.03;
+}
+
 html {
   -webkit-tap-highlight-color: transparent;
-  color-scheme: dark;
 }
 
 body {
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(245, 158, 11, 0.08), transparent 55%),
-    var(--color-chassis);
-  color: var(--color-ink);
+    radial-gradient(ellipse at 50% -10%, rgb(var(--glow) / 0.08), transparent 55%),
+    var(--chassis);
+  color: var(--ink);
 }
 
-/* Fine grain so flat areas don't band on OLED */
+/* Fine grain / paper texture */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.04;
+  opacity: var(--grain);
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-/* Brushed aluminum */
+/* Brushed panel finish, tinted by the active kit */
 .brushed {
   background-image:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px),
-    linear-gradient(180deg, #212126, #18181c);
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, var(--panel-hi), var(--panel));
 }
 
 .vinyl {
@@ -51,19 +106,19 @@ body::before {
     radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.12), transparent 35%),
     repeating-radial-gradient(circle, #0d0d0f 0 2px, #1c1c20 2px 4px);
   box-shadow:
-    0 0 0 1px #2c2c33,
-    0 12px 32px rgba(0, 0, 0, 0.65);
+    0 0 0 1px var(--edge),
+    0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--color-amber);
+  outline: 3px solid var(--amber);
   outline-offset: 2px;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: rgb(236 232 225 / 0.35);
+  color: color-mix(in srgb, var(--ink) 40%, transparent);
 }

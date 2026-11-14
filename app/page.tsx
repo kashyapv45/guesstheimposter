@@ -1,67 +1,43 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Button, Led, Rocker, Screen, Sleeve, Vinyl } from "@/components/ui";
-import { clearSession, HOST_KEY } from "@/lib/session";
-
-type Mode = "pass" | "lan";
-
-const MODE_INFO: Record<Mode, { led: "green" | "off"; text: string }> = {
-  pass: { led: "off", text: "One phone, passed around the table." },
-  lan: {
-    led: "green",
-    text: "Everyone on their own phone, on the same Wi-Fi or hotspot. The host shows an invite QR, each player scans it and shows a reply QR back. No setup, no server: phones talk directly over your network.",
-  },
-};
+import { Button, Screen, Sleeve, Vinyl } from "@/components/ui";
+import { THEMES, useTheme } from "@/lib/theme";
 
 export default function Home() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("pass");
+  const [theme, setTheme] = useTheme();
 
   return (
-    <Screen
-      title="Guess the Imposter"
-      kicker="Side A · 33⅓ RPM"
-      actions={
-        mode === "pass" ? (
-          <Button onClick={() => router.push("/play")}>Start Pass &amp; Play</Button>
-        ) : (
-          <>
-            <Button
-              onClick={() => {
-                clearSession(HOST_KEY); // a new room replaces the one this tab was hosting
-                router.push("/room");
-              }}
-            >
-              Host a room
-            </Button>
-            <p className="text-center text-xs text-ink/60">Joining? Scan the host&apos;s invite QR with your camera.</p>
-          </>
-        )
-      }
-    >
+    <Screen title="Guess the Imposter" kicker="Side A · 33⅓ RPM" actions={<Button onClick={() => router.push("/play")}>Start Pass &amp; Play</Button>}>
       <div className="flex justify-center py-2">
         <Vinyl size={220} label={<span className="font-serif text-[10px] font-black leading-[1.15] tracking-tight text-chassis">WHO&apos;S<br />THE<br />IMPOSTER?</span>} />
       </div>
       <Sleeve title="How to play">
-        <p>Everyone gets the same secret word, except the imposter. Take turns giving one-word clues, then vote out whoever seems to be bluffing.</p>
+        <p>Everyone gets the same secret word, except the imposter. Pass the phone so each player can peek at their record, give one-word clues, then vote out whoever seems to be bluffing.</p>
       </Sleeve>
-      <Sleeve title="Connection">
-        <Rocker
-          label="Play mode"
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: "pass", label: "Pass & Play" },
-            { value: "lan", label: "Local Wi-Fi" },
-          ]}
-        />
-        <p className="mt-3 flex items-start gap-2 text-sm">
-          <span className="mt-1.5">
-            <Led color={MODE_INFO[mode].led} />
-          </span>
-          {MODE_INFO[mode].text}
-        </p>
+      <Sleeve title="UI kit">
+        <div role="radiogroup" aria-label="UI kit" className="grid gap-2">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              role="radio"
+              aria-checked={theme === t.id}
+              onClick={() => setTheme(t.id)}
+              className={`flex min-h-14 items-center gap-3 rounded-xl border-2 px-3 text-left transition ${theme === t.id ? "border-amber bg-amber/10" : "border-edge bg-field"}`}
+            >
+              <span className="flex shrink-0 overflow-hidden rounded-md border border-edge">
+                {t.swatch.map((c) => (
+                  <span key={c} className="h-8 w-4" style={{ background: c }} />
+                ))}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-bold">{t.name}</span>
+                <span className="block truncate text-xs opacity-70">{t.blurb}</span>
+              </span>
+              <span className={`h-4 w-4 shrink-0 rounded-full border-2 ${theme === t.id ? "border-amber bg-amber" : "border-edge"}`} />
+            </button>
+          ))}
+        </div>
       </Sleeve>
     </Screen>
   );

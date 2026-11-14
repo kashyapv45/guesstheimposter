@@ -4,7 +4,6 @@ import { useReducer, useState } from "react";
 import { CratePicker, ResultView, Scoreboard, SettingsPanel } from "@/components/panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
 import { newGame, reduce, secretFor } from "@/lib/game";
-import { randomId } from "@/lib/roomCode";
 import { useWordDeck } from "@/lib/useWordDeck";
 
 export default function PassAndPlay() {
@@ -26,7 +25,7 @@ export default function PassAndPlay() {
   if (s.phase === "lobby") {
     const addPlayer = () => {
       if (!name.trim()) return;
-      dispatch({ type: "join", id: randomId(), name });
+      dispatch({ type: "join", id: crypto.randomUUID(), name });
       setName("");
     };
     return (

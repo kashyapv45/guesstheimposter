@@ -69,7 +69,7 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
                 role="checkbox"
                 aria-checked={on}
                 onClick={() => onChange(on ? selected.filter((id) => id !== c.id) : [...selected, c.id])}
-                className={`flex min-h-12 flex-1 items-center justify-between gap-2 rounded-lg border-2 border-edge px-3 text-left ${on ? "border-amber bg-amber/10 text-amber shadow-[0_0_14px_rgba(245,158,11,.25)]" : "bg-field"}`}
+                className={`flex min-h-12 flex-1 items-center justify-between gap-2 rounded-lg border-2 border-edge px-3 text-left ${on ? "border-amber bg-amber/10 text-amber shadow-[0_0_14px_rgb(var(--glow)/.25)]" : "bg-field"}`}
               >
                 <span className="font-bold">{c.name}</span>
                 <span className="shrink-0 font-mono text-[10px] uppercase opacity-80">

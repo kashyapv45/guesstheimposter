@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
-import QRCode from "qrcode";
 import type { Secret } from "@/lib/game";
 
 export function Screen({ title, kicker, children, actions }: { title: string; kicker?: string; children: ReactNode; actions?: ReactNode }) {
@@ -23,8 +22,8 @@ export function Screen({ title, kicker, children, actions }: { title: string; ki
 }
 
 const BUTTON = {
-  primary: "bg-amber text-chassis shadow-[0_0_24px_rgba(245,158,11,.25)]",
-  secondary: "bg-well text-ink",
+  primary: "bg-amber text-chassis shadow-[0_0_24px_rgb(var(--glow)/.25)]",
+  secondary: "bg-well text-well-ink",
   ghost: "brushed bg-panel text-ink",
   teal: "bg-emerald text-chassis",
 };
@@ -40,7 +39,7 @@ export function Button({ variant = "primary", className = "", ...p }: ButtonHTML
 
 export function Sleeve({ title, dark, children, className = "" }: { title?: string; dark?: boolean; children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-2xl border-2 border-edge p-4 shadow-[0_10px_30px_rgba(0,0,0,.55)] ${dark ? "bg-well text-ink" : "brushed bg-panel"} ${className}`}>
+    <section className={`rounded-2xl border-2 border-edge p-4 shadow-[0_10px_30px_rgba(0,0,0,.55)] ${dark ? "bg-well text-well-ink" : "brushed bg-panel"} ${className}`}>
       {title && <h2 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] opacity-70">{title}</h2>}
       {children}
     </section>
@@ -56,7 +55,7 @@ export function Rocker<T extends string>({ label, value, options, onChange }: { 
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-11 flex-1 rounded-lg px-1 font-mono text-[11px] font-bold uppercase tracking-wider transition ${value === o.value ? "bg-amber text-chassis shadow-[inset_0_-3px_0_rgba(0,0,0,.3),0_0_14px_rgba(245,158,11,.45)]" : "text-ink/70"}`}
+          className={`min-h-11 flex-1 rounded-lg px-1 font-mono text-[11px] font-bold uppercase tracking-wider transition ${value === o.value ? "bg-amber text-chassis shadow-[inset_0_-3px_0_rgba(0,0,0,.3),0_0_14px_rgb(var(--glow)/.45)]" : "text-well-ink/70"}`}
         >
           {o.label}
         </button>
@@ -102,12 +101,7 @@ export function Stepper({ label, value, min, max, step = 1, onChange, format = S
   );
 }
 
-export function Led({ color, label }: { color: "green" | "amber" | "off"; label?: string }) {
-  const c = { green: "bg-emerald shadow-[0_0_10px_#10B981]", amber: "bg-amber shadow-[0_0_10px_#F59E0B]", off: "bg-edge" }[color];
-  return <span role="img" aria-label={label ?? color} className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${c}`} />;
-}
-
-export function Vinyl({ color = "#F59E0B", size = 220, spinning = true, label }: { color?: string; size?: number; spinning?: boolean; label?: ReactNode }) {
+export function Vinyl({ color = "var(--amber)", size = 220, spinning = true, label }: { color?: string; size?: number; spinning?: boolean; label?: ReactNode }) {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <div className={`vinyl grid h-full w-full place-items-center rounded-full ${spinning ? "motion-safe:animate-[spin_4s_linear_infinite]" : ""}`}>
@@ -183,7 +177,7 @@ export function VinylReveal({ secret, color, onReveal }: { secret: Secret; color
       >
         <Vinyl color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight text-chassis">Hold<br />me</span>} />
         {held && (
-          <div className={`absolute inset-[12%] grid place-items-center content-center gap-1 rounded-full border-4 p-4 text-center ${secret.role === "imposter" ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgba(245,158,11,.25)]"}`}>
+          <div className={`absolute inset-[12%] grid place-items-center content-center gap-1 rounded-full border-4 p-4 text-center ${secret.role === "imposter" ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
             <SecretText secret={secret} />
           </div>
         )}
@@ -219,9 +213,9 @@ export function Timer({ endAt, total, caption, onExpire }: { endAt: number | nul
       <div className="relative grid h-44 w-44 place-items-center">
         <svg viewBox="0 0 160 160" className="absolute inset-0 -rotate-90">
           <circle cx="80" cy="80" r={r} fill="#0b0b0d" stroke="#1f1f24" strokeWidth="14" />
-          <circle cx="80" cy="80" r={r} fill="none" stroke={left <= 5 ? "#EF4444" : "#F59E0B"} strokeWidth="8" strokeDasharray={circ} strokeDashoffset={circ * (1 - left / Math.max(1, total))} strokeLinecap="round" className="transition-[stroke-dashoffset] duration-300" />
+          <circle cx="80" cy="80" r={r} fill="none" style={{ stroke: left <= 5 ? "var(--crimson)" : "var(--amber)" }} strokeWidth="8" strokeDasharray={circ} strokeDashoffset={circ * (1 - left / Math.max(1, total))} strokeLinecap="round" className="transition-[stroke-dashoffset] duration-300" />
         </svg>
-        <div className="relative flex items-center gap-0.5 font-mono text-2xl font-bold text-amber [text-shadow:0_0_8px_rgba(245,158,11,.7)]">
+        <div className="relative flex items-center gap-0.5 font-mono text-2xl font-bold text-amber [text-shadow:0_0_8px_rgb(var(--glow)/.7)]">
           {digits.split("").map((d, i) => (
             <span key={i} className="flex items-center">
               {i === 2 && <span className="px-0.5">:</span>}
@@ -232,20 +226,5 @@ export function Timer({ endAt, total, caption, onExpire }: { endAt: number | nul
       </div>
       {caption && <p className="font-mono text-xs uppercase tracking-widest">{caption}</p>}
     </div>
-  );
-}
-
-export function QR({ text, size = 240 }: { text: string; size?: number }) {
-  const [src, setSrc] = useState("");
-  useEffect(() => {
-    QRCode.toDataURL(text, { margin: 1, width: size * 2, errorCorrectionLevel: "L", color: { dark: "#121214", light: "#F5F5F4" } })
-      .then(setSrc)
-      .catch(() => setSrc(""));
-  }, [text, size]);
-  return src ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} width={size} height={size} alt="QR code" className="mx-auto rounded-lg border-2 border-edge" />
-  ) : (
-    <div style={{ width: size, height: size }} className="mx-auto animate-pulse rounded-lg bg-well/10" />
   );
 }
