@@ -17,7 +17,7 @@ export default function Home() {
         <p>Everyone gets the same secret word, except the imposter. Pass the phone so each player can peek at their {theme.noun}, give one-word clues, then vote out whoever seems to be bluffing.</p>
       </Sleeve>
       <Sleeve title="UI kit">
-        <div role="radiogroup" aria-label="UI kit" className="grid gap-2">
+        <div role="radiogroup" aria-label="UI kit" className="grid grid-cols-1 gap-2">
           {THEMES.map((t) => {
             const on = theme.id === t.id;
             return (
@@ -26,7 +26,7 @@ export default function Home() {
                 role="radio"
                 aria-checked={on}
                 onClick={() => setTheme(t.id)}
-                className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-sm)] border-[length:var(--bw)] px-3 text-left transition ${on ? "border-amber bg-amber/10" : "border-edge bg-field"}`}
+                className={`flex min-h-14 w-full min-w-0 items-center gap-3 rounded-[var(--radius-sm)] border-[length:var(--bw)] px-3 text-left transition ${on ? "border-amber bg-amber/10" : "border-edge bg-field"}`}
               >
                 <span className="flex shrink-0 overflow-hidden rounded-md border border-edge">
                   {t.swatch.map((c) => (
