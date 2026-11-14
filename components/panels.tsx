@@ -69,18 +69,18 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
                 role="checkbox"
                 aria-checked={on}
                 onClick={() => onChange(on ? selected.filter((id) => id !== c.id) : [...selected, c.id])}
-                className={`flex min-h-12 flex-1 items-center justify-between gap-2 rounded-lg border-2 border-edge px-3 text-left ${on ? "border-amber bg-amber/10 text-amber shadow-[0_0_14px_rgb(var(--glow)/.25)]" : "bg-field"}`}
+                className={`flex min-h-12 flex-1 items-center justify-between gap-2 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge px-3 text-left ${on ? "border-amber bg-amber/10 text-amber shadow-[0_0_14px_rgb(var(--glow)/.25)]" : "bg-field"}`}
               >
                 <span className="font-bold">{c.name}</span>
                 <span className="shrink-0 font-mono text-[10px] uppercase opacity-80">
                   {left} / {total} left
                 </span>
               </button>
-              <button aria-label={`Reshuffle ${c.name}`} title="Reshuffle crate" onClick={() => deck.reshuffle(c.id)} className="h-12 w-12 shrink-0 rounded-lg border-2 border-edge bg-field font-mono text-lg">
+              <button aria-label={`Reshuffle ${c.name}`} title="Reshuffle crate" onClick={() => deck.reshuffle(c.id)} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-lg">
                 ↺
               </button>
               {c.custom && (
-                <button aria-label={`Delete ${c.name}`} onClick={() => (deck.removeCustom(c.id), onChange(selected.filter((id) => id !== c.id)))} className="h-12 w-12 shrink-0 rounded-lg border-2 border-edge bg-field font-mono">
+                <button aria-label={`Delete ${c.name}`} onClick={() => (deck.removeCustom(c.id), onChange(selected.filter((id) => id !== c.id)))} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono">
                   ✕
                 </button>
               )}
@@ -91,8 +91,8 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
       <details className="mt-4">
         <summary className="cursor-pointer font-bold">Add your own word list</summary>
         <div className="mt-2 space-y-2">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="List name" maxLength={30} className="w-full rounded-lg border-2 border-edge bg-field px-3 py-2" />
-          <textarea value={words} onChange={(e) => setWords(e.target.value)} placeholder="One word per line (at least 5)" rows={4} className="w-full rounded-lg border-2 border-edge bg-field px-3 py-2" />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="List name" maxLength={30} className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
+          <textarea value={words} onChange={(e) => setWords(e.target.value)} placeholder="One word per line (at least 5)" rows={4} className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
           <button
             disabled={!name.trim() || parsed.length < 5}
             onClick={() => {
@@ -101,7 +101,7 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
               setName("");
               setWords("");
             }}
-            className="w-full rounded-lg border-2 border-edge bg-emerald py-2 font-bold text-ink disabled:opacity-40"
+            className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald py-2 font-bold text-ink disabled:opacity-40"
           >
             Save list ({parsed.length} words)
           </button>
@@ -150,8 +150,8 @@ export function ResultView({ state, canGuess, onGuess }: { state: GameState; can
               if (guess.trim()) onGuess(guess.trim());
             }}
           >
-            <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="Your guess" aria-label="Your guess" className="min-w-0 flex-1 rounded-lg border-2 border-edge bg-field px-3 py-2 text-ink" />
-            <button className="rounded-lg border-2 border-edge bg-amber px-4 font-bold text-chassis">Guess</button>
+            <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="Your guess" aria-label="Your guess" className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2 text-ink" />
+            <button className="rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-amber px-4 font-bold text-on-accent">Guess</button>
           </form>
         ) : (
           <p className="mt-3 font-mono text-sm opacity-70">Waiting for their guess…</p>

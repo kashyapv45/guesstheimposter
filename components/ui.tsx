@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import type { Secret } from "@/lib/game";
+import { useTheme } from "@/lib/theme";
+import { HeroObject } from "./kit";
 
 export function Screen({ title, kicker, children, actions }: { title: string; kicker?: string; children: ReactNode; actions?: ReactNode }) {
   return (
@@ -22,24 +24,24 @@ export function Screen({ title, kicker, children, actions }: { title: string; ki
 }
 
 const BUTTON = {
-  primary: "bg-amber text-chassis shadow-[0_0_24px_rgb(var(--glow)/.25)]",
+  primary: "bg-amber text-on-accent shadow-[0_0_24px_rgb(var(--glow)/.25)]",
   secondary: "bg-well text-well-ink",
   ghost: "brushed bg-panel text-ink",
-  teal: "bg-emerald text-chassis",
+  teal: "bg-emerald text-on-accent",
 };
 
 export function Button({ variant = "primary", className = "", ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof BUTTON }) {
   return (
     <button
       {...p}
-      className={`min-h-14 w-full rounded-xl border-2 border-edge px-4 font-serif text-lg font-bold shadow-[0_4px_0_#000] transition active:translate-y-1 active:shadow-none disabled:opacity-40 disabled:active:translate-y-0 disabled:active:shadow-[0_4px_0_#000] ${BUTTON[variant]} ${className}`}
+      className={`min-h-14 w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge px-4 font-serif text-lg font-bold shadow-[var(--btn-shadow)] transition active:translate-y-1 active:shadow-none disabled:opacity-40 disabled:active:translate-y-0 disabled:active:shadow-[var(--btn-shadow)] ${BUTTON[variant]} ${className}`}
     />
   );
 }
 
 export function Sleeve({ title, dark, children, className = "" }: { title?: string; dark?: boolean; children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-2xl border-2 border-edge p-4 shadow-[0_10px_30px_rgba(0,0,0,.55)] ${dark ? "bg-well text-well-ink" : "brushed bg-panel"} ${className}`}>
+    <section className={`rounded-[var(--radius)] border-[length:var(--bw)] border-edge p-4 shadow-[var(--card-shadow)] ${dark ? "bg-well text-well-ink" : "brushed bg-panel"} ${className}`}>
       {title && <h2 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] opacity-70">{title}</h2>}
       {children}
     </section>
@@ -48,14 +50,14 @@ export function Sleeve({ title, dark, children, className = "" }: { title?: stri
 
 export function Rocker<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-xl border-2 border-edge bg-well p-1">
+    <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-well p-1">
       {options.map((o) => (
         <button
           key={o.value}
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-11 flex-1 rounded-lg px-1 font-mono text-[11px] font-bold uppercase tracking-wider transition ${value === o.value ? "bg-amber text-chassis shadow-[inset_0_-3px_0_rgba(0,0,0,.3),0_0_14px_rgb(var(--glow)/.45)]" : "text-well-ink/70"}`}
+          className={`min-h-11 flex-1 rounded-[var(--radius-sm)] px-1 font-mono text-[11px] font-bold uppercase tracking-wider transition ${value === o.value ? "bg-amber text-on-accent shadow-[inset_0_-3px_0_rgba(0,0,0,.3),0_0_14px_rgb(var(--glow)/.45)]" : "text-well-ink/70"}`}
         >
           {o.label}
         </button>
@@ -76,15 +78,15 @@ export function Toggle({ label, on, onChange, hint }: { label: string; on: boole
         <span className="block font-bold">{label}</span>
         {hint && <span className="block text-xs opacity-70">{hint}</span>}
       </span>
-      <span className={`relative h-8 w-14 shrink-0 rounded-md border-2 border-edge ${on ? "bg-emerald" : "bg-field"}`}>
-        <span className={`absolute top-0.5 h-6 w-6 rounded-sm border-2 border-edge bg-well transition-all ${on ? "left-6" : "left-0.5"}`} />
+      <span className={`relative h-8 w-14 shrink-0 rounded-md border-[length:var(--bw)] border-edge ${on ? "bg-emerald" : "bg-field"}`}>
+        <span className={`absolute top-0.5 h-6 w-6 rounded-sm border-[length:var(--bw)] border-edge bg-well transition-all ${on ? "left-6" : "left-0.5"}`} />
       </span>
     </button>
   );
 }
 
 export function Stepper({ label, value, min, max, step = 1, onChange, format = String }: { label: string; value: number; min: number; max: number; step?: number; onChange: (v: number) => void; format?: (v: number) => string }) {
-  const btn = "h-11 w-11 rounded-lg border-2 border-edge bg-field font-mono text-xl font-bold disabled:opacity-30";
+  const btn = "h-11 w-11 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-xl font-bold disabled:opacity-30";
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="font-bold">{label}</span>
@@ -96,25 +98,6 @@ export function Stepper({ label, value, min, max, step = 1, onChange, format = S
         <button aria-label={`Increase ${label}`} className={btn} disabled={value >= max} onClick={() => onChange(Math.min(max, value + step))}>
           +
         </button>
-      </div>
-    </div>
-  );
-}
-
-export function Vinyl({ color = "var(--amber)", size = 220, spinning = true, label }: { color?: string; size?: number; spinning?: boolean; label?: ReactNode }) {
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <div className={`vinyl grid h-full w-full place-items-center rounded-full ${spinning ? "motion-safe:animate-[spin_4s_linear_infinite]" : ""}`}>
-        <div className="grid place-items-center rounded-full text-center shadow-[0_0_18px_rgba(0,0,0,.6)]" style={{ width: size * 0.4, height: size * 0.4, background: color }}>
-          {label}
-        </div>
-        {!label && <div className="absolute h-2.5 w-2.5 rounded-full bg-zinc-300" />}
-      </div>
-      {/* chrome tonearm */}
-      <div aria-hidden className="pointer-events-none absolute" style={{ right: -size * 0.04, top: -size * 0.02, width: size * 0.16, height: size * 0.62 }}>
-        <div className="absolute right-0 top-0 aspect-square w-3/4 rounded-full border border-zinc-500 bg-[radial-gradient(circle_at_35%_30%,#f4f4f5,#71717a)] shadow-[0_4px_10px_rgba(0,0,0,.6)]" />
-        <div className="absolute top-[12%] h-[82%] w-[9%] origin-top rotate-[22deg] rounded-full bg-gradient-to-r from-zinc-400 via-zinc-100 to-zinc-500" style={{ right: "34%" }} />
-        <div className="absolute bottom-0 left-[6%] h-[11%] w-[34%] rotate-[22deg] rounded-sm bg-gradient-to-b from-zinc-200 to-zinc-500" />
       </div>
     </div>
   );
@@ -147,9 +130,11 @@ export function SecretText({ secret }: { secret: Secret }) {
   );
 }
 
-// Press-and-hold the record to peek; letting go hides it again.
+// Press-and-hold the kit's object (record, sticker, reel, pad…) to peek; letting go hides it again.
 export function VinylReveal({ secret, color, onReveal }: { secret: Secret; color: string; onReveal?: () => void }) {
   const [held, setHeld] = useState(false);
+  const [theme] = useTheme();
+  const round = theme.shape === "round";
   const show = (v: boolean) => {
     setHeld(v);
     if (v) onReveal?.();
@@ -173,16 +158,16 @@ export function VinylReveal({ secret, color, onReveal }: { secret: Secret; color
         onKeyUp={() => show(false)}
         onBlur={() => held && show(false)}
         onContextMenu={(e) => e.preventDefault()}
-        className="relative touch-none select-none rounded-full [-webkit-touch-callout:none]"
+        className={`relative touch-none select-none [-webkit-touch-callout:none] ${round ? "rounded-full" : "rounded-[var(--radius)]"}`}
       >
-        <Vinyl color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight text-chassis">Hold<br />me</span>} />
+        <HeroObject color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight">Hold<br />me</span>} />
         {held && (
-          <div className={`absolute inset-[12%] grid place-items-center content-center gap-1 rounded-full border-4 p-4 text-center ${secret.role === "imposter" ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
+          <div className={`absolute grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${secret.role === "imposter" ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
             <SecretText secret={secret} />
           </div>
         )}
       </button>
-      <p className="font-mono text-xs uppercase tracking-widest text-ink/70">{held ? "Let go to hide" : "Press & hold the record"}</p>
+      <p className="font-mono text-xs uppercase tracking-widest text-ink/70">{held ? "Let go to hide" : `Press & hold the ${theme.noun}`}</p>
     </div>
   );
 }

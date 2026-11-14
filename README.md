@@ -22,13 +22,20 @@ Import the repo into Vercel and deploy. Nothing else to configure.
 
 The home screen has a **UI kit** picker; the choice is saved on the device.
 
-| Kit | Look |
-|---|---|
-| Midnight Hi-Fi | Brushed obsidian, amber tube glow, emerald switches (default) |
-| Retro Vinyl | Cream sleeve, kraft cards, charcoal jacket, burnt orange |
-| Neon Arcade | Midnight purple, cyan glow, magenta imposter alert |
+| Kit | Signature object (home hero + press-and-hold reveal) | Look |
+|---|---|---|
+| 1970s Crate Digger | Black record, cream paper label, ink-stamp ring | Cream paper, kraft cards, burnt orange + mustard, Fraunces serif |
+| Midnight Hi-Fi (default) | Record with chrome tonearm | Brushed obsidian, amber glow, emerald/crimson LEDs |
+| Neo-Brutalist Zine | Tilted halftone sticker | 3px black borders, hard offset shadows, mustard/coral, Archivo Black |
+| 80s Tokyo City Pop | Glossy square album: sunset, striped sun, chrome grid, colour obi | Pastel turquoise + sunset coral, gloss, Righteous |
+| 50s Diner Jukebox | Cherry-red 45 with chrome rim | Checkerboard trim, chrome cards, neon turquoise, Bungee |
+| Motown Master Tape | Twin reel-to-reel spools with a studio label | Walnut woodgrain, brass, Fraunces |
+| 90s MPC & Wax | Sampler with green LCD and 4×4 pads | Matte black, LCD green, stencil orange, Black Ops One |
+| 60s Acid Folk | Swirling marbled record | Tangerine / avocado / plum blocks, Shrikhand |
 
-Components only use colour tokens (`chassis`, `panel`, `well`, `ink`, `amber`, …). To add a kit, add a `[data-theme="<id>"]` block with those values in `app/globals.css` and an entry in `THEMES` in `lib/theme.ts`.
+Each kit sets its own fonts, corner radius, border width, shadows, page background, panel texture and wording (e.g. *Roll tape*, *Drop the beat*). Display fonts aren't preloaded, so a phone only downloads its kit's font.
+
+Components only use theme tokens (`chassis`, `panel`, `well`, `ink`, `amber`, `--radius`, `--bw`, `--card-shadow`, …). To add a kit: a `[data-theme="<id>"]` block in `app/globals.css`, an entry in `THEMES` in `lib/theme.ts`, and (optionally) its own object in `components/kit.tsx`. Vinyl kits fall back to the record.
 
 ## Words
 

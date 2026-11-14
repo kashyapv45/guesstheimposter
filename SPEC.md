@@ -6,11 +6,20 @@ Pass & Play only: one phone passed around the table. Pure local React state + lo
 
 ## 2. UI kits (mobile-first)
 
-- Selectable on the home screen, saved per device, applied before first paint.
-- **Midnight Hi-Fi** (default): brushed obsidian `#121214`, amber glow `#F59E0B`, emerald `#10B981`, crimson imposter alert `#EF4444`.
-- **Retro Vinyl**: cream `#F4EFE6`, kraft `#D8C3A5`, charcoal `#1E1E1E`, burnt orange `#D95D39`, teal `#2A9D8F`.
-- **Neon Arcade**: midnight purple `#0D0221`, cyan `#00E5FF`, neon green `#39FF14`, magenta `#FF2D95`.
-- Shared across kits: Fraunces (headers), Space Grotesk (body), JetBrains Mono (timers); spinning record with chrome tonearm; press-and-hold reveal (imposter label glows crimson); primary controls in the bottom 35% of the screen.
+Selectable on the home screen, saved per device, applied before first paint. Each kit has its own palette, display font, corner radius, border weight, shadows, background/texture, wording, and a signature object used as the home hero and the press-and-hold reveal. The vinyl record only appears in vinyl kits.
+
+| Kit | Signature object (home hero + press-and-hold reveal) | Look |
+|---|---|---|
+| 1970s Crate Digger | Black record, cream paper label, ink-stamp ring | Cream paper, kraft cards, burnt orange + mustard, Fraunces serif |
+| Midnight Hi-Fi (default) | Record with chrome tonearm | Brushed obsidian, amber glow, emerald/crimson LEDs |
+| Neo-Brutalist Zine | Tilted halftone sticker | 3px black borders, hard offset shadows, mustard/coral, Archivo Black |
+| 80s Tokyo City Pop | Glossy square album: sunset, striped sun, chrome grid, colour obi | Pastel turquoise + sunset coral, gloss, Righteous |
+| 50s Diner Jukebox | Cherry-red 45 with chrome rim | Checkerboard trim, chrome cards, neon turquoise, Bungee |
+| Motown Master Tape | Twin reel-to-reel spools with a studio label | Walnut woodgrain, brass, Fraunces |
+| 90s MPC & Wax | Sampler with green LCD and 4×4 pads | Matte black, LCD green, stencil orange, Black Ops One |
+| 60s Acid Folk | Swirling marbled record | Tangerine / avocado / plum blocks, Shrikhand |
+
+Shared across kits: press-and-hold reveal (imposter panel glows crimson), primary controls in the bottom 35% of the screen.
 
 ## 3. Game features
 

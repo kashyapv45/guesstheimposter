@@ -4,10 +4,12 @@ import { useReducer, useState } from "react";
 import { CratePicker, ResultView, Scoreboard, SettingsPanel } from "@/components/panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
 import { newGame, reduce, secretFor } from "@/lib/game";
+import { useTheme } from "@/lib/theme";
 import { useWordDeck } from "@/lib/useWordDeck";
 
 export default function PassAndPlay() {
   const deck = useWordDeck();
+  const [kit] = useTheme();
   const [s, dispatch] = useReducer(reduce, undefined, () => newGame());
   const [name, setName] = useState("");
   const [ready, setReady] = useState(false); // "I'm <name>" confirmed on a pass-the-phone screen
@@ -35,7 +37,7 @@ export default function PassAndPlay() {
           <>
             {error && <p className="text-sm text-crimson">{error}</p>}
             <Button disabled={s.players.length < 3 || !s.settings.categories.length} onClick={start}>
-              {s.players.length < 3 ? `Add ${3 - s.players.length} more player${s.players.length === 2 ? "" : "s"}` : s.roundNo ? "Drop the needle: next round" : "Drop the needle"}
+              {s.players.length < 3 ? `Add ${3 - s.players.length} more player${s.players.length === 2 ? "" : "s"}` : s.roundNo ? `${kit.deal}: next round` : kit.deal}
             </Button>
           </>
         }
@@ -46,17 +48,17 @@ export default function PassAndPlay() {
           <ul className="mb-3 space-y-2">
             {s.players.map((p) => (
               <li key={p.id} className="flex items-center gap-2">
-                <span className="h-4 w-4 rounded-full border-2 border-edge" style={{ background: p.color }} />
+                <span className="h-4 w-4 rounded-full border-[length:var(--bw)] border-edge" style={{ background: p.color }} />
                 <span className="flex-1 truncate font-bold">{p.name}</span>
-                <button aria-label={`Remove ${p.name}`} onClick={() => dispatch({ type: "leave", id: p.id })} className="h-10 w-10 rounded-lg border-2 border-edge bg-field">
+                <button aria-label={`Remove ${p.name}`} onClick={() => dispatch({ type: "leave", id: p.id })} className="h-10 w-10 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field">
                   ✕
                 </button>
               </li>
             ))}
           </ul>
           <form className="flex gap-2" onSubmit={(e) => (e.preventDefault(), addPlayer())}>
-            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={20} placeholder="Player name" aria-label="Player name" className="min-w-0 flex-1 rounded-lg border-2 border-edge bg-field px-3 py-2" />
-            <button disabled={!name.trim()} className="rounded-lg border-2 border-edge bg-well px-4 font-bold text-ink disabled:opacity-40">
+            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={20} placeholder="Player name" aria-label="Player name" className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
+            <button disabled={!name.trim()} className="rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-well px-4 font-bold text-ink disabled:opacity-40">
               Add
             </button>
           </form>
@@ -81,7 +83,7 @@ export default function PassAndPlay() {
       );
     return (
       <Screen
-        title={ready ? `${next.name}'s record` : "Pass the phone"}
+        title={ready ? `${next.name}'s ${kit.noun}` : "Pass the phone"}
         kicker={`Reveal ${s.revealed.length + 1} of ${s.players.length}`}
         actions={
           ready ? (
@@ -139,7 +141,7 @@ export default function PassAndPlay() {
         <Sleeve title="Clue order">
           <ol className="space-y-1">
             {round.order.map((id, i) => (
-              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-amber font-bold text-chassis" : ""}`}>
+              <li key={id} className={`rounded px-2 py-1 ${id === current ? "bg-amber font-bold text-on-accent" : ""}`}>
                 {i + 1}. {playerName(id)}
               </li>
             ))}
@@ -187,7 +189,7 @@ export default function PassAndPlay() {
   }
 
   return (
-    <Screen title="The verdict" kicker={`Round ${s.roundNo}`} actions={!s.awaitingGuess && <Button onClick={() => dispatch({ type: "next" })}>Back to the crate</Button>}>
+    <Screen title="The verdict" kicker={`Round ${s.roundNo}`} actions={!s.awaitingGuess && <Button onClick={() => dispatch({ type: "next" })}>{kit.back}</Button>}>
       <ResultView state={s} canGuess onGuess={(word) => dispatch({ type: "guess", id: s.outcome!.eliminated!, word })} />
       {!s.awaitingGuess && <Scoreboard state={s} />}
     </Screen>

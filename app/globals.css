@@ -10,18 +10,47 @@
   --color-edge: var(--edge); /* borders */
   --color-ink: var(--ink); /* text */
   --color-amber: var(--amber); /* primary accent */
-  --color-emerald: var(--emerald); /* positive / switches */
+  --color-on-accent: var(--on-accent); /* text on primary/secondary accents */
+  --color-emerald: var(--emerald); /* secondary accent, switches */
   --color-crimson: var(--crimson); /* imposter, errors */
-  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-serif: var(--display); /* headings, buttons */
   --font-sans: var(--font-grotesk), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
-/* Midnight Hi-Fi (default): brushed obsidian, amber tube glow, emerald LEDs */
-:root,
+/* 1970s Crate Digger: kraft sleeves, aged cream paper, burnt-orange + mustard stamps, serif jackets */
+[data-theme="crate"] {
+  color-scheme: light;
+  --chassis: #f4efe6;
+  --panel: #d8c3a5;
+  --panel-hi: #e0ceb3;
+  --well: #3b2a1e;
+  --well-ink: #f4efe6;
+  --field: #f8f3ea;
+  --edge: #3b2a1e;
+  --ink: #2b1d12;
+  --amber: #d95d39;
+  --on-accent: #f8f3ea;
+  --emerald: #e9b44c;
+  --crimson: #b3361b;
+  --glow: 217 93 57;
+  --grain: 0.1;
+  --display: var(--font-fraunces), Georgia, serif;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --bw: 2px;
+  --card-shadow: 3px 3px 0 #3b2a1e;
+  --btn-shadow: 0 4px 0 #3b2a1e;
+  --bg: var(--chassis);
+  --panel-texture: repeating-linear-gradient(0deg, rgb(59 42 30 / 0.05) 0 1px, transparent 1px 4px), linear-gradient(180deg, var(--panel-hi), var(--panel));
+}
+
+/* Midnight Hi-Fi (default): brushed obsidian aluminum, amber tube readouts, emerald/crimson LEDs.
+   :where() keeps the fallback at zero specificity so it never overrides another kit's block. */
+:where(:root),
 [data-theme="hifi"] {
   color-scheme: dark;
-  --chassis: #121214;
+  --chassis: #111114;
   --panel: #1b1b1f;
   --panel-hi: #212126;
   --well: #0b0b0d;
@@ -30,46 +59,181 @@
   --edge: #2c2c33;
   --ink: #ece8e1;
   --amber: #f59e0b;
+  --on-accent: #111114;
   --emerald: #10b981;
   --crimson: #ef4444;
   --glow: 245 158 11;
   --grain: 0.04;
+  --display: var(--font-fraunces), Georgia, serif;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --bw: 2px;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --btn-shadow: 0 4px 0 #000;
+  --bg: radial-gradient(ellipse at 50% -10%, rgb(245 158 11 / 0.08), transparent 55%), var(--chassis);
+  --panel-texture: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px), linear-gradient(180deg, var(--panel-hi), var(--panel));
 }
 
-/* Retro Vinyl: cream sleeve, kraft card, charcoal jacket, burnt orange */
-[data-theme="retro"] {
+/* Neo-Brutalist Indie Zine: 3px black ink borders, hard offset shadows, mustard/coral stickers */
+[data-theme="zine"] {
   color-scheme: light;
-  --chassis: #f4efe6;
-  --panel: #d8c3a5;
-  --panel-hi: #e0ceb3;
-  --well: #1e1e1e;
-  --well-ink: #f4efe6;
-  --field: #f4efe6;
-  --edge: #1e1e1e;
-  --ink: #1e1e1e;
-  --amber: #d95d39;
-  --emerald: #2a9d8f;
-  --crimson: #c0392b;
-  --glow: 217 93 57;
-  --grain: 0.08;
+  --chassis: #fffdf5;
+  --panel: #ffffff;
+  --panel-hi: #ffffff;
+  --well: #111111;
+  --well-ink: #fffdf5;
+  --field: #ffffff;
+  --edge: #111111;
+  --ink: #111111;
+  --amber: #ffd23f;
+  --on-accent: #111111;
+  --emerald: #ff6b57;
+  --crimson: #e63946;
+  --glow: 255 210 63;
+  --grain: 0.05;
+  --display: var(--font-archivo), Impact, sans-serif;
+  --radius: 4px;
+  --radius-sm: 2px;
+  --bw: 3px;
+  --card-shadow: 6px 6px 0 #111111;
+  --btn-shadow: 4px 4px 0 #111111;
+  --bg: radial-gradient(rgb(17 17 17 / 0.13) 1px, transparent 1.4px) 0 0 / 14px 14px, var(--chassis);
+  --panel-texture: none;
 }
 
-/* Neon Arcade: midnight purple, cyan glow, magenta alert */
-[data-theme="neon"] {
+/* 1980s Tokyo City Pop: pastel turquoise, sunset coral, glossy plastic sheen, clean chrome lines */
+[data-theme="citypop"] {
+  color-scheme: light;
+  --chassis: #fdf1e8;
+  --panel: #ffffff;
+  --panel-hi: #fff8f3;
+  --well: #1f3a5f;
+  --well-ink: #fdf1e8;
+  --field: #ffffff;
+  --edge: #b9d9e3;
+  --ink: #1f3a5f;
+  --amber: #ff7f6a;
+  --on-accent: #ffffff;
+  --emerald: #3cc6c0;
+  --crimson: #e8505b;
+  --glow: 255 127 106;
+  --grain: 0.02;
+  --display: var(--font-righteous), "Trebuchet MS", sans-serif;
+  --radius: 22px;
+  --radius-sm: 16px;
+  --bw: 1.5px;
+  --card-shadow: 0 12px 30px rgb(31 58 95 / 0.14), inset 0 1px 0 #ffffff;
+  --btn-shadow: 0 6px 16px rgb(255 127 106 / 0.35);
+  --bg: linear-gradient(180deg, #ffd6c7 0%, #fdf1e8 32%, #e6f7f6 100%) fixed;
+  --panel-texture: linear-gradient(160deg, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.7) 45%, rgb(230 247 246 / 0.8));
+}
+
+/* 1950s Diner Jukebox: cherry red, checkerboard trim, brushed chrome, neon turquoise, bubble letters */
+[data-theme="diner"] {
+  color-scheme: light;
+  --chassis: #fdf6ec;
+  --panel: #eef1f3;
+  --panel-hi: #ffffff;
+  --well: #c8102e;
+  --well-ink: #ffffff;
+  --field: #ffffff;
+  --edge: #8a949b;
+  --ink: #1b1b1b;
+  --amber: #c8102e;
+  --on-accent: #ffffff;
+  --emerald: #2ec4b6;
+  --crimson: #e4002b;
+  --glow: 46 196 182;
+  --grain: 0.04;
+  --display: var(--font-bungee), Impact, sans-serif;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --bw: 3px;
+  --card-shadow: 0 4px 0 #8a949b, 0 10px 20px rgb(0 0 0 / 0.08);
+  --btn-shadow: 0 4px 0 #7a0a1c;
+  --bg: var(--chassis);
+  --panel-texture: linear-gradient(180deg, #ffffff, #e3e8eb 52%, #f5f7f8);
+}
+
+/* Motown Studio Master Tape: walnut woodgrain, brass + VU amber, stamped studio labels */
+[data-theme="motown"] {
   color-scheme: dark;
-  --chassis: #0d0221;
-  --panel: #1a0b3d;
-  --panel-hi: #24114f;
-  --well: #07011a;
-  --well-ink: #f3e8ff;
-  --field: #12062e;
-  --edge: #3b1d6e;
-  --ink: #f3e8ff;
-  --amber: #00e5ff;
-  --emerald: #39ff14;
-  --crimson: #ff2d95;
-  --glow: 0 229 255;
-  --grain: 0.03;
+  --chassis: #2a1a10;
+  --panel: #5a3a22;
+  --panel-hi: #6b4426;
+  --well: #1a110b;
+  --well-ink: #f3e6cf;
+  --field: #22160e;
+  --edge: #8a6a45;
+  --ink: #f3e6cf;
+  --amber: #d4a24c;
+  --on-accent: #1a110b;
+  --emerald: #7fa36a;
+  --crimson: #c0392b;
+  --glow: 212 162 76;
+  --grain: 0.06;
+  --display: var(--font-fraunces), Georgia, serif;
+  --radius: 10px;
+  --radius-sm: 8px;
+  --bw: 2px;
+  --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  --btn-shadow: 0 4px 0 #1a110b;
+  --bg: radial-gradient(ellipse at 50% -10%, rgb(212 162 76 / 0.12), transparent 55%), var(--chassis);
+  --panel-texture: repeating-linear-gradient(95deg, rgb(0 0 0 / 0.13) 0 2px, transparent 2px 9px), repeating-linear-gradient(86deg, rgb(255 255 255 / 0.04) 0 1px, transparent 1px 13px), linear-gradient(180deg, var(--panel-hi), var(--panel));
+}
+
+/* 90s Hip-Hop MPC & Wax: matte black pads, LCD green, white-label promo, graffiti-stencil accents */
+[data-theme="mpc"] {
+  color-scheme: dark;
+  --chassis: #0e0f0d;
+  --panel: #1a1c19;
+  --panel-hi: #20231f;
+  --well: #0a0b09;
+  --well-ink: #9dff5a;
+  --field: #121411;
+  --edge: #2e322c;
+  --ink: #e8ede4;
+  --amber: #7cff4f;
+  --on-accent: #0e0f0d;
+  --emerald: #ff5a36;
+  --crimson: #ff3b3b;
+  --glow: 124 255 79;
+  --grain: 0.05;
+  --display: var(--font-blackops), Impact, sans-serif;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --bw: 2px;
+  --card-shadow: 0 6px 0 #000000;
+  --btn-shadow: 0 4px 0 #000000;
+  --bg: var(--chassis);
+  --panel-texture: linear-gradient(180deg, var(--panel-hi), var(--panel));
+}
+
+/* Psychedelic 60s Acid Folk: marbled discs, liquid lettering, tangerine / avocado / plum blocks */
+[data-theme="psych"] {
+  color-scheme: light;
+  --chassis: #f6e7c8;
+  --panel: #ffd9a0;
+  --panel-hi: #ffe3b5;
+  --well: #5b2a6e;
+  --well-ink: #ffe9c7;
+  --field: #fff3dd;
+  --edge: #5b2a6e;
+  --ink: #3b1f3d;
+  --amber: #f28c28;
+  --on-accent: #3b1f3d;
+  --emerald: #6b8e23;
+  --crimson: #c2185b;
+  --glow: 242 140 40;
+  --grain: 0.08;
+  --display: var(--font-shrikhand), Georgia, serif;
+  --radius: 24px;
+  --radius-sm: 18px;
+  --bw: 3px;
+  --card-shadow: 5px 5px 0 #5b2a6e;
+  --btn-shadow: 0 5px 0 #5b2a6e;
+  --bg: radial-gradient(circle at 8% 8%, rgb(242 140 40 / 0.35), transparent 40%), radial-gradient(circle at 92% 28%, rgb(107 142 35 / 0.28), transparent 45%), radial-gradient(circle at 25% 92%, rgb(91 42 110 / 0.28), transparent 45%), var(--chassis);
+  --panel-texture: linear-gradient(180deg, var(--panel-hi), var(--panel));
 }
 
 html {
@@ -77,9 +241,7 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(ellipse at 50% -10%, rgb(var(--glow) / 0.08), transparent 55%),
-    var(--chassis);
+  background: var(--bg);
   color: var(--ink);
 }
 
@@ -94,12 +256,26 @@ body::before {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-/* Brushed panel finish, tinted by the active kit */
-.brushed {
-  background-image:
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px),
-    linear-gradient(180deg, var(--panel-hi), var(--panel));
+/* Diner: checkerboard trim along the top edge */
+[data-theme="diner"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 12px;
+  z-index: 40;
+  pointer-events: none;
+  background: repeating-conic-gradient(#1b1b1b 0 25%, #fdf6ec 0 50%) 0 0 / 12px 12px;
 }
+[data-theme="diner"] main {
+  padding-top: max(1.75rem, calc(env(safe-area-inset-top) + 0.75rem));
+}
+
+/* Panel finish for the active kit (brushed metal, woodgrain, gloss, paper fibre…) */
+.brushed {
+  background-image: var(--panel-texture);
+}
+
+/* ---- Signature objects (components/kit.tsx) ---- */
 
 .vinyl {
   background:
@@ -108,6 +284,122 @@ body::before {
   box-shadow:
     0 0 0 1px var(--edge),
     0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Crate Digger: paper label with an ink-stamp ring */
+.label-paper {
+  box-shadow:
+    inset 0 0 0 5px #f4efe6,
+    inset 0 0 0 7px rgb(59 42 30 / 0.55);
+}
+
+/* Diner: translucent cherry 45 with chrome rim */
+.disc-diner {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.4), transparent 34%),
+    repeating-radial-gradient(circle, #9e0c24 0 2px, #c8102e 2px 4px);
+  box-shadow:
+    0 0 0 4px #dfe4e7,
+    0 0 0 7px #8a949b,
+    0 12px 28px rgb(200 16 46 / 0.35);
+}
+
+/* Acid Folk: swirling marbled disc */
+.disc-psych {
+  background:
+    repeating-radial-gradient(circle, rgb(0 0 0 / 0.16) 0 1px, transparent 1px 4px),
+    conic-gradient(from 40deg at 38% 42%, #f28c28, #6b8e23, #5b2a6e, #f2c14e, #c2185b, #f28c28),
+    #5b2a6e;
+  box-shadow:
+    0 0 0 3px #5b2a6e,
+    6px 6px 0 #5b2a6e;
+}
+
+/* Zine: halftone sticker with hard shadow */
+.zine-sticker {
+  border: 3px solid #111;
+  box-shadow: 8px 8px 0 #111;
+  rotate: -4deg;
+  background-image: radial-gradient(rgb(17 17 17 / 0.35) 1.2px, transparent 1.6px);
+  background-size: 9px 9px;
+}
+
+/* City Pop: glossy square album art */
+.citypop-art {
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffb4a2 0%, #ff8f7a 38%, #ffd6a5 62%);
+  box-shadow:
+    0 18px 40px rgb(31 58 95 / 0.25),
+    0 0 0 1.5px #ffffff;
+}
+.citypop-sun {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 9px, #ffb4a2 9px 12px) bottom / 100% 45% no-repeat,
+    linear-gradient(180deg, #fff3b0, #ff6f91);
+}
+.citypop-sea {
+  background:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.55) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(180deg, rgb(255 255 255 / 0.45) 0 1px, transparent 1px 10px),
+    linear-gradient(180deg, #3cc6c0, #1f7a9a);
+}
+.citypop-gloss {
+  background: linear-gradient(125deg, rgb(255 255 255 / 0.55) 0%, rgb(255 255 255 / 0.12) 30%, transparent 46%);
+}
+
+/* Motown: tape deck with two reels */
+.motown-deck {
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(95deg, rgb(0 0 0 / 0.13) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #6b4426, #4a2e19);
+  box-shadow:
+    inset 0 0 0 6px #3a2414,
+    0 12px 28px rgba(0, 0, 0, 0.5);
+}
+.motown-reel {
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle, #1a110b 0 9%, #d9d4c8 9% 15%, transparent 15%),
+    conic-gradient(#d9d4c8 0 40deg, transparent 40deg 120deg, #d9d4c8 120deg 160deg, transparent 160deg 240deg, #d9d4c8 240deg 280deg, transparent 280deg),
+    radial-gradient(circle, transparent 0 34%, #3b2414 34% 78%, #d9d4c8 78% 82%, transparent 82%);
+  box-shadow: 0 0 0 3px #d9d4c8, 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+.motown-label {
+  background: #f3e6cf;
+  color: #2a1a10;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* MPC: matte sampler, LCD, rubber pads */
+.mpc-body {
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2a2d28, #1a1c19);
+  box-shadow:
+    inset 0 0 0 2px #3a3f37,
+    0 12px 28px rgba(0, 0, 0, 0.6);
+}
+.mpc-lcd {
+  border-radius: 4px;
+  background: #0f1a0b;
+  color: #9dff5a;
+  text-shadow: 0 0 6px rgb(157 255 90 / 0.7);
+  box-shadow: inset 0 0 0 2px #3a3f37;
+}
+.mpc-pad {
+  border-radius: 5px;
+  background: linear-gradient(180deg, #d9d6cc, #b9b5a8);
+  box-shadow: 0 3px 0 #6e6b62;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50% { transform: rotate(2deg) scale(1.02); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 button:focus-visible,
