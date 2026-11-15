@@ -1,26 +1,38 @@
-# Guess the Imposter
+# Party Kit
 
-A pass-and-play party game on one phone. Everyone gets the same secret word, except the imposter. Pass the phone so each player can press-and-hold the record to peek at their word, give one-word clues, then vote out the bluffer.
+Party games for one table, on phones:
 
-No accounts, no server, no setup: a static Next.js site.
+| Game | Players | How |
+|---|---|---|
+| **Guess the Imposter** | 3–16 | Everyone gets the same secret word except the imposter. One-word clues, then vote. Pass & Play on one phone, or online with a room code. Crew see a one-line description of their word. |
+| **Mafia** | 4–16 | Secret roles (Mafia, Doctor, Detective, Villagers). Night actions in secret on each phone, morning news, day discussion and vote. Online with a room code; the app is the moderator. |
+
+Online rooms run on **PartyKit**: a small room server (`party/server.ts`) holds each room's game, runs the rules and sends every phone only what that player may see. Phones connect over WebSockets with an 8-character room code (`VNL7-K92P`) and reconnect on their own.
 
 ## Run
 
 ```bash
 npm install
+npm run party:dev  # room server on localhost:1999 (needed for online rooms)
 npm run dev        # http://localhost:3000
-npm test           # game rules and word deck
-npm run validate-words
+npm test           # Imposter + Mafia rules, word deck
 npm run build      # runs validate-words first
 ```
 
-## Deploy to Vercel
+## Deploy
 
-Import the repo into Vercel and deploy. Nothing else to configure.
+1. **Room server (once, then after server changes):** `npx partykit login`, then `npm run party:deploy`. It prints the host, e.g. `guess-the-imposter.<you>.partykit.dev`.
+2. **Vercel:** Project → Settings → Environment Variables → `NEXT_PUBLIC_PARTYKIT_HOST` = that host. Redeploy.
+
+Pass & Play works without the room server. Without the variable, online rooms show "Online play isn't set up".
+
+## Word descriptions
+
+Crew players see a one-line description under their word. Hand-written ones go in a category file's `"notes": { "Okapi": "…" }` map (checked by the validator) and always win; otherwise the host's phone looks the word up on Wikipedia, steered by the category, caches it, and gives up after 2.5s. The imposter never sees it.
 
 ## UI kits
 
-The home screen has a **UI kit** picker; the choice is saved on the device.
+**Settings** (⚙ on the home screen) has the **UI kit** picker; the choice is saved on the device.
 
 | Kit | Signature object (home hero + press-and-hold reveal) | Look |
 |---|---|---|

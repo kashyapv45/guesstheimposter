@@ -1,0 +1,193 @@
+// Pure Mafia rules. The PartyKit room server runs this; phones only see their own redacted view.
+import { shuffle } from "./deck.ts";
+
+export type MRole = "mafia" | "doctor" | "detective" | "villager";
+export type MPhase = "lobby" | "reveal" | "night" | "morning" | "day" | "vote" | "verdict" | "over";
+export type MPlayer = { id: string; name: string; color: string; connected: boolean };
+export type MSettings = { mafia: number | null; doctor: boolean; detective: boolean; revealOnDeath: boolean; daySeconds: number };
+export type Check = { target: string; mafia: boolean };
+
+export type MState = {
+  phase: MPhase;
+  players: MPlayer[];
+  settings: MSettings;
+  roles: Record<string, MRole>;
+  alive: string[];
+  revealed: string[];
+  night: { picks: Record<string, string>; done: string[] }; // picks: actor -> target
+  report: { died: string | null } | null; // what happened last night
+  checks: Record<string, Check[]>; // detective -> results
+  votes: Record<string, string>; // voter -> target id or "skip"
+  lynched: { id: string | null } | null;
+  day: number;
+  timerEnd: number | null;
+  winner: "mafia" | "town" | null;
+};
+
+export type MAction =
+  | { type: "join"; id: string; name: string }
+  | { type: "connected"; id: string; connected: boolean }
+  | { type: "leave"; id: string }
+  | { type: "settings"; settings: Partial<MSettings> }
+  | { type: "start"; seed: number }
+  | { type: "revealed"; id: string }
+  | { type: "nightfall" }
+  | { type: "night"; id: string; target: string | null }
+  | { type: "discuss"; now: number }
+  | { type: "startVote" }
+  | { type: "vote"; id: string; target: string }
+  | { type: "next" };
+
+export const MIN_PLAYERS = 4;
+export const MAX_PLAYERS = 16;
+export const MAFIA_DEFAULTS: MSettings = { mafia: null, doctor: true, detective: true, revealOnDeath: true, daySeconds: 0 };
+const COLORS = ["#D95D39", "#E9B44C", "#2A9D8F", "#8E5572", "#3D5A80", "#7FB069", "#E07A5F", "#6D597A", "#BC4749", "#457B9D", "#F2CC8F", "#264653"];
+
+export const recommendMafia = (n: number) => (n >= 9 ? 3 : n >= 6 ? 2 : 1);
+export function mafiaCount(s: MSettings, n: number) {
+  const max = Math.max(1, Math.floor((n - 1) / 2)); // town must start with the majority
+  return Math.min(max, Math.max(1, s.mafia ?? recommendMafia(n)));
+}
+
+export function newMafia(settings: MSettings = MAFIA_DEFAULTS): MState {
+  return {
+    phase: "lobby", players: [], settings, roles: {}, alive: [], revealed: [], night: { picks: {}, done: [] },
+    report: null, checks: {}, votes: {}, lynched: null, day: 0, timerEnd: null, winner: null,
+  };
+}
+
+function rng(seed: number) {
+  let t = seed >>> 0;
+  return () => {
+    t = (t + 0x6d2b79f5) >>> 0;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Players the game waits on: alive and still connected (a dropped player can't stall the night or the vote).
+function waitingOn(s: MState) {
+  const on = new Set(s.players.filter((p) => p.connected).map((p) => p.id));
+  return s.alive.filter((id) => on.has(id));
+}
+
+function winnerOf(s: MState): MState["winner"] {
+  const mafia = s.alive.filter((id) => s.roles[id] === "mafia").length;
+  if (mafia === 0) return "town";
+  if (mafia >= s.alive.length - mafia) return "mafia";
+  return null;
+}
+
+function endOrGo(s: MState, phase: MPhase): MState {
+  const winner = winnerOf(s);
+  return winner ? { ...s, phase: "over", winner, timerEnd: null } : { ...s, phase };
+}
+
+// Plurality pick; ties go to whoever comes first in seat order (keeps the night deterministic).
+function plurality(s: MState, picks: string[]): string | null {
+  const tally = new Map<string, number>();
+  for (const t of picks) tally.set(t, (tally.get(t) ?? 0) + 1);
+  let best: string | null = null;
+  let max = 0;
+  for (const id of s.alive) {
+    const n = tally.get(id) ?? 0;
+    if (n > max) {
+      best = id;
+      max = n;
+    }
+  }
+  return best;
+}
+
+function resolveNight(s: MState): MState {
+  if (s.phase !== "night" || !waitingOn(s).every((id) => s.night.done.includes(id))) return s;
+  const role = (id: string) => s.roles[id];
+  const target = plurality(s, s.alive.filter((id) => role(id) === "mafia" && s.night.picks[id]).map((id) => s.night.picks[id]));
+  const saved = !!target && s.alive.some((id) => role(id) === "doctor" && s.night.picks[id] === target);
+  const died = target && !saved ? target : null;
+  const checks = { ...s.checks };
+  for (const id of s.alive) {
+    const t = s.night.picks[id];
+    if (role(id) === "detective" && t) checks[id] = [...(checks[id] ?? []), { target: t, mafia: role(t) === "mafia" }];
+  }
+  return endOrGo({ ...s, alive: died ? s.alive.filter((id) => id !== died) : s.alive, checks, report: { died }, day: s.day + 1 }, "morning");
+}
+
+function resolveVote(s: MState): MState {
+  if (s.phase !== "vote" || !waitingOn(s).every((id) => s.votes[id])) return s;
+  const tally = new Map<string, number>();
+  for (const id of s.alive) if (s.votes[id]) tally.set(s.votes[id], (tally.get(s.votes[id]) ?? 0) + 1);
+  const max = Math.max(0, ...tally.values());
+  const top = [...tally].filter(([, n]) => n === max).map(([t]) => t);
+  const out = top.length === 1 && top[0] !== "skip" ? top[0] : null; // a tie or "skip" means nobody goes
+  return endOrGo({ ...s, alive: out ? s.alive.filter((a) => a !== out) : s.alive, lynched: { id: out }, timerEnd: null }, "verdict");
+}
+
+export function reduceMafia(s: MState, a: MAction): MState {
+  switch (a.type) {
+    case "join": {
+      const name = a.name.trim().slice(0, 20) || "Player";
+      if (s.players.some((p) => p.id === a.id)) return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, name, connected: true } : p)) };
+      if (s.players.length >= MAX_PLAYERS) return s; // late joiners sit out until the next game
+      return { ...s, players: [...s.players, { id: a.id, name, color: COLORS[s.players.length % COLORS.length], connected: true }] };
+    }
+    case "connected":
+      return resolveVote(resolveNight({ ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, connected: a.connected } : p)) }));
+    case "leave":
+      return s.phase === "lobby" ? { ...s, players: s.players.filter((p) => p.id !== a.id) } : s;
+    case "settings":
+      return s.phase === "lobby" ? { ...s, settings: { ...s.settings, ...a.settings } } : s;
+    case "start": {
+      if (s.phase !== "lobby") return s;
+      const ids = s.players.filter((p) => p.connected).map((p) => p.id);
+      if (ids.length < MIN_PLAYERS) return s;
+      const order = shuffle(ids, rng(a.seed));
+      const k = mafiaCount(s.settings, ids.length);
+      const roles: Record<string, MRole> = {};
+      order.forEach((id, i) => (roles[id] = i < k ? "mafia" : "villager"));
+      let next = k;
+      if (s.settings.doctor && ids.length - next > 1) roles[order[next++]] = "doctor";
+      if (s.settings.detective && ids.length - next > 1) roles[order[next++]] = "detective";
+      return { ...newMafia(s.settings), players: s.players, phase: "reveal", roles, alive: ids };
+    }
+    case "revealed":
+      return s.phase === "reveal" && s.roles[a.id] && !s.revealed.includes(a.id) ? { ...s, revealed: [...s.revealed, a.id] } : s;
+    case "nightfall":
+      return s.phase === "reveal" || s.phase === "verdict" ? { ...s, phase: "night", night: { picks: {}, done: [] }, report: null, timerEnd: null } : s;
+    case "night": {
+      if (s.phase !== "night" || !s.alive.includes(a.id) || s.night.done.includes(a.id)) return s;
+      const role = s.roles[a.id];
+      const t = a.target;
+      const ok =
+        role === "villager" ||
+        (t != null && s.alive.includes(t) && (role === "doctor" || (role === "mafia" && s.roles[t] !== "mafia") || (role === "detective" && t !== a.id)));
+      if (!ok) return s;
+      const picks = role === "villager" || t == null ? s.night.picks : { ...s.night.picks, [a.id]: t };
+      return resolveNight({ ...s, night: { picks, done: [...s.night.done, a.id] } });
+    }
+    case "discuss":
+      return s.phase === "morning" ? { ...s, phase: "day", timerEnd: s.settings.daySeconds ? a.now + s.settings.daySeconds * 1000 : null } : s;
+    case "startVote":
+      return s.phase === "day" ? { ...s, phase: "vote", votes: {}, timerEnd: null } : s;
+    case "vote": {
+      if (s.phase !== "vote" || !s.alive.includes(a.id) || s.votes[a.id] || a.target === a.id) return s;
+      if (a.target !== "skip" && !s.alive.includes(a.target)) return s;
+      return resolveVote({ ...s, votes: { ...s.votes, [a.id]: a.target } });
+    }
+    case "next":
+      return s.phase === "over" ? { ...newMafia(s.settings), players: s.players } : s;
+  }
+}
+
+// What one player may see: own role, fellow mafia (if mafia), roles of the dead (if revealed on death),
+// own night pick (mafia see each other's picks) and own detective results. All is revealed when the game ends.
+export function viewMafia(s: MState, id: string): MState {
+  if (s.phase === "over") return s;
+  const me = s.roles[id];
+  const roles = Object.fromEntries(
+    Object.entries(s.roles).filter(([pid, r]) => pid === id || (me === "mafia" && r === "mafia") || (s.settings.revealOnDeath && !s.alive.includes(pid))),
+  );
+  const picks = Object.fromEntries(Object.entries(s.night.picks).filter(([pid]) => pid === id || (me === "mafia" && s.roles[pid] === "mafia")));
+  return { ...s, roles, night: { ...s.night, picks }, checks: s.checks[id] ? { [id]: s.checks[id] } : {} };
+}

@@ -57,6 +57,12 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith(".json")).sort()) {
   if (count < MIN_PER_CATEGORY) errors.push(`${cat.id}: ${count} words, needs at least ${MIN_PER_CATEGORY}`);
   console.log(`${cat.id.padEnd(22)} ${count}`);
 
+  // Optional notes: { "Okapi": "Forest giraffe relative with zebra-striped legs" } — shown to crew.
+  for (const [word, note] of Object.entries(cat.notes ?? {})) {
+    if (!inCategory.has(norm(word))) errors.push(`${cat.id}: note key "${word}" is not a word in this category`);
+    if (typeof note !== "string" || !note.trim() || note.length > 160) errors.push(`${cat.id}: note for "${word}" must be 1-160 characters`);
+  }
+
   // Optional decoys: { "Espresso": "Cappuccino" } — key must be a word in this category.
   for (const [word, decoy] of Object.entries(cat.decoys ?? {})) {
     if (!inCategory.has(norm(word))) errors.push(`${cat.id}: decoy key "${word}" is not a word in this category`);

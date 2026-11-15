@@ -27,7 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export type Player = { id: string; name: string; color: string; score: number; connected: boolean };
-export type SecretWord = { word: string; category: string; categoryName: string; decoy: string };
+export type SecretWord = { word: string; category: string; categoryName: string; decoy: string; desc?: string | null };
 export type Round = SecretWord & { roles: Record<string, Role>; order: string[] };
 export type Outcome = { eliminated: string | null; winner: "crew" | "imposters" | "mrwhite"; guess?: string };
 
@@ -60,7 +60,7 @@ export type Action =
   | { type: "guess"; id: string; word: string }
   | { type: "next" };
 
-export type Secret = { role: Role; word: string | null; category: string | null };
+export type Secret = { role: Role; word: string | null; category: string | null; desc?: string | null };
 
 export const COLORS = ["#D95D39", "#E9B44C", "#2A9D8F", "#8E5572", "#3D5A80", "#7FB069", "#E07A5F", "#6D597A", "#BC4749", "#457B9D", "#F2CC8F", "#264653"];
 export const MAX_PLAYERS = 16;
@@ -191,7 +191,19 @@ export function reduce(s: GameState, a: Action): GameState {
 export function secretFor(round: Round, hint: HintMode, id: string): Secret | null {
   const role = round.roles[id];
   if (!role) return null;
-  if (role === "crew") return { role, word: round.word, category: round.categoryName };
+  if (role === "crew") return { role, word: round.word, category: round.categoryName, desc: round.desc ?? null };
   if (role === "mrwhite") return { role, word: null, category: null };
   return { role, word: hint === "decoy" ? round.decoy : null, category: hint === "blind" ? null : round.categoryName };
+}
+
+// What one remote player may see: their own secret, no one else's role, anonymous votes.
+export function viewFor(s: GameState, id: string): { state: GameState; secret: Secret | null } {
+  if (!s.round) return { state: s, secret: null };
+  const secret = secretFor(s.round, s.settings.hint, id);
+  if (s.phase === "result" && !s.awaitingGuess) return { state: s, secret };
+  const votes = Object.fromEntries(Object.keys(s.votes).map((v) => [v, v === id ? s.votes[v] : "?"]));
+  return {
+    state: { ...s, votes, round: { ...s.round, word: "", decoy: "", category: "", categoryName: "", desc: null, roles: {} } },
+    secret,
+  };
 }

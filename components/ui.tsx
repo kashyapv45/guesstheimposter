@@ -4,7 +4,7 @@ import type { Secret } from "@/lib/game";
 import { useTheme } from "@/lib/theme";
 import { HeroObject } from "./kit";
 
-export function Screen({ title, kicker, children, actions }: { title: string; kicker?: string; children: ReactNode; actions?: ReactNode }) {
+export function Screen({ title, kicker, children, actions, corner }: { title: string; kicker?: string; children: ReactNode; actions?: ReactNode; corner?: ReactNode }) {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))]">
       <header className="flex items-start justify-between gap-3">
@@ -12,6 +12,7 @@ export function Screen({ title, kicker, children, actions }: { title: string; ki
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">{kicker ?? "45 RPM · Side A"}</p>
           <h1 className="font-serif text-3xl font-black leading-none">{title}</h1>
         </div>
+        {corner}
       </header>
       <div className="flex-1 space-y-4 py-4">{children}</div>
       {actions && (
@@ -126,12 +127,15 @@ export function SecretText({ secret }: { secret: Secret }) {
     <>
       <p className="font-mono text-[10px] uppercase tracking-widest">{secret.category}</p>
       <p className="font-serif text-2xl font-black leading-tight">{secret.word}</p>
+      {secret.desc && <p className="line-clamp-3 max-w-[13rem] text-[11px] leading-snug opacity-75">{secret.desc}</p>}
     </>
   );
 }
 
 // Press-and-hold the kit's object (record, sticker, reel, pad…) to peek; letting go hides it again.
-export function VinylReveal({ secret, color, onReveal }: { secret: Secret; color: string; onReveal?: () => void }) {
+// `content` + `alert` let other games (Mafia) reuse the reveal with their own card.
+export function VinylReveal({ secret, color, onReveal, content, alert }: { secret?: Secret | null; color: string; onReveal?: () => void; content?: ReactNode; alert?: boolean }) {
+  const isAlert = alert ?? secret?.role === "imposter";
   const [held, setHeld] = useState(false);
   const [theme] = useTheme();
   const round = theme.shape === "round";
@@ -162,8 +166,8 @@ export function VinylReveal({ secret, color, onReveal }: { secret: Secret; color
       >
         <HeroObject color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight">Hold<br />me</span>} />
         {held && (
-          <div className={`absolute grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${secret.role === "imposter" ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
-            <SecretText secret={secret} />
+          <div className={`absolute grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${isAlert ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
+            {content ?? (secret && <SecretText secret={secret} />)}
           </div>
         )}
       </button>

@@ -30,6 +30,7 @@ type CategoryFile = {
   name: string;
   words: Record<string, Partial<Record<Difficulty, string[]>>>;
   decoys?: Record<string, string>;
+  notes?: Record<string, string>; // hand-written crew descriptions
 };
 
 const FILES: CategoryFile[] = [
@@ -50,6 +51,9 @@ export const WORDS: WordEntry[] = FILES.flatMap((f) =>
     ),
   ),
 );
+
+const NOTES = new Map(FILES.flatMap((f) => Object.entries(f.notes ?? {}).map(([w, d]) => [`${f.id}:${w}`, d])));
+export const noteFor = (w: WordEntry) => NOTES.get(w.id) ?? null;
 
 const DECOYS = new Map(FILES.flatMap((f) => Object.entries(f.decoys ?? {}).map(([w, d]) => [`${f.id}:${w}`, d])));
 
