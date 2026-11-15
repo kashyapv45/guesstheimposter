@@ -207,3 +207,20 @@ export function Timer({ endAt, total, caption, onExpire }: { endAt: number | nul
     </div>
   );
 }
+
+// Bottom sheet asking to confirm leaving a game (used by the back button).
+export function ConfirmSheet({ open, title, body, confirmLabel, onConfirm, onCancel }: { open: boolean; title: string; body?: string; confirmLabel: string; onConfirm: () => void; onCancel: () => void }) {
+  if (!open) return null;
+  return (
+    <div role="dialog" aria-modal="true" aria-label={title} className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={onCancel}>
+      <div className="w-full max-w-md space-y-3 rounded-[var(--radius)] border-[length:var(--bw)] border-edge bg-chassis p-4 shadow-[var(--card-shadow)]" onClick={(e) => e.stopPropagation()}>
+        <p className="font-serif text-xl font-bold">{title}</p>
+        {body && <p className="text-sm opacity-80">{body}</p>}
+        <Button onClick={onConfirm}>{confirmLabel}</Button>
+        <Button variant="secondary" autoFocus onClick={onCancel}>
+          Keep playing
+        </Button>
+      </div>
+    </div>
+  );
+}

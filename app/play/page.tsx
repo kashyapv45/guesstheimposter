@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { useReducer, useState } from "react";
 import { CratePicker, ResultView, SettingsPanel } from "@/components/panels";
-import { Button, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
+import { Button, ConfirmSheet, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
 import { newGame, reduce, secretFor } from "@/lib/game";
 import { describe } from "@/lib/describe";
+import { useBackGuard } from "@/lib/useBackGuard";
 import { useTheme } from "@/lib/theme";
 import { useWordDeck } from "@/lib/useWordDeck";
 
@@ -29,6 +30,11 @@ export default function PassAndPlay() {
     dispatch({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
   };
 
+  // Phone/browser back mid-round asks before ending it (players are kept).
+  const [leaving, setLeaving] = useState(false);
+  useBackGuard(s.phase !== "lobby", () => setLeaving(true));
+
+  const screen = (() => {
   if (s.phase === "lobby") {
     const addPlayer = () => {
       if (!name.trim()) return;
@@ -196,5 +202,22 @@ export default function PassAndPlay() {
     <Screen title="The verdict" kicker={`Round ${s.roundNo}`} actions={<Button onClick={() => dispatch({ type: "next" })}>{kit.back}</Button>}>
       <ResultView state={s} />
     </Screen>
+  );
+  })();
+  return (
+    <>
+      {screen}
+      <ConfirmSheet
+        open={leaving}
+        title="End this round?"
+        body="You'll go back to setup. Players are kept."
+        confirmLabel="Back to setup"
+        onConfirm={() => {
+          setLeaving(false);
+          dispatch({ type: "abort" });
+        }}
+        onCancel={() => setLeaving(false)}
+      />
+    </>
   );
 }

@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { GameView } from "@/components/GameView";
 import { ImposterLobby, MafiaLobby } from "@/components/lobbies";
 import { MafiaView } from "@/components/MafiaView";
-import { Button, Screen, Sleeve } from "@/components/ui";
+import { Button, ConfirmSheet, Screen, Sleeve } from "@/components/ui";
 import type { Action, GameState } from "@/lib/game";
 import type { MAction, MState } from "@/lib/mafia";
 import { cleanCode, formatCode, isValidCode, randomId } from "@/lib/roomCode";
 import { guestKey, loadSession, saveSession } from "@/lib/session";
+import { useBackGuard } from "@/lib/useBackGuard";
 import { useGuestRoom, useHostRoom, type Game } from "@/lib/useRoom";
 
 // Seat in this tab, kept for 1 hour without play. `host` marks the phone that runs the room.
@@ -70,6 +71,11 @@ export default function RoomClient() {
     setJoined(true);
   };
 
+  // Phone/browser back inside a room asks before leaving it.
+  const [leaving, setLeaving] = useState(false);
+  const leave = useBackGuard(joined && !!msg, () => setLeaving(true));
+
+  const screen = (() => {
   if (error === "nosetup" || status === "nosetup")
     return (
       <Screen title="Online play isn't set up" kicker="Party Kit">
@@ -150,6 +156,20 @@ export default function RoomClient() {
     <>
       {banner}
       {state.phase === "lobby" && isHost ? <ImposterLobby code={code} state={state} act={send} /> : <GameView state={state} secret={msg.secret} me={me} isHost={isHost} act={send} />}
+    </>
+  );
+  })();
+  return (
+    <>
+      {screen}
+      <ConfirmSheet
+        open={leaving}
+        title="Leave the room?"
+        body={hosting ? "You're the host: leaving ends the room for everyone." : "You can rejoin with the same code."}
+        confirmLabel="Leave"
+        onConfirm={() => leave("/")}
+        onCancel={() => setLeaving(false)}
+      />
     </>
   );
 }

@@ -52,6 +52,7 @@ export type Action =
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
   | { type: "closeVote" } // host: count the votes cast so far (someone left for good)
+  | { type: "abort" } // end the round early (back button), keep the players
   | { type: "next" };
 
 export type Secret = { role: Role; word: string | null; category: string | null; desc?: string | null };
@@ -170,6 +171,8 @@ export function reduce(s: GameState, a: Action): GameState {
     }
     case "closeVote":
       return resolveIfDone(s, true);
+    case "abort":
+      return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
     case "next":
       if (s.phase !== "result") return s;
       return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
