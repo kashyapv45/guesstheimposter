@@ -1,7 +1,8 @@
 "use client";
-// One-line description of the secret word, shown to crew only (never the imposter).
-// Hand-written notes in data/categories/*.json win; otherwise Wikipedia, steered by the category
-// so "Frozen" finds the film and "Mercury" the planet. Cached per device; gives up after a short timeout.
+// What the secret word is, for crew only (never the imposter): a short, specific explanation.
+// Hand-written notes in data/categories/*.json win; otherwise the first two sentences of the Wikipedia
+// summary, steered by the category so "Frozen" finds the film and "Mercury" the planet.
+// Cached per device; gives up after a short timeout.
 import { noteFor, type WordEntry } from "./words";
 
 const HINT: Record<string, string> = {
@@ -21,16 +22,17 @@ const HINT: Record<string, string> = {
   "hobbies-activities": "hobby",
   "places-buildings": "",
 };
-const CACHE = "imposter:desc:";
-const MAX = 140;
+const CACHE = "imposter:about:";
+const MAX = 280;
 
-function firstSentence(text: string | undefined) {
+// First two sentences of the summary: specific enough to explain an unfamiliar word.
+function lead(text: string | undefined) {
   if (!text) return null;
-  const s = text.split(/(?<=\.)\s/)[0];
-  return s.length > MAX ? s.slice(0, MAX - 1).trimEnd() + "…" : s;
+  const two = text.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
+  return two.length > MAX ? two.slice(0, MAX - 1).trimEnd() + "…" : two;
 }
 
-export async function describe(w: WordEntry, timeoutMs = 2500): Promise<string | null> {
+export async function describe(w: WordEntry, timeoutMs = 3000): Promise<string | null> {
   const note = noteFor(w);
   if (note) return note;
   const key = CACHE + w.id;
@@ -40,21 +42,29 @@ export async function describe(w: WordEntry, timeoutMs = 2500): Promise<string |
   } catch {}
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const summary = async (title: string) => {
+    const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { signal: ctrl.signal });
+    const sum = r.ok ? await r.json() : null;
+    return sum?.type === "standard" ? (lead(sum.extract) ?? sum.description ?? null) : null;
+  };
   try {
-    const q = encodeURIComponent(`${w.word} ${HINT[w.category] ?? ""}`.trim());
-    const search = await (await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=1&format=json&origin=*`, { signal: ctrl.signal })).json();
-    const title: string | undefined = search?.query?.search?.[0]?.title;
-    let desc: string | null = null;
-    if (title) {
-      const sum = await (await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { signal: ctrl.signal })).json();
-      if (sum?.type !== "disambiguation") desc = sum?.description ? sum.description[0].toUpperCase() + sum.description.slice(1) : firstSentence(sum?.extract);
+    // 1) The word's own article ("Theremin" the instrument, not its inventor).
+    let text: string | null = await summary(w.word);
+    // 2) Missing or ambiguous ("Frozen"): search with the category, preferring "Frozen (2013 film)"-style titles.
+    if (!text) {
+      const q = encodeURIComponent(`${w.word} ${HINT[w.category] ?? ""}`.trim());
+      const search = await (await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=5&format=json&origin=*`, { signal: ctrl.signal })).json();
+      const titles: string[] = (search?.query?.search ?? []).map((r: { title: string }) => r.title);
+      const lw = w.word.toLowerCase();
+      const best = titles.find((t) => t.toLowerCase().startsWith(`${lw} (`)) ?? titles.find((t) => t.toLowerCase() === lw) ?? titles[0];
+      if (best) text = await summary(best);
     }
     try {
-      localStorage.setItem(key, desc ?? "");
+      localStorage.setItem(key, text ?? "");
     } catch {}
-    return desc;
+    return text;
   } catch {
-    return null; // offline or slow: the word just shows without a description
+    return null; // offline or slow: the word just shows without an explanation
   } finally {
     clearTimeout(timer);
   }

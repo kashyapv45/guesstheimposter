@@ -117,7 +117,6 @@ export function SecretText({ secret }: { secret: Secret }) {
     <>
       <p className="font-mono text-[10px] uppercase tracking-widest">{secret.category}</p>
       <p className="font-serif text-2xl font-black leading-tight">{secret.word}</p>
-      {secret.desc && <p className="line-clamp-3 max-w-[13rem] text-[11px] leading-snug opacity-75">{secret.desc}</p>}
     </>
   );
 }
@@ -162,6 +161,13 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
         )}
       </button>
       <p className="font-mono text-xs uppercase tracking-widest text-ink/70">{held ? "Let go to hide" : `Press & hold the ${theme.noun}`}</p>
+      {/* What the word means (crew only), shown only while held so neighbours can't read it. */}
+      {held && secret?.role === "crew" && secret.desc && (
+        <div className="w-full max-w-sm rounded-[var(--radius)] border-[length:var(--bw)] border-edge bg-panel p-3 text-left shadow-[var(--card-shadow)]">
+          <p className="font-mono text-[10px] uppercase tracking-widest opacity-60">What is it?</p>
+          <p className="text-sm leading-snug">{secret.desc}</p>
+        </div>
+      )}
     </div>
   );
 }

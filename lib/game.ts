@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export type Player = { id: string; name: string; color: string; connected: boolean };
+// desc: a couple of sentences explaining the word, for crew who don't know it.
 export type SecretWord = { word: string; category: string; categoryName: string; desc?: string | null };
 export type Round = SecretWord & { roles: Record<string, Role>; order: string[] };
 export type Outcome = { eliminated: string | null; winner: "crew" | "imposters" };
