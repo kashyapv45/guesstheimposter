@@ -53,6 +53,27 @@ test("catching the imposter scores the crew", () => {
   for (const p of done.players) assert.equal(p.score, p.id === imp ? 0 : 1);
 });
 
+test("a locked phone (disconnected) can't let a minority decide the vote", () => {
+  const s = game(5);
+  const imp = ids(s, "imposter")[0];
+  const crew = ids(s, "crew");
+  // two crew phones drop, the rest vote; the imposter's vote alone must not decide it
+  let t = reduce(s, { type: "connected", id: crew[0], connected: false });
+  t = reduce(t, { type: "connected", id: crew[1], connected: false });
+  t = reduce(t, { type: "vote", voter: imp, target: crew[2] });
+  t = reduce(t, { type: "vote", voter: crew[2], target: imp });
+  t = reduce(t, { type: "vote", voter: crew[3], target: imp });
+  assert.equal(t.phase, "vote"); // still waiting for the locked phones
+  t = reduce(t, { type: "vote", voter: crew[0], target: imp });
+  t = reduce(t, { type: "vote", voter: crew[1], target: imp });
+  assert.deepEqual(t.outcome, { eliminated: imp, winner: "crew" });
+  // host can count early if someone really left
+  let u = reduce(s, { type: "vote", voter: crew[0], target: imp });
+  u = reduce(u, { type: "vote", voter: crew[1], target: imp });
+  u = reduce(u, { type: "closeVote" });
+  assert.deepEqual(u.outcome, { eliminated: imp, winner: "crew" });
+});
+
 test("a tie triggers one runoff, a second tie lets imposters escape", () => {
   const s = game(4);
   const [a, b, c, d] = s.players.map((p) => p.id);

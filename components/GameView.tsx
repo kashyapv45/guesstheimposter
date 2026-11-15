@@ -115,6 +115,11 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
             <p>Tie! Vote again between {state.candidates.map(name).join(" and ")}.</p>
           </Sleeve>
         )}
+        {isHost && Object.keys(state.votes).length < round.order.length && (
+          <Button variant="secondary" onClick={() => act({ type: "closeVote" })}>
+            Count the votes now
+          </Button>
+        )}
         {mine ? (
           <Sleeve dark>
             <p className="font-serif text-xl font-bold">You voted for {name(mine)}.</p>

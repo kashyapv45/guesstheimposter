@@ -67,7 +67,11 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
     const options = state.alive.filter((id) => (myRole === "mafia" ? roleOf(id) !== "mafia" && !team.includes(id) && id !== me : myRole === "detective" ? id !== me : true));
     const prompt = myRole === "mafia" ? "Who does the Mafia eliminate?" : myRole === "doctor" ? "Who do you save tonight?" : myRole === "detective" ? "Who do you check?" : null;
     return (
-      <Screen title={`Night ${state.day + 1}`} kicker={`${state.night.done.length} / ${state.alive.length} ready`}>
+      <Screen
+        title={`Night ${state.day + 1}`}
+        kicker={`${state.night.done.length} / ${state.alive.length} ready`}
+        actions={isHost && state.night.done.length < state.alive.length && <Button variant="secondary" onClick={() => act({ type: "force" })}>Stop waiting: end the night</Button>}
+      >
         {deadNote ||
           (done ? (
             <Sleeve dark>
@@ -150,7 +154,11 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
   if (state.phase === "vote") {
     const mine = state.votes[me];
     return (
-      <Screen title="Town vote" kicker={`${Object.keys(state.votes).length} / ${state.alive.length} voted`}>
+      <Screen
+        title="Town vote"
+        kicker={`${Object.keys(state.votes).length} / ${state.alive.length} voted`}
+        actions={isHost && Object.keys(state.votes).length < state.alive.length && <Button variant="secondary" onClick={() => act({ type: "force" })}>Count the votes now</Button>}
+      >
         {deadNote ||
           (mine ? (
             <Sleeve dark>

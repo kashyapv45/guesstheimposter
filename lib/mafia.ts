@@ -36,6 +36,7 @@ export type MAction =
   | { type: "discuss"; now: number }
   | { type: "startVote" }
   | { type: "vote"; id: string; target: string }
+  | { type: "force" } // host: stop waiting (night or vote) when someone left for good
   | { type: "next" };
 
 export const MIN_PLAYERS = 4;
@@ -66,11 +67,9 @@ function rng(seed: number) {
   };
 }
 
-// Players the game waits on: alive and still connected (a dropped player can't stall the night or the vote).
-function waitingOn(s: MState) {
-  const on = new Set(s.players.filter((p) => p.connected).map((p) => p.id));
-  return s.alive.filter((id) => on.has(id));
-}
+// The game waits on every living player, connected or not (a locked phone drops its connection);
+// the host can force the night or the vote to end if someone left for good.
+const waitingOn = (s: MState) => s.alive;
 
 function winnerOf(s: MState): MState["winner"] {
   const mafia = s.alive.filter((id) => s.roles[id] === "mafia").length;
@@ -100,8 +99,8 @@ function plurality(s: MState, picks: string[]): string | null {
   return best;
 }
 
-function resolveNight(s: MState): MState {
-  if (s.phase !== "night" || !waitingOn(s).every((id) => s.night.done.includes(id))) return s;
+function resolveNight(s: MState, force = false): MState {
+  if (s.phase !== "night" || (!force && !waitingOn(s).every((id) => s.night.done.includes(id)))) return s;
   const role = (id: string) => s.roles[id];
   const target = plurality(s, s.alive.filter((id) => role(id) === "mafia" && s.night.picks[id]).map((id) => s.night.picks[id]));
   const saved = !!target && s.alive.some((id) => role(id) === "doctor" && s.night.picks[id] === target);
@@ -114,8 +113,8 @@ function resolveNight(s: MState): MState {
   return endOrGo({ ...s, alive: died ? s.alive.filter((id) => id !== died) : s.alive, checks, report: { died }, day: s.day + 1 }, "morning");
 }
 
-function resolveVote(s: MState): MState {
-  if (s.phase !== "vote" || !waitingOn(s).every((id) => s.votes[id])) return s;
+function resolveVote(s: MState, force = false): MState {
+  if (s.phase !== "vote" || (!force && !waitingOn(s).every((id) => s.votes[id]))) return s;
   const tally = new Map<string, number>();
   for (const id of s.alive) if (s.votes[id]) tally.set(s.votes[id], (tally.get(s.votes[id]) ?? 0) + 1);
   const max = Math.max(0, ...tally.values());
@@ -175,6 +174,8 @@ export function reduceMafia(s: MState, a: MAction): MState {
       if (a.target !== "skip" && !s.alive.includes(a.target)) return s;
       return resolveVote({ ...s, votes: { ...s.votes, [a.id]: a.target } });
     }
+    case "force":
+      return resolveVote(resolveNight(s, true), true);
     case "next":
       return s.phase === "over" ? { ...newMafia(s.settings), players: s.players } : s;
   }

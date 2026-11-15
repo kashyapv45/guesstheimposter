@@ -58,6 +58,7 @@ export type Action =
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
   | { type: "guess"; id: string; word: string }
+  | { type: "closeVote" } // host: count the votes cast so far (someone left for good)
   | { type: "next" };
 
 export type Secret = { role: Role; word: string | null; category: string | null; desc?: string | null };
@@ -104,10 +105,14 @@ function finish(s: GameState, outcome: Outcome): GameState {
   };
 }
 
-function resolveIfDone(s: GameState): GameState {
+// Waits for every player dealt into the round, connected or not: a phone that locks mid-vote
+// drops its connection, and skipping it used to decide the vote without them.
+function resolveIfDone(s: GameState, force = false): GameState {
   if (s.phase !== "vote" || !s.round) return s;
-  const voters = activeIds(s).filter((id) => s.round!.roles[id]);
-  if (!voters.length || !voters.every((id) => s.votes[id])) return s;
+  const dealt = Object.keys(s.round.roles);
+  if (!force && !dealt.every((id) => s.votes[id])) return s;
+  const voters = dealt.filter((id) => s.votes[id]);
+  if (!voters.length) return s;
   const tally: Record<string, number> = {};
   for (const id of voters) tally[s.votes[id]] = (tally[s.votes[id]] ?? 0) + 1;
   const max = Math.max(...Object.values(tally));
@@ -182,6 +187,8 @@ export function reduce(s: GameState, a: Action): GameState {
       const right = normalizeWord(a.word) === normalizeWord(s.round.word);
       return finish(s, { ...s.outcome, winner: right ? "mrwhite" : "crew", guess: a.word.slice(0, 60) });
     }
+    case "closeVote":
+      return resolveIfDone(s, true);
     case "next":
       if (s.phase !== "result" || s.awaitingGuess) return s;
       return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
