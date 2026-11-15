@@ -51,17 +51,16 @@ Components only use theme tokens (`chassis`, `panel`, `well`, `ink`, `amber`, `-
 
 ## Words
 
-`data/categories/*.json`: 15 categories, 4,000+ words, each tagged with a sub-category and difficulty (`easy`, `medium`, `spicy`). Optional curated decoys go in a `"decoys": { "Espresso": "Cappuccino" }` map. Words without one get a random sibling from the same sub-category.
+`data/categories/*.json`: 15 categories, 4,000+ words, each tagged with a sub-category and difficulty (`easy`, `medium`, `spicy`).
 
 `npm run validate-words` checks the schema, duplicates across all files (ignoring case and accents), overly generic words, at least 250 words per category and at least 4,000 in total.
 
 Played words are tracked per device in `localStorage` with a persistent Fisher-Yates deck. A word won't repeat until its whole crate has been played, and each category shows a `312 / 350 left` badge plus a reshuffle button. You can also add your own word lists.
 
-## Rules as implemented
+## Guess the Imposter rules
 
-- 3 to 16 players. Imposters: 1 for 3–5 players, 2 for 6–8, 3 for 9+, with a manual override. The crew always outnumbers the imposters.
-- Imposter hint: category, a decoy word, or hardcore (nothing).
-- Mr. White (optional, 6+ players): gets a blank label. If voted out, they get one guess at the word.
-- Secret pass-the-phone voting. A tie triggers one runoff between the tied players. If it ties again, the imposters escape.
-- Scoring: crew catch the imposter, +1 each. Imposters escape, +2 each. Mr. White guesses right, +3.
-- Timer: off, a discussion countdown (60–300s) or a per-clue timer (15–45s). The ring turns crimson for the last 5s.
+- 3 to 16 players: everyone is **crew** except the **imposter(s)**. Imposters: 1 for 3–5 players, 2 for 6–8, 3 for 9+, with a manual override. The crew always outnumbers the imposters.
+- Crew see the secret word (plus a one-line description). Imposters see only the category.
+- Give one-word clues, then vote. Voting out an imposter: crew win. Voting out a crew member, or a second tie after one runoff: imposters win.
+- Online, the vote waits for everyone dealt in; the host can "Count the votes now" if someone left.
+- Optional timer: a discussion countdown (60–300s) or a per-clue timer (15–45s).

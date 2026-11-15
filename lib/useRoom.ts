@@ -14,7 +14,7 @@ export type RoomMsg = { game: Game; host: string; state: unknown; secret: Secret
 export type RoomStatus = "connecting" | "open" | "waiting" | "missing" | "nosetup" | "offline";
 type AnyAction = IAction | MAction;
 
-const GUEST_ONLY: Record<Game, Set<string>> = { imposter: new Set(["revealed", "vote", "guess"]), mafia: new Set(["revealed", "night", "vote"]) };
+const GUEST_ONLY: Record<Game, Set<string>> = { imposter: new Set(["revealed", "vote"]), mafia: new Set(["revealed", "night", "vote"]) };
 
 function client(code: string, token: string, onId: (pid: string) => void, onNoSetup: () => void) {
   return new Ably.Realtime({

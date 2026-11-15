@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { draw, reshuffle, type DeckStore } from "./deck.ts";
 import { newGame, reduce, type Action, type GameState } from "./game.ts";
 
-const secret = { word: "Espresso", category: "foods-drinks", categoryName: "Foods & Drinks", decoy: "Latte" };
+const secret = { word: "Espresso", category: "foods-drinks", categoryName: "Foods & Drinks" };
 
 function game(n: number, extra: Partial<GameState["settings"]> = {}) {
   let s = reduce(newGame(), { type: "settings", settings: extra });
@@ -39,18 +39,16 @@ test("roles scale with player count and a crew member opens", () => {
     assert.equal(ids(s, "imposter").length, k, `${n} players`);
     assert.equal(s.round!.roles[s.round!.order[0]], "crew");
   }
-  assert.equal(ids(game(6, { mrWhite: true }), "mrwhite").length, 1);
-  assert.equal(ids(game(3, { mrWhite: true }), "mrwhite").length, 0); // too few players for Mr. White
+  assert.equal(ids(game(6), "crew").length, 4); // only crew and imposters
 });
 
-test("catching the imposter scores the crew", () => {
+test("catching the imposter wins it for the crew", () => {
   const s = game(4);
   const imp = ids(s, "imposter")[0];
   const crewVoteTarget = (v: string) => (v === imp ? ids(s, "crew")[0] : imp);
   const done = voteAll(s, crewVoteTarget);
   assert.equal(done.phase, "result");
   assert.deepEqual(done.outcome, { eliminated: imp, winner: "crew" });
-  for (const p of done.players) assert.equal(p.score, p.id === imp ? 0 : 1);
 });
 
 test("a locked phone (disconnected) can't let a minority decide the vote", () => {
@@ -86,12 +84,3 @@ test("a tie triggers one runoff, a second tie lets imposters escape", () => {
   assert.equal(again.outcome!.winner, "imposters");
 });
 
-test("Mr. White wins by guessing the word", () => {
-  const s = game(6, { mrWhite: true });
-  const mw = ids(s, "mrwhite")[0];
-  const caught = voteAll(s, (v) => (v === mw ? s.players.find((p) => p.id !== mw)!.id : mw));
-  assert.equal(caught.awaitingGuess, true);
-  const won = reduce(caught, { type: "guess", id: mw, word: "espresso" });
-  assert.equal(won.outcome!.winner, "mrwhite");
-  assert.equal(won.players.find((p) => p.id === mw)!.score, 3);
-});

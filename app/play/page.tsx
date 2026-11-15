@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useReducer, useState } from "react";
-import { CratePicker, ResultView, Scoreboard, SettingsPanel } from "@/components/panels";
+import { CratePicker, ResultView, SettingsPanel } from "@/components/panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
 import { newGame, reduce, secretFor } from "@/lib/game";
 import { describe } from "@/lib/describe";
@@ -26,7 +26,7 @@ export default function PassAndPlay() {
     setDealing(true);
     const desc = await describe(w);
     setDealing(false);
-    dispatch({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, decoy: deck.decoy(w), desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
+    dispatch({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
   };
 
   if (s.phase === "lobby") {
@@ -48,7 +48,6 @@ export default function PassAndPlay() {
         }
       >
         <Link href="/" className="font-mono text-xs underline">← Back</Link>
-        {s.roundNo > 0 && <Scoreboard state={s} />}
         <Sleeve title={`Players (${s.players.length})`}>
           <ul className="mb-3 space-y-2">
             {s.players.map((p) => (
@@ -107,7 +106,7 @@ export default function PassAndPlay() {
         }
       >
         {ready ? (
-          <VinylReveal secret={secretFor(round, s.settings.hint, next.id)!} color={next.color} />
+          <VinylReveal secret={secretFor(round, next.id)!} color={next.color} />
         ) : (
           <Sleeve dark>
             <p className="font-serif text-2xl font-bold">Hand the phone to {next.name}.</p>
@@ -194,9 +193,8 @@ export default function PassAndPlay() {
   }
 
   return (
-    <Screen title="The verdict" kicker={`Round ${s.roundNo}`} actions={!s.awaitingGuess && <Button onClick={() => dispatch({ type: "next" })}>{kit.back}</Button>}>
-      <ResultView state={s} canGuess onGuess={(word) => dispatch({ type: "guess", id: s.outcome!.eliminated!, word })} />
-      {!s.awaitingGuess && <Scoreboard state={s} />}
+    <Screen title="The verdict" kicker={`Round ${s.roundNo}`} actions={<Button onClick={() => dispatch({ type: "next" })}>{kit.back}</Button>}>
+      <ResultView state={s} />
     </Screen>
   );
 }

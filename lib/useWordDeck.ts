@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { crateKey, draw as drawDeck, reshuffle as reshuffleDeck, type DeckStore } from "./deck";
-import { CATEGORIES, WORDS, customEntries, decoyFor, type CustomList, type WordEntry } from "./words";
+import { CATEGORIES, WORDS, customEntries, type CustomList, type WordEntry } from "./words";
 
 const DECK_KEY = "imposter:deck";
 const CUSTOM_KEY = "imposter:custom";
@@ -71,7 +71,6 @@ export function useWordDeck() {
     removeCustom(id: string) {
       updateCustom(custom.filter((c) => c.id !== id));
     },
-    decoy: (w: WordEntry) => decoyFor(w, all),
   };
 }
 

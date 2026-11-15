@@ -29,7 +29,6 @@ type CategoryFile = {
   id: string;
   name: string;
   words: Record<string, Partial<Record<Difficulty, string[]>>>;
-  decoys?: Record<string, string>;
   notes?: Record<string, string>; // hand-written crew descriptions
 };
 
@@ -55,7 +54,6 @@ export const WORDS: WordEntry[] = FILES.flatMap((f) =>
 const NOTES = new Map(FILES.flatMap((f) => Object.entries(f.notes ?? {}).map(([w, d]) => [`${f.id}:${w}`, d])));
 export const noteFor = (w: WordEntry) => NOTES.get(w.id) ?? null;
 
-const DECOYS = new Map(FILES.flatMap((f) => Object.entries(f.decoys ?? {}).map(([w, d]) => [`${f.id}:${w}`, d])));
 
 export function customEntries(lists: CustomList[]): WordEntry[] {
   return lists.flatMap((l) =>
@@ -65,12 +63,3 @@ export function customEntries(lists: CustomList[]): WordEntry[] {
   );
 }
 
-// Explicit decoy if curated, else a sibling from the same sub-category (Espresso -> Cappuccino style).
-export function decoyFor(w: WordEntry, pool: WordEntry[] = WORDS): string {
-  const explicit = DECOYS.get(w.id);
-  if (explicit) return explicit;
-  const same = pool.filter((x) => x.category === w.category && x.id !== w.id);
-  const sub = same.filter((x) => x.subCategory === w.subCategory);
-  const from = sub.length ? sub : same;
-  return from.length ? from[Math.floor(Math.random() * from.length)].word : w.categoryName;
-}

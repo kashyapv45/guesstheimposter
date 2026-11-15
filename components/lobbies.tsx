@@ -8,7 +8,7 @@ import { formatCode } from "@/lib/roomCode";
 import { useTheme } from "@/lib/theme";
 import { useWordDeck } from "@/lib/useWordDeck";
 import { PlayerList } from "./GameView";
-import { CratePicker, Scoreboard, SettingsPanel } from "./panels";
+import { CratePicker, SettingsPanel } from "./panels";
 import { Button, Screen, Sleeve, Stepper, Toggle } from "./ui";
 
 export function CodeCard({ code, game }: { code: string; game: string }) {
@@ -49,7 +49,7 @@ export function ImposterLobby({ code, state, act }: { code: string; state: GameS
     setBusy(true);
     const desc = await describe(w);
     setBusy(false);
-    act({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, decoy: deck.decoy(w), desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
+    act({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
   };
   return (
     <Screen
@@ -68,7 +68,6 @@ export function ImposterLobby({ code, state, act }: { code: string; state: GameS
       <Sleeve title={`Players (${state.players.length} / 16)`}>
         <PlayerList players={state.players} showLinks />
       </Sleeve>
-      {state.roundNo > 0 && <Scoreboard state={state} />}
       <SettingsPanel settings={state.settings} players={ready} onChange={(settings) => act({ type: "settings", settings })} />
       <CratePicker deck={deck} selected={state.settings.categories} onChange={(categories) => act({ type: "settings", settings: { categories } })} />
     </Screen>

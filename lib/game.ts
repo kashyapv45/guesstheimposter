@@ -1,16 +1,13 @@
 // Pure game rules for Pass & Play.
 import { shuffle } from "./deck.ts";
 
-export type Role = "crew" | "imposter" | "mrwhite";
-export type HintMode = "category" | "decoy" | "blind";
+export type Role = "crew" | "imposter";
 export type TimerMode = "off" | "discussion" | "turn";
 export type Phase = "lobby" | "reveal" | "discuss" | "vote" | "result";
 
 export type Settings = {
   categories: string[];
   imposters: number | null; // null = auto
-  hint: HintMode;
-  mrWhite: boolean;
   timerMode: TimerMode;
   discussionSeconds: number;
   turnSeconds: number;
@@ -19,17 +16,15 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   categories: ["foods-drinks", "animals", "everyday-objects"],
   imposters: null,
-  hint: "category",
-  mrWhite: false,
   timerMode: "off",
   discussionSeconds: 180,
   turnSeconds: 30,
 };
 
-export type Player = { id: string; name: string; color: string; score: number; connected: boolean };
-export type SecretWord = { word: string; category: string; categoryName: string; decoy: string; desc?: string | null };
+export type Player = { id: string; name: string; color: string; connected: boolean };
+export type SecretWord = { word: string; category: string; categoryName: string; desc?: string | null };
 export type Round = SecretWord & { roles: Record<string, Role>; order: string[] };
-export type Outcome = { eliminated: string | null; winner: "crew" | "imposters" | "mrwhite"; guess?: string };
+export type Outcome = { eliminated: string | null; winner: "crew" | "imposters" };
 
 export type GameState = {
   phase: Phase;
@@ -39,7 +34,6 @@ export type GameState = {
   revealed: string[];
   votes: Record<string, string>;
   candidates: string[] | null; // set during a tie-break runoff
-  awaitingGuess: boolean; // Mr. White was voted out and gets one guess
   outcome: Outcome | null;
   turn: number;
   timerEnd: number | null;
@@ -57,7 +51,6 @@ export type Action =
   | { type: "nextTurn"; now: number }
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
-  | { type: "guess"; id: string; word: string }
   | { type: "closeVote" } // host: count the votes cast so far (someone left for good)
   | { type: "next" };
 
@@ -65,12 +58,11 @@ export type Secret = { role: Role; word: string | null; category: string | null;
 
 export const COLORS = ["#D95D39", "#E9B44C", "#2A9D8F", "#8E5572", "#3D5A80", "#7FB069", "#E07A5F", "#6D597A", "#BC4749", "#457B9D", "#F2CC8F", "#264653"];
 export const MAX_PLAYERS = 16;
-export const POINTS = { crew: 1, imposter: 2, mrwhite: 3 };
 
 export function newGame(settings: Settings = DEFAULT_SETTINGS): GameState {
   return {
     phase: "lobby", players: [], settings, round: null, revealed: [], votes: {}, candidates: null,
-    awaitingGuess: false, outcome: null, turn: 0, timerEnd: null, roundNo: 0,
+    outcome: null, turn: 0, timerEnd: null, roundNo: 0,
   };
 }
 
@@ -97,12 +89,7 @@ function rng(seed: number) {
 const activeIds = (s: GameState) => s.players.filter((p) => p.connected).map((p) => p.id);
 
 function finish(s: GameState, outcome: Outcome): GameState {
-  const roles = s.round?.roles ?? {};
-  const winRole: Role = outcome.winner === "imposters" ? "imposter" : outcome.winner;
-  return {
-    ...s, phase: "result", awaitingGuess: false, outcome,
-    players: s.players.map((p) => (roles[p.id] === winRole ? { ...p, score: p.score + POINTS[winRole] } : p)),
-  };
+  return { ...s, phase: "result", outcome, timerEnd: null };
 }
 
 // Waits for every player dealt into the round, connected or not: a phone that locks mid-vote
@@ -123,7 +110,6 @@ function resolveIfDone(s: GameState, force = false): GameState {
   }
   const eliminated = top[0];
   const role = s.round.roles[eliminated];
-  if (role === "mrwhite") return { ...s, phase: "result", awaitingGuess: true, outcome: { eliminated, winner: "crew" } };
   return finish(s, { eliminated, winner: role === "imposter" ? "crew" : "imposters" });
 }
 
@@ -135,7 +121,7 @@ export function reduce(s: GameState, a: Action): GameState {
         return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, name, connected: true } : p)) };
       if (s.players.length >= MAX_PLAYERS) return s; // late joiners sit out until the next deal
       const color = COLORS[s.players.length % COLORS.length];
-      return { ...s, players: [...s.players, { id: a.id, name, color, score: 0, connected: true }] };
+      return { ...s, players: [...s.players, { id: a.id, name, color, connected: true }] };
     }
     case "leave":
       return s.phase === "lobby" ? { ...s, players: s.players.filter((p) => p.id !== a.id) } : s;
@@ -150,14 +136,14 @@ export function reduce(s: GameState, a: Action): GameState {
       const rand = rng(a.seed);
       const k = imposterCount(s.settings, ids.length);
       const roles: Record<string, Role> = {};
-      shuffle(ids, rand).forEach((id, i, all) => {
-        roles[id] = i < k ? "imposter" : s.settings.mrWhite && i === k && all.length - k >= 3 ? "mrwhite" : "crew";
+      shuffle(ids, rand).forEach((id, i) => {
+        roles[id] = i < k ? "imposter" : "crew";
       });
       const order = shuffle(ids, rand);
       order.unshift(...order.splice(order.findIndex((id) => roles[id] === "crew"), 1)); // a crew member opens
       return {
         ...s, phase: "reveal", round: { ...a.secret, roles, order }, revealed: [], votes: {}, candidates: null,
-        awaitingGuess: false, outcome: null, turn: 0, timerEnd: null, roundNo: s.roundNo + 1,
+        outcome: null, turn: 0, timerEnd: null, roundNo: s.roundNo + 1,
       };
     }
     case "revealed":
@@ -182,35 +168,30 @@ export function reduce(s: GameState, a: Action): GameState {
       if (!allowed.includes(a.target)) return s;
       return resolveIfDone({ ...s, votes: { ...s.votes, [a.voter]: a.target } });
     }
-    case "guess": {
-      if (!s.awaitingGuess || !s.round || !s.outcome || s.outcome.eliminated !== a.id) return s;
-      const right = normalizeWord(a.word) === normalizeWord(s.round.word);
-      return finish(s, { ...s.outcome, winner: right ? "mrwhite" : "crew", guess: a.word.slice(0, 60) });
-    }
     case "closeVote":
       return resolveIfDone(s, true);
     case "next":
-      if (s.phase !== "result" || s.awaitingGuess) return s;
+      if (s.phase !== "result") return s;
       return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
   }
 }
 
-export function secretFor(round: Round, hint: HintMode, id: string): Secret | null {
+// Crew get the word (and its description); the imposter gets only the category.
+export function secretFor(round: Round, id: string): Secret | null {
   const role = round.roles[id];
   if (!role) return null;
   if (role === "crew") return { role, word: round.word, category: round.categoryName, desc: round.desc ?? null };
-  if (role === "mrwhite") return { role, word: null, category: null };
-  return { role, word: hint === "decoy" ? round.decoy : null, category: hint === "blind" ? null : round.categoryName };
+  return { role, word: null, category: round.categoryName };
 }
 
 // What one remote player may see: their own secret, no one else's role, anonymous votes.
 export function viewFor(s: GameState, id: string): { state: GameState; secret: Secret | null } {
   if (!s.round) return { state: s, secret: null };
-  const secret = secretFor(s.round, s.settings.hint, id);
-  if (s.phase === "result" && !s.awaitingGuess) return { state: s, secret };
+  const secret = secretFor(s.round, id);
+  if (s.phase === "result") return { state: s, secret };
   const votes = Object.fromEntries(Object.keys(s.votes).map((v) => [v, v === id ? s.votes[v] : "?"]));
   return {
-    state: { ...s, votes, round: { ...s.round, word: "", decoy: "", category: "", categoryName: "", desc: null, roles: {} } },
+    state: { ...s, votes, round: { ...s.round, word: "", category: "", categoryName: "", desc: null, roles: {} } },
     secret,
   };
 }

@@ -28,12 +28,10 @@ Shared across kits: press-and-hold reveal (imposter panel glows crimson), primar
 
 - Timer: off, discussion countdown (60–300s), or per-player clue timer (15–45s). Groove progress ring + flip-clock, crimson for the last 5s.
 - Imposters auto-scale (1 for 3–5, 2 for 6–8, 3 for 9+) with manual override. 3–16 players.
-- Imposter visibility: category only, related decoy word, or hardcore blind.
-- Optional Mr. White: blank label, wins by guessing the word after being voted out.
-- Secret pass-the-phone voting with one tie-break runoff; score tracking across rounds.
+- Crew vs imposter only: crew see the word, imposters see the category. Secret voting with one tie-break runoff; no points.
 
 ## 4. Word engine
 
 - 15 categories, 250+ words each, 4,000+ total, in `data/categories/*.json`.
-- `npm run validate-words` runs before every build: no duplicates across categories, schema, generic-word ban, decoy pairs valid, minimum counts.
+- `npm run validate-words` runs before every build: no duplicates across categories, schema, generic-word ban, word notes valid, minimum counts.
 - Persistent Fisher-Yates deck in localStorage: no repeats until the crate is exhausted, "N / M left" badge, reshuffle button, custom word lists.

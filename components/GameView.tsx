@@ -1,7 +1,7 @@
 "use client";
 // The in-round screens for networked play (host and guests share it; host gets extra controls).
 import type { Action, GameState, Secret } from "@/lib/game";
-import { ResultView, Scoreboard } from "./panels";
+import { ResultView } from "./panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
 type Seat = { id: string; name: string; color: string; connected: boolean };
@@ -31,7 +31,6 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
           <PlayerList players={state.players} />
         </Sleeve>
         <p className="text-center font-mono text-sm uppercase tracking-widest">Waiting for the host to drop the needle…</p>
-        {state.roundNo > 0 && <Scoreboard state={state} />}
       </Screen>
     );
 
@@ -141,9 +140,8 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
   }
 
   return (
-    <Screen title="The verdict" kicker={`Round ${state.roundNo}`} actions={isHost && !state.awaitingGuess && <Button onClick={() => act({ type: "next" })}>Back to the lobby</Button>}>
-      <ResultView state={state} canGuess={state.outcome?.eliminated === me} onGuess={(word) => act({ type: "guess", id: me, word })} />
-      {!state.awaitingGuess && <Scoreboard state={state} />}
+    <Screen title="The verdict" kicker={`Round ${state.roundNo}`} actions={isHost && <Button onClick={() => act({ type: "next" })}>Back to the lobby</Button>}>
+      <ResultView state={state} />
     </Screen>
   );
 }

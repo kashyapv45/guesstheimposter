@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { imposterCount, recommendImposters, POINTS, type GameState, type Settings } from "@/lib/game";
+import { imposterCount, recommendImposters, type GameState, type Settings } from "@/lib/game";
 import type { WordDeck } from "@/lib/useWordDeck";
 import { Rocker, Sleeve, Stepper, Toggle } from "./ui";
 
@@ -17,20 +17,6 @@ export function SettingsPanel({ settings, players, onChange }: { settings: Setti
           onChange={(auto) => onChange({ imposters: auto ? null : imposterCount(settings, n) })}
         />
         {settings.imposters != null && <Stepper label="Imposters" value={Math.min(settings.imposters, max)} min={1} max={max} onChange={(v) => onChange({ imposters: v })} />}
-        <div className="space-y-2">
-          <p className="font-bold">What the imposter sees</p>
-          <Rocker
-            label="Imposter hint"
-            value={settings.hint}
-            onChange={(hint) => onChange({ hint })}
-            options={[
-              { value: "category", label: "Category" },
-              { value: "decoy", label: "Decoy word" },
-              { value: "blind", label: "Hardcore" },
-            ]}
-          />
-        </div>
-        <Toggle label="Mr. White" hint="One player gets a blank label (6+ players works best)" on={settings.mrWhite} onChange={(mrWhite) => onChange({ mrWhite })} />
         <div className="space-y-2">
           <p className="font-bold">Timer</p>
           <Rocker
@@ -111,69 +97,23 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
   );
 }
 
-export function Scoreboard({ state }: { state: GameState }) {
-  const sorted = [...state.players].sort((a, b) => b.score - a.score);
-  return (
-    <Sleeve title={`Scoreboard · Round ${state.roundNo}`} dark>
-      <ol className="space-y-1">
-        {sorted.map((p, i) => (
-          <li key={p.id} className="flex items-center gap-2 font-mono">
-            <span className="w-5 opacity-60">{i + 1}</span>
-            <span className="h-3 w-3 rounded-full" style={{ background: p.color }} />
-            <span className="flex-1 truncate">{p.name}</span>
-            <span className="font-bold">{p.score}</span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-2 text-xs opacity-60">Crew catch: +{POINTS.crew} · Imposter escape: +{POINTS.imposter} · Mr. White guess: +{POINTS.mrwhite}</p>
-    </Sleeve>
-  );
-}
-
-const ROLE_LABEL = { crew: "Crew", imposter: "Imposter", mrwhite: "Mr. White" };
-
-export function ResultView({ state, canGuess, onGuess }: { state: GameState; canGuess: boolean; onGuess: (word: string) => void }) {
-  const [guess, setGuess] = useState("");
+// Who won the round, the word, and who was who.
+export function ResultView({ state }: { state: GameState }) {
   const { round, outcome } = state;
   if (!round || !outcome) return null;
   const name = (id: string | null) => state.players.find((p) => p.id === id)?.name ?? "?";
-  if (state.awaitingGuess)
-    return (
-      <Sleeve title="Caught!" dark>
-        <p className="font-serif text-2xl font-black">{name(outcome.eliminated)} was Mr. White!</p>
-        <p className="mt-1">One guess at the secret word to steal the win.</p>
-        {canGuess ? (
-          <form
-            className="mt-3 flex gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (guess.trim()) onGuess(guess.trim());
-            }}
-          >
-            <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="Your guess" aria-label="Your guess" className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2 text-ink" />
-            <button className="rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-amber px-4 font-bold text-on-accent">Guess</button>
-          </form>
-        ) : (
-          <p className="mt-3 font-mono text-sm opacity-70">Waiting for their guess…</p>
-        )}
-      </Sleeve>
-    );
   const headline =
-    outcome.winner === "mrwhite"
-      ? `${name(outcome.eliminated)} guessed "${outcome.guess}". Mr. White wins!`
-      : outcome.winner === "crew"
-        ? outcome.guess
-          ? `Wrong guess ("${outcome.guess}"). Crew wins!`
-          : `${name(outcome.eliminated)} was the imposter. Crew wins!`
-        : outcome.eliminated
-          ? `${name(outcome.eliminated)} was innocent. Imposters win!`
-          : "Hung jury. The imposters slip away!";
+    outcome.winner === "crew"
+      ? `${name(outcome.eliminated)} was the imposter. Crew wins!`
+      : outcome.eliminated
+        ? `${name(outcome.eliminated)} was crew. Imposters win!`
+        : "Hung jury. The imposters slip away!";
   return (
     <>
       <Sleeve dark>
-        <p className="font-mono text-xs uppercase tracking-widest opacity-70">The record was</p>
+        <p className="font-mono text-xs uppercase tracking-widest opacity-70">The word was</p>
         <p className="font-serif text-3xl font-black text-amber">{round.word}</p>
-        <p className="font-mono text-xs opacity-70">{round.categoryName}{state.settings.hint === "decoy" ? ` · decoy: ${round.decoy}` : ""}</p>
+        <p className="font-mono text-xs opacity-70">{round.categoryName}</p>
         <p className="mt-3 font-serif text-xl font-bold">{headline}</p>
       </Sleeve>
       <Sleeve title="Who was who">
@@ -181,7 +121,7 @@ export function ResultView({ state, canGuess, onGuess }: { state: GameState; can
           {round.order.map((id) => (
             <li key={id} className="flex justify-between gap-2">
               <span className="truncate">{name(id)}</span>
-              <span className={`font-mono text-sm font-bold ${round.roles[id] === "crew" ? "" : "text-crimson"}`}>{ROLE_LABEL[round.roles[id]]}</span>
+              <span className={`font-mono text-sm font-bold ${round.roles[id] === "imposter" ? "text-crimson" : ""}`}>{round.roles[id] === "imposter" ? "Imposter" : "Crew"}</span>
             </li>
           ))}
         </ul>

@@ -105,22 +105,12 @@ export function Stepper({ label, value, min, max, step = 1, onChange, format = S
 }
 
 export function SecretText({ secret }: { secret: Secret }) {
-  if (secret.role === "mrwhite")
-    return (
-      <>
-        <p className="font-mono text-[10px] uppercase tracking-widest">Blank label</p>
-        <p className="font-serif text-xl font-black">You are Mr. White</p>
-        <p className="text-xs">No word, no category. Blend in. If you get caught, guess the word to win.</p>
-      </>
-    );
   if (secret.role === "imposter")
     return (
       <>
         <p className="font-serif text-xl font-black uppercase leading-tight text-white">Imposter alert</p>
         <p className="text-xs font-bold text-white/90">You don&apos;t know the word.</p>
         {secret.category && <p className="text-sm">Category: <b>{secret.category}</b></p>}
-        {secret.word && <p className="text-sm">Decoy: <b>{secret.word}</b></p>}
-        {!secret.category && !secret.word && <p className="text-xs">No hints. Good luck.</p>}
       </>
     );
   return (
