@@ -3,7 +3,7 @@
 //   room:<CODE>:host      guests -> host (hello / action); presence shows who is connected
 //   room:<CODE>:p:<pid>   host -> one player (their own redacted view)
 // Ably authenticates every message's clientId (pid), so the host knows who sent what.
-import * as Ably from "ably";
+import { createClient, type PubSubClient, type RealtimeChannel, type TokenRequest } from "@ably/pubsub-device";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { newGame, reduce as reduceImposter, viewFor, type Action as IAction, type GameState, type Secret } from "./game";
 import { newMafia, reduceMafia, viewMafia, type MAction, type MState } from "./mafia";
@@ -17,7 +17,7 @@ type AnyAction = IAction | MAction;
 const GUEST_ONLY: Record<Game, Set<string>> = { imposter: new Set(["revealed", "vote"]), mafia: new Set(["revealed", "night", "vote"]) };
 
 function client(code: string, token: string, onId: (pid: string) => void, onNoSetup: () => void) {
-  return new Ably.Realtime({
+  return createClient({
     authCallback: async (_params, cb) => {
       try {
         const r = await fetch(`/api/ably?t=${token}&code=${code}`, { cache: "no-store" });
@@ -25,7 +25,7 @@ function client(code: string, token: string, onId: (pid: string) => void, onNoSe
           onNoSetup();
           return cb("nosetup", null);
         }
-        const tr = (await r.json()) as Ably.TokenRequest;
+        const tr = (await r.json()) as TokenRequest;
         if (tr.clientId) onId(tr.clientId);
         cb(null, tr);
       } catch (e) {
@@ -45,7 +45,7 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
   const [me, setMe] = useState("");
   const [status, setStatus] = useState<RoomStatus>("connecting");
   const [tick, setTick] = useState(0); // forces a resend when a player says hello again
-  const ably = useRef<Ably.Realtime | null>(null);
+  const ably = useRef<PubSubClient | null>(null);
 
   const dispatch = useCallback(
     (a: AnyAction) => setState((s) => (s ? (game === "imposter" ? reduceImposter(s as GameState, a as IAction) : reduceMafia(s as MState, a as MAction)) : s)),
@@ -109,7 +109,7 @@ export function useGuestRoom(code: string, token: string, name: string) {
   const [msg, setMsg] = useState<RoomMsg | null>(null);
   const [me, setMe] = useState("");
   const [status, setStatus] = useState<RoomStatus>("connecting");
-  const inbox = useRef<Ably.RealtimeChannel | null>(null);
+  const inbox = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     if (!code || !token || !name || !me) return;
@@ -150,7 +150,7 @@ export function useGuestRoom(code: string, token: string, name: string) {
     void fetch(`/api/ably?t=${token}&code=${code}`, { cache: "no-store" })
       .then(async (r) => {
         if (r.status === 503) return setStatus("nosetup");
-        const tr = (await r.json()) as Ably.TokenRequest;
+        const tr = (await r.json()) as TokenRequest;
         if (tr.clientId) {
           saveSession(`imposter:pid:${code}:${token}`, tr.clientId);
           setMe(tr.clientId);

@@ -4,7 +4,7 @@
 //       host  (code matches its secret): read the room inbox, write to every player's private channel
 //       guest: write to the room inbox, read only its own private channel
 // Player ids are a keyed hash of the secret, so ids shown to others can't be used to read someone's channel.
-import Ably from "ably";
+import { createHttpClient } from "@ably/pubsub-server";
 import { createHmac } from "node:crypto";
 import { ALPHABET, isValidCode } from "@/lib/roomCode";
 
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     codeFor(t) === code
       ? { [`${room}:host`]: ["subscribe", "presence"], [`${room}:p:*`]: ["publish"] }
       : { [`${room}:host`]: ["publish", "presence"], [`${room}:p:${pid}`]: ["subscribe"] };
-  const tokenRequest = await new Ably.Rest({ key: KEY }).auth.createTokenRequest({
+  const tokenRequest = await createHttpClient({ key: KEY }).auth.createTokenRequest({
     clientId: pid,
     capability: JSON.stringify(capability),
     ttl: 4 * 60 * 60 * 1000,
