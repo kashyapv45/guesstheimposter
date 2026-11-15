@@ -7,13 +7,12 @@ Party games for one table, on phones:
 | **Guess the Imposter** | 3–16 | Everyone gets the same secret word except the imposter. One-word clues, then vote. Pass & Play on one phone, or online with a room code. Crew see a one-line description of their word. |
 | **Mafia** | 4–16 | Secret roles (Mafia, Doctor, Detective, Villagers). Night actions in secret on each phone, morning news, day discussion and vote. Online with a room code; the app is the moderator. |
 
-Online rooms run on **PartyKit**: a small room server (`party/server.ts`) holds each room's game, runs the rules and sends every phone only what that player may see. Phones connect over WebSockets with an 8-character room code (`VNL7-K92P`) and reconnect on their own.
+Online rooms run on **Ably** (realtime WebSockets, free tier). The host's phone runs the game and sends every player only their own view over a private channel. A small Vercel route (`/api/ably`) hands out locked-down Ably passes: guests can only write to the room and read their own channel, and the room code is derived from the host's secret so nobody else can run that room. Phones reconnect on their own; a host refresh restores the room.
 
 ## Run
 
 ```bash
 npm install
-npm run party:dev  # room server on localhost:1999 (needed for online rooms)
 npm run dev        # http://localhost:3000
 npm test           # Imposter + Mafia rules, word deck
 npm run build      # runs validate-words first
@@ -21,10 +20,11 @@ npm run build      # runs validate-words first
 
 ## Deploy
 
-1. **Room server (once, then after server changes):** `npx partykit login`, then `npm run party:deploy`. It prints the host, e.g. `guess-the-imposter.<you>.partykit.dev`.
-2. **Vercel:** Project → Settings → Environment Variables → `NEXT_PUBLIC_PARTYKIT_HOST` = that host. Redeploy.
+1. Create a free account at ably.com → create an app → **API Keys** → copy the key that has all capabilities (it looks like `xxxx.yyyy:zzzz`).
+2. Vercel → Project → Settings → Environment Variables → `ABLY_API_KEY` = that key (keep it server-only; don't prefix it with NEXT_PUBLIC). Redeploy.
+3. For local online play, put the same line in `.env.local`.
 
-Pass & Play works without the room server. Without the variable, online rooms show "Online play isn't set up".
+Pass & Play works without a key. Without it, online rooms show "Online play isn't set up".
 
 ## Word descriptions
 

@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HeroObject } from "@/components/kit";
 import { Button, Screen, Sleeve } from "@/components/ui";
-import { cleanCode, formatCode, isValidCode, newRoomCode } from "@/lib/roomCode";
+import { cleanCode, formatCode, isValidCode } from "@/lib/roomCode";
 
 export default function PartyKit() {
   const router = useRouter();
   const [code, setCode] = useState("");
-  const host = (game: "imposter" | "mafia") => router.push(`/room/${newRoomCode()}?create=${game}`);
+  const host = (game: "imposter" | "mafia") => router.push(`/room/new?create=${game}`);
 
   return (
     <Screen title="Party Kit" kicker="Side A · 33⅓ RPM" corner={<Link href="/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-panel text-lg">⚙</Link>}>

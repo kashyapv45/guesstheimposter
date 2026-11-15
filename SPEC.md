@@ -4,7 +4,7 @@
 
 - **Guess the Imposter:** Pass & Play (one phone) or online room. Crew see a one-line description of their word (hand-written note, else Wikipedia lookup).
 - **Mafia:** online room only. Roles: Mafia (1 for 4–5 players, 2 for 6–8, 3 for 9+, override), optional Doctor and Detective, Villagers. Night: mafia pick a target (plurality, seat-order tiebreak), doctor saves, detective checks. Morning report, day discussion (optional timer), vote (tie or "skip" = nobody). Town wins when no mafia remain; mafia win when they equal the town. Optional role reveal on death.
-- **Online rooms:** PartyKit room server per 8-character code; server-authoritative rules, per-player redacted views, automatic reconnect, seat kept in the tab for 1 hour.
+- **Online rooms:** Ably realtime; the host's phone runs the rules and sends per-player redacted views over private channels; `/api/ably` issues capability-limited tokens (room code derived from the host's secret); automatic reconnect; seats and host state kept in the tab for 1 hour.
 - Home is the Party Kit hub; the UI kit picker lives in Settings.
 
 ## 2. UI kits (mobile-first)

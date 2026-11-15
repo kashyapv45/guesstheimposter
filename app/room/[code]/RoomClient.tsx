@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GameView } from "@/components/GameView";
 import { ImposterLobby, MafiaLobby } from "@/components/lobbies";
@@ -8,63 +7,91 @@ import { MafiaView } from "@/components/MafiaView";
 import { Button, Screen, Sleeve } from "@/components/ui";
 import type { Action, GameState } from "@/lib/game";
 import type { MAction, MState } from "@/lib/mafia";
-import { cleanCode, formatCode, isValidCode, newRoomCode, randomId } from "@/lib/roomCode";
+import { cleanCode, formatCode, isValidCode, randomId } from "@/lib/roomCode";
 import { guestKey, loadSession, saveSession } from "@/lib/session";
-import { useRoom, type Game } from "@/lib/useRoom";
+import { useGuestRoom, useHostRoom, type Game } from "@/lib/useRoom";
 
-type Saved = { token: string; name: string };
+// Seat in this tab, kept for 1 hour without play. `host` marks the phone that runs the room.
+type Saved = { token: string; name: string; host?: Game };
+const GAME_NAME: Record<Game, string> = { imposter: "Guess the Imposter", mafia: "Mafia" };
 
 export default function RoomClient() {
-  const router = useRouter();
   const [code, setCode] = useState("");
   const [create, setCreate] = useState<Game | undefined>();
-  const [me, setMe] = useState("");
+  const [token, setToken] = useState("");
   const [name, setName] = useState("");
+  const [hostGame, setHostGame] = useState<Game | undefined>();
   const [joined, setJoined] = useState(false);
+  const [error, setError] = useState("");
 
-  // Seat (token + name) lives in this tab for 1 hour without play, so a refresh rejoins automatically.
   /* eslint-disable react-hooks/set-state-in-effect -- one-time read of URL + sessionStorage after hydration */
   useEffect(() => {
-    const c = cleanCode(location.pathname.split("/")[2] ?? "");
+    const seg = location.pathname.split("/")[2] ?? "";
     const g = new URLSearchParams(location.search).get("create");
+    if (seg === "new" && (g === "imposter" || g === "mafia")) {
+      setCreate(g);
+      setToken(randomId());
+      return;
+    }
+    const c = cleanCode(seg);
     setCode(c);
-    setCreate(g === "imposter" || g === "mafia" ? g : undefined);
     const saved = loadSession<Saved>(guestKey(c));
-    setMe(saved?.token ?? randomId());
+    setToken(saved?.token ?? randomId());
     if (saved?.name) {
       setName(saved.name);
+      setHostGame(saved.host);
       setJoined(true);
     }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const { msg, status, act } = useRoom(code, joined ? me : "", joined ? name : "", create);
+  const hosting = joined && !!hostGame;
+  const host = useHostRoom(hosting ? code : "", hosting ? token : "", name, hostGame ?? "imposter");
+  const guest = useGuestRoom(joined && !hostGame ? code : "", joined && !hostGame ? token : "", name);
+  const { msg, status, me, act } = hosting ? host : guest;
   const send = (a: Action | MAction) => {
     act(a);
-    saveSession<Saved>(guestKey(code), { token: me, name }); // activity keeps the seat
+    saveSession<Saved>(guestKey(code), { token, name, host: hostGame }); // activity keeps the seat
   };
 
-  // Someone else already owns this code (very unlikely): make a fresh one.
-  useEffect(() => {
-    if (status === "taken" && create) router.replace(`/room/${newRoomCode()}?create=${create}`);
-  }, [status, create, router]);
+  const open = async () => {
+    const n = name.trim();
+    if (create) {
+      // The room code comes from the host's secret, so only this phone can run this room.
+      const r = await fetch(`/api/ably?t=${token}&code=new`, { cache: "no-store" }).catch(() => null);
+      if (!r || !r.ok) return setError(r?.status === 503 ? "nosetup" : "Couldn't reach the server. Check your connection.");
+      const { code: c } = (await r.json()) as { code: string };
+      saveSession<Saved>(guestKey(c), { token, name: n, host: create });
+      history.replaceState(null, "", `/room/${c}`);
+      setCode(c);
+      setHostGame(create);
+    } else saveSession<Saved>(guestKey(code), { token, name: n });
+    setName(n);
+    setJoined(true);
+  };
+
+  if (error === "nosetup" || status === "nosetup")
+    return (
+      <Screen title="Online play isn't set up" kicker="Party Kit">
+        <Sleeve>
+          <p>This site has no Ably key yet. Add <b>ABLY_API_KEY</b> in Vercel → Settings → Environment Variables, then redeploy.</p>
+        </Sleeve>
+        <Link href="/" className="font-mono text-xs underline">← Party Kit</Link>
+      </Screen>
+    );
 
   if (!joined)
     return (
       <Screen
-        title={create ? `Host ${create === "mafia" ? "Mafia" : "Guess the Imposter"}` : "Join a room"}
-        kicker={isValidCode(code) ? `Room ${formatCode(code)}` : "Room code"}
+        title={create ? `Host ${GAME_NAME[create]}` : "Join a room"}
+        kicker={create ? "New online room" : isValidCode(code) ? `Room ${formatCode(code)}` : "Room code"}
         actions={
-          <Button
-            disabled={!isValidCode(code) || !name.trim()}
-            onClick={() => {
-              saveSession<Saved>(guestKey(code), { token: me, name: name.trim() });
-              setName(name.trim());
-              setJoined(true);
-            }}
-          >
-            {create ? "Open the room" : "Join"}
-          </Button>
+          <>
+            {error && <p className="text-sm text-crimson">{error}</p>}
+            <Button disabled={(!create && !isValidCode(code)) || !name.trim() || !token} onClick={open}>
+              {create ? "Open the room" : "Join"}
+            </Button>
+          </>
         }
       >
         {!create && (
@@ -87,15 +114,11 @@ export default function RoomClient() {
       </Screen>
     );
 
-  if (status === "nosetup" || status === "missing")
+  if (status === "missing")
     return (
-      <Screen title={status === "missing" ? "Room not found" : "Online play isn't set up"} kicker={`Room ${formatCode(code)}`}>
+      <Screen title="Room not found" kicker={`Room ${formatCode(code)}`}>
         <Sleeve>
-          <p>
-            {status === "missing"
-              ? "No room with that code is open. Check the code with your host; rooms close when everyone leaves."
-              : "This site isn't connected to its PartyKit room server yet (NEXT_PUBLIC_PARTYKIT_HOST is missing)."}
-          </p>
+          <p>Nobody is hosting this code right now. Check the code with your host, and make sure their room screen is open.</p>
         </Sleeve>
         <Link href="/" className="font-mono text-xs underline">← Party Kit</Link>
       </Screen>
@@ -104,7 +127,9 @@ export default function RoomClient() {
   if (!msg)
     return (
       <Screen title="Connecting…" kicker={`Room ${formatCode(code)}`}>
-        <p className="py-10 text-center font-mono text-sm uppercase tracking-widest">{status === "offline" ? "Reconnecting to the room…" : "Opening the room…"}</p>
+        <p className="py-10 text-center font-mono text-sm uppercase tracking-widest">
+          {status === "waiting" ? "Waiting for the host…" : status === "offline" ? "Reconnecting…" : "Opening the room…"}
+        </p>
       </Screen>
     );
 
