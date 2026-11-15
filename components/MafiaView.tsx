@@ -162,7 +162,7 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
         {deadNote ||
           (mine ? (
             <Sleeve dark>
-              <p className="font-serif text-xl font-bold">{mine === "skip" ? "You chose to skip." : `You voted for ${name(mine)}.`}</p>
+              <p className="font-serif text-xl font-bold">{`You voted for ${name(mine)}.`}</p>
               <p className="opacity-70">Waiting for everyone else…</p>
             </Sleeve>
           ) : (
@@ -175,9 +175,6 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
                       {name(id)}
                     </Button>
                   ))}
-                <Button variant="secondary" onClick={() => act({ type: "vote", id: me, target: "skip" })}>
-                  Skip
-                </Button>
               </div>
             </Sleeve>
           ))}
