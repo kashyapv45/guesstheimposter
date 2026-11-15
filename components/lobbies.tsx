@@ -1,12 +1,12 @@
 "use client";
 // Host lobbies for online rooms, plus the shareable room code card.
 import { useState } from "react";
-import { describe } from "@/lib/describe";
 import type { Action, GameState } from "@/lib/game";
 import { mafiaCount, MAX_PLAYERS, MIN_PLAYERS, recommendMafia, type MAction, type MState } from "@/lib/mafia";
 import { formatCode } from "@/lib/roomCode";
 import { useTheme } from "@/lib/theme";
 import { useWordDeck } from "@/lib/useWordDeck";
+import { noteFor } from "@/lib/words";
 import { PlayerList } from "./GameView";
 import { CratePicker, SettingsPanel } from "./panels";
 import { Button, Screen, Sleeve, Stepper, Toggle } from "./ui";
@@ -39,16 +39,13 @@ export function CodeCard({ code, game }: { code: string; game: string }) {
 export function ImposterLobby({ code, state, act }: { code: string; state: GameState; act: (a: Action) => void }) {
   const deck = useWordDeck();
   const [kit] = useTheme();
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const ready = state.players.filter((p) => p.connected).length;
-  const start = async () => {
+  const start = () => {
     const w = deck.draw(state.settings.categories);
     if (!w) return setError("Pick at least one category.");
     setError("");
-    setBusy(true);
-    const desc = await describe(w);
-    setBusy(false);
+    const desc = noteFor(w);
     act({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
   };
   return (
@@ -58,7 +55,7 @@ export function ImposterLobby({ code, state, act }: { code: string; state: GameS
       actions={
         <>
           {error && <p className="text-sm text-crimson">{error}</p>}
-          <Button disabled={busy || ready < 3 || !state.settings.categories.length} onClick={start}>
+          <Button disabled={ready < 3 || !state.settings.categories.length} onClick={start}>
             {ready < 3 ? `Need ${3 - ready} more player${ready === 2 ? "" : "s"}` : kit.deal}
           </Button>
         </>

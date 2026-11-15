@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { imposterCount, recommendImposters, type GameState, type Settings } from "@/lib/game";
 import type { WordDeck } from "@/lib/useWordDeck";
 import { Rocker, Sleeve, Stepper, Toggle } from "./ui";
@@ -40,9 +39,6 @@ export function SettingsPanel({ settings, players, onChange }: { settings: Setti
 }
 
 export function CratePicker({ selected, onChange, deck }: { selected: string[]; onChange: (ids: string[]) => void; deck: WordDeck }) {
-  const [name, setName] = useState("");
-  const [words, setWords] = useState("");
-  const parsed = [...new Set(words.split(/[\n,]/).map((w) => w.trim()).filter(Boolean))];
   return (
     <Sleeve title="Crate (pick categories)">
       <ul className="space-y-2">
@@ -65,34 +61,10 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
               <button aria-label={`Reshuffle ${c.name}`} title="Reshuffle crate" onClick={() => deck.reshuffle(c.id)} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-lg">
                 ↺
               </button>
-              {c.custom && (
-                <button aria-label={`Delete ${c.name}`} onClick={() => (deck.removeCustom(c.id), onChange(selected.filter((id) => id !== c.id)))} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono">
-                  ✕
-                </button>
-              )}
             </li>
           );
         })}
       </ul>
-      <details className="mt-4">
-        <summary className="cursor-pointer font-bold">Add your own word list</summary>
-        <div className="mt-2 space-y-2">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="List name" maxLength={30} className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
-          <textarea value={words} onChange={(e) => setWords(e.target.value)} placeholder="One word per line (at least 5)" rows={4} className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
-          <button
-            disabled={!name.trim() || parsed.length < 5}
-            onClick={() => {
-              const id = deck.addCustom(name.trim(), parsed.map((w) => w.slice(0, 40)));
-              onChange([...selected, id]);
-              setName("");
-              setWords("");
-            }}
-            className="w-full rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald py-2 font-bold text-ink disabled:opacity-40"
-          >
-            Save list ({parsed.length} words)
-          </button>
-        </div>
-      </details>
     </Sleeve>
   );
 }

@@ -4,9 +4,9 @@ import { useReducer, useState } from "react";
 import { CratePicker, ResultView, SettingsPanel } from "@/components/panels";
 import { Button, ConfirmSheet, Screen, Sleeve, Timer, VinylReveal } from "@/components/ui";
 import { newGame, reduce, secretFor } from "@/lib/game";
-import { describe } from "@/lib/describe";
 import { useBackGuard } from "@/lib/useBackGuard";
 import { useTheme } from "@/lib/theme";
+import { noteFor } from "@/lib/words";
 import { useWordDeck } from "@/lib/useWordDeck";
 
 export default function PassAndPlay() {
@@ -18,15 +18,12 @@ export default function PassAndPlay() {
   const [error, setError] = useState("");
   const playerName = (id: string) => s.players.find((p) => p.id === id)?.name ?? "?";
 
-  const [dealing, setDealing] = useState(false);
-  const start = async () => {
+  const start = () => {
     const w = deck.draw(s.settings.categories);
     if (!w) return setError("Pick at least one category.");
     setError("");
     setReady(false);
-    setDealing(true);
-    const desc = await describe(w);
-    setDealing(false);
+    const desc = noteFor(w);
     dispatch({ type: "start", secret: { word: w.word, category: w.category, categoryName: w.categoryName, desc }, now: Date.now(), seed: (Math.random() * 2 ** 32) >>> 0 });
   };
 
@@ -47,7 +44,7 @@ export default function PassAndPlay() {
         actions={
           <>
             {error && <p className="text-sm text-crimson">{error}</p>}
-            <Button disabled={dealing || s.players.length < 3 || !s.settings.categories.length} onClick={start}>
+            <Button disabled={s.players.length < 3 || !s.settings.categories.length} onClick={start}>
               {s.players.length < 3 ? `Add ${3 - s.players.length} more player${s.players.length === 2 ? "" : "s"}` : s.roundNo ? `${kit.deal}: next round` : kit.deal}
             </Button>
           </>

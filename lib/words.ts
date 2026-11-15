@@ -23,7 +23,6 @@ export type WordEntry = {
   subCategory: string;
   difficulty: Difficulty;
 };
-export type CustomList = { id: string; name: string; words: string[] };
 
 type CategoryFile = {
   id: string;
@@ -55,11 +54,4 @@ const NOTES = new Map(FILES.flatMap((f) => Object.entries(f.notes ?? {}).map(([w
 export const noteFor = (w: WordEntry) => NOTES.get(w.id) ?? null;
 
 
-export function customEntries(lists: CustomList[]): WordEntry[] {
-  return lists.flatMap((l) =>
-    l.words.map((word) => ({
-      id: `${l.id}:${word}`, word, category: l.id, categoryName: l.name, subCategory: "Custom", difficulty: "medium" as const,
-    })),
-  );
-}
 

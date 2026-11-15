@@ -28,7 +28,7 @@ Pass & Play works without a key. Without it, online rooms show "Online play isn'
 
 ## Word descriptions
 
-Crew players see a one-line description under their word. Hand-written ones go in a category file's `"notes": { "Okapi": "…" }` map (checked by the validator) and always win; otherwise the host's phone looks the word up on Wikipedia, steered by the category, caches it, and gives up after 2.5s. The imposter never sees it.
+Crew players see a short description of their word (a "What is it?" card while holding the record). They live in each category file's `"notes"` map: every medium and spicy word has one (2,926 total), checked by the validator. The imposter never sees it.
 
 ## UI kits
 
@@ -55,7 +55,7 @@ Components only use theme tokens (`chassis`, `panel`, `well`, `ink`, `amber`, `-
 
 `npm run validate-words` checks the schema, duplicates across all files (ignoring case and accents), overly generic words, at least 250 words per category and at least 4,000 in total.
 
-Played words are tracked per device in `localStorage` with a persistent Fisher-Yates deck. A word won't repeat until its whole crate has been played, and each category shows a `312 / 350 left` badge plus a reshuffle button. You can also add your own word lists.
+Played words are tracked per device in `localStorage` with a persistent Fisher-Yates deck. A word won't repeat until its whole crate has been played, and each category shows a `312 / 350 left` badge plus a reshuffle button.
 
 ## Guess the Imposter rules
 

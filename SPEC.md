@@ -2,7 +2,7 @@
 
 ## 1. Games and modes
 
-- **Guess the Imposter:** Pass & Play (one phone) or online room. Crew see a one-line description of their word (hand-written note, else Wikipedia lookup).
+- **Guess the Imposter:** Pass & Play (one phone) or online room. Crew see a one-line description of their word (from the word files' notes).
 - **Mafia:** online room only. Roles: Mafia (1 for 4–5 players, 2 for 6–8, 3 for 9+, override), optional Doctor and Detective, Villagers. Night: mafia pick a target (plurality, seat-order tiebreak), doctor saves, detective checks. Morning report, day discussion (optional timer), vote (tie or "skip" = nobody). Town wins when no mafia remain; mafia win when they equal the town. Optional role reveal on death.
 - **Online rooms:** Ably realtime; the host's phone runs the rules and sends per-player redacted views over private channels; `/api/ably` issues capability-limited tokens (room code derived from the host's secret); automatic reconnect; seats and host state kept in the tab for 1 hour.
 - Home is the Party Kit hub; the UI kit picker lives in Settings.
@@ -34,4 +34,4 @@ Shared across kits: press-and-hold reveal (imposter panel glows crimson), primar
 
 - 15 categories, 250+ words each, 4,000+ total, in `data/categories/*.json`.
 - `npm run validate-words` runs before every build: no duplicates across categories, schema, generic-word ban, word notes valid, minimum counts.
-- Persistent Fisher-Yates deck in localStorage: no repeats until the crate is exhausted, "N / M left" badge, reshuffle button, custom word lists.
+- Persistent Fisher-Yates deck in localStorage: no repeats until the crate is exhausted, "N / M left" badge, reshuffle button.
