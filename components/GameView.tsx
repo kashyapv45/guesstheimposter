@@ -1,7 +1,7 @@
 "use client";
 // The in-round screens for networked play (host and guests share it; host gets extra controls).
 import type { Action, GameState, Secret } from "@/lib/game";
-import { hapticConfirm } from "@/lib/haptics";
+import { hapticConfirm, hapticTap } from "@/lib/haptics";
 import { ResultView } from "./panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
@@ -123,7 +123,16 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
         {mine ? (
           <Sleeve dark>
             <p className="font-serif text-xl font-bold">You voted for {name(mine)}.</p>
-            <p className="opacity-70">Waiting for everyone else…</p>
+            <p className="mb-3 opacity-70">Waiting for everyone else…</p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                hapticTap();
+                act({ type: "unvote", voter: me });
+              }}
+            >
+              Change vote
+            </Button>
           </Sleeve>
         ) : (
           <Sleeve title="Who's the imposter?">

@@ -69,3 +69,20 @@ test("views hide other roles, but mafia see each other", () => {
   assert.deepEqual(Object.keys(viewMafia(s, v).roles), [v]);
   assert.deepEqual(Object.keys(viewMafia(s, m1).roles).sort(), [m1, m2].sort());
 });
+
+test("player can unvote or change vote in town vote", () => {
+  let s = game(4);
+  const [m] = who(s, "mafia");
+  s = night(s, { [m]: who(s, "villager")[0] });
+  s = run(s, [{ type: "discuss", now: 0 }, { type: "startVote" }]);
+  const voter = s.alive[0];
+  const target1 = s.alive[1];
+  const target2 = s.alive[2];
+  s = reduceMafia(s, { type: "vote", id: voter, target: target1 });
+  assert.equal(s.votes[voter], target1);
+  s = reduceMafia(s, { type: "unvote", id: voter });
+  assert.equal(s.votes[voter], undefined);
+  s = reduceMafia(s, { type: "vote", id: voter, target: target2 });
+  assert.equal(s.votes[voter], target2);
+});
+

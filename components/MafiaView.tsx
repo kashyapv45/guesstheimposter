@@ -1,7 +1,7 @@
 "use client";
 // Mafia screens for every phase. The app is the moderator; each phone only knows what its player may know.
 import type { MAction, MRole, MState } from "@/lib/mafia";
-import { hapticConfirm } from "@/lib/haptics";
+import { hapticConfirm, hapticTap } from "@/lib/haptics";
 import { PlayerList } from "./GameView";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
@@ -177,7 +177,16 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
           (mine ? (
             <Sleeve dark>
               <p className="font-serif text-xl font-bold">{`You voted for ${name(mine)}.`}</p>
-              <p className="opacity-70">Waiting for everyone else…</p>
+              <p className="mb-3 opacity-70">Waiting for everyone else…</p>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  hapticTap();
+                  act({ type: "unvote", id: me });
+                }}
+              >
+                Change vote
+              </Button>
             </Sleeve>
           ) : (
             <Sleeve title="Who should leave town?">

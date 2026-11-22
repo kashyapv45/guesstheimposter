@@ -36,6 +36,7 @@ export type MAction =
   | { type: "discuss"; now: number }
   | { type: "startVote" }
   | { type: "vote"; id: string; target: string }
+  | { type: "unvote"; id: string }
   | { type: "force" } // host: stop waiting (night or vote) when someone left for good
   | { type: "next" };
 
@@ -170,9 +171,15 @@ export function reduceMafia(s: MState, a: MAction): MState {
     case "startVote":
       return s.phase === "day" ? { ...s, phase: "vote", votes: {}, timerEnd: null } : s;
     case "vote": {
-      if (s.phase !== "vote" || !s.alive.includes(a.id) || s.votes[a.id] || a.target === a.id) return s;
+      if (s.phase !== "vote" || !s.alive.includes(a.id) || a.target === a.id) return s;
       if (a.target !== "skip" && !s.alive.includes(a.target)) return s;
       return resolveVote({ ...s, votes: { ...s.votes, [a.id]: a.target } });
+    }
+    case "unvote": {
+      if (s.phase !== "vote" || !s.alive.includes(a.id) || !s.votes[a.id]) return s;
+      const votes = { ...s.votes };
+      delete votes[a.id];
+      return { ...s, votes };
     }
     case "force":
       return resolveVote(resolveNight(s, true), true);

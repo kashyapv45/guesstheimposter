@@ -53,6 +53,7 @@ export type Action =
   | { type: "nextTurn"; now: number }
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
+  | { type: "unvote"; voter: string }
   | { type: "closeVote" } // host: count the votes cast so far (someone left for good)
   | { type: "abort" } // end the round early (back button), keep the players
   | { type: "next" };
@@ -171,10 +172,16 @@ export function reduce(s: GameState, a: Action): GameState {
     case "startVote":
       return s.phase === "discuss" ? { ...s, phase: "vote", votes: {}, candidates: null, timerEnd: null } : s;
     case "vote": {
-      if (s.phase !== "vote" || !s.round || !s.round.roles[a.voter] || a.voter === a.target || s.votes[a.voter]) return s;
+      if (s.phase !== "vote" || !s.round || !s.round.roles[a.voter] || a.voter === a.target) return s;
       const allowed = s.candidates ?? s.round.order;
       if (!allowed.includes(a.target)) return s;
       return resolveIfDone({ ...s, votes: { ...s.votes, [a.voter]: a.target } });
+    }
+    case "unvote": {
+      if (s.phase !== "vote" || !s.round || !s.votes[a.voter]) return s;
+      const votes = { ...s.votes };
+      delete votes[a.voter];
+      return { ...s, votes };
     }
     case "closeVote":
       return resolveIfDone(s, true);

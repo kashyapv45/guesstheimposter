@@ -93,4 +93,16 @@ test("player rename updates name without changing color or id", () => {
   assert.equal(s.players[0].color, color);
 });
 
+test("player can unvote or change vote before resolution", () => {
+  const s = game(4);
+  const [a, b, c] = s.players.map((p) => p.id);
+  let v = reduce(s, { type: "vote", voter: a, target: b });
+  assert.equal(v.votes[a], b);
+  v = reduce(v, { type: "unvote", voter: a });
+  assert.equal(v.votes[a], undefined);
+  v = reduce(v, { type: "vote", voter: a, target: c });
+  assert.equal(v.votes[a], c);
+});
+
+
 

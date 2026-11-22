@@ -22,12 +22,16 @@ This document tracks technical improvements, implemented features, and future re
 - **Status:** **Completed**
 - **Implementation:** Added `{ type: "rename", id, name }` action to `lib/game.ts` (with unit tests) and inline rename input (✎ / ✓ / ✕) in `app/play/page.tsx` so players can fix typos or change names between rounds without losing their color or seat.
 
-### 1.4 Automatic Host Migration on 2-Minute Disconnect
+### 1.4 Automatic Host Migration on 1-Minute Disconnect
 - **Status:** **Completed**
 - **Implementation:**
   - In `app/api/ably/route.ts`, the endpoint supports `claimHost=<hostSecret>`. It validates `codeFor(claimHost) === code` using the server's HMAC key, granting host capabilities to the claimant without server-side storage.
   - In `lib/useRoom.ts`, the host passes `hostKey` over authenticated private player channels (`room:${code}:p:${pid}`).
-  - If the host disconnects from presence for **2 minutes (120 seconds)**, connected guests display a countdown banner. If the host does not return, a deterministic election selects the next player in seat order. That player claims host capabilities, resets the round safely to the lobby, and resumes the room.
+  - If the host disconnects from presence for **1 minute (60 seconds)**, connected guests display a countdown banner. If the host does not return, a deterministic election selects the next player in seat order. That player claims host capabilities, resets the round safely to the lobby, and resumes the room.
+
+### 1.5 Change Vote Button
+- **Status:** **Completed**
+- **Implementation:** Added `{ type: "unvote" }` action to both Imposter (`lib/game.ts`) and Mafia (`lib/mafia.ts`) with unit tests. In both games, players who have cast a vote see their choice alongside a "Change vote" button that allows withdrawing and re-selecting before all votes are finalized.
 
 ---
 

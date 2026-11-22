@@ -20,7 +20,10 @@ export type RoomMsg = {
 export type RoomStatus = "connecting" | "open" | "waiting" | "missing" | "nosetup" | "offline";
 type AnyAction = IAction | MAction;
 
-const GUEST_ONLY: Record<Game, Set<string>> = { imposter: new Set(["revealed", "vote"]), mafia: new Set(["revealed", "night", "vote"]) };
+const GUEST_ONLY: Record<Game, Set<string>> = {
+  imposter: new Set(["revealed", "vote", "unvote"]),
+  mafia: new Set(["revealed", "night", "vote", "unvote"]),
+};
 
 function client(
   code: string,
@@ -208,13 +211,13 @@ export function useGuestRoom(
     let missingTimer: ReturnType<typeof setTimeout> | undefined;
     let retryInterval: ReturnType<typeof setInterval> | undefined;
     let hostDisconnectInterval: ReturnType<typeof setInterval> | undefined;
-    let hostMissingLeft = 120;
+    let hostMissingLeft = 60;
     const subscribed = new Set<string>();
 
     const startHostCountdown = () => {
       if (hostDisconnectInterval || !msgRef.current) return;
-      hostMissingLeft = 120;
-      setHostMissingSeconds(120);
+      hostMissingLeft = 60;
+      setHostMissingSeconds(60);
       hostDisconnectInterval = setInterval(async () => {
         if (cancelled) return;
         hostMissingLeft -= 1;
@@ -222,7 +225,7 @@ export function useGuestRoom(
           clearInterval(hostDisconnectInterval);
           hostDisconnectInterval = undefined;
           setHostMissingSeconds(null);
-          // 2 minutes expired without host: elect another host
+          // 1 minute expired without host: elect another host
           try {
             const members = await host.presence.get();
             const guestMembers = members.filter((m) => !(m.data as { host?: boolean })?.host);
