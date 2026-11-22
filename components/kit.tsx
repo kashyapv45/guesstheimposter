@@ -46,7 +46,7 @@ function ScratchCard({ size, spinning = true, label, color = "var(--amber)" }: P
         <span className="pointer-events-none absolute bottom-2 right-2.5 font-mono text-[9px] text-ink/30 select-none">✦</span>
 
         {/* Header Ribbon / Banner */}
-        <div className="relative z-10 flex w-full items-center justify-center gap-1.5">
+        <div className="relative flex w-full items-center justify-center gap-1.5">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-edge" />
           <div
             className="rounded-full px-2.5 py-0.5 font-serif text-[10px] font-bold uppercase tracking-wider text-on-accent shadow-xs"
@@ -59,7 +59,7 @@ function ScratchCard({ size, spinning = true, label, color = "var(--amber)" }: P
 
         {/* Center Metallic Latex Scratch Foil */}
         <div
-          className="scratch-foil relative z-10 grid place-items-center rounded-full border-2 border-dashed border-[#a6b1bd]"
+          className="scratch-foil relative grid place-items-center rounded-full border-2 border-dashed border-[#a6b1bd]"
           style={{ width: foilSize, height: foilSize }}
         >
           {/* Inner Golden Lucky Coin */}
@@ -77,7 +77,7 @@ function ScratchCard({ size, spinning = true, label, color = "var(--amber)" }: P
         </div>
 
         {/* Footer ticket number */}
-        <div className="relative z-10 flex w-full flex-col items-center gap-0.5">
+        <div className="relative flex w-full flex-col items-center gap-0.5">
           <div className="w-full border-t border-dashed border-edge/70" />
           <p className="font-mono text-[8px] font-bold tracking-widest text-ink/50 select-none">
             ★ NO. 777-WIN ★

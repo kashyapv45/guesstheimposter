@@ -161,7 +161,7 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
       >
         <HeroObject color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight">Hold<br />me</span>} />
         {held && (
-          <div className={`absolute grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${isAlert ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
+          <div className={`absolute z-20 grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${isAlert ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
             {content ?? (secret && <SecretText secret={secret} />)}
           </div>
         )}

@@ -82,7 +82,7 @@ export default function PassAndPlay() {
                       type="submit"
                       disabled={!editName.trim()}
                       aria-label="Save name"
-                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2 text-sm font-bold text-white disabled:opacity-40"
+                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2 text-sm font-bold text-on-accent disabled:opacity-40"
                     >
                       ✓
                     </button>
@@ -124,7 +124,7 @@ export default function PassAndPlay() {
           </ul>
           <form className="flex gap-2" onSubmit={(e) => (e.preventDefault(), addPlayer())}>
             <input value={name} onChange={(e) => setName(e.target.value)} maxLength={20} placeholder="Player name" aria-label="Player name" className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-3 py-2" />
-            <button disabled={!name.trim()} className="rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-well px-4 font-bold text-ink disabled:opacity-40">
+            <button disabled={!name.trim()} className="rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-well px-4 font-bold text-well-ink disabled:opacity-40">
               Add
             </button>
           </form>
