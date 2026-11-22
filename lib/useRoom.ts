@@ -16,7 +16,13 @@ type AnyAction = IAction | MAction;
 
 const GUEST_ONLY: Record<Game, Set<string>> = { imposter: new Set(["revealed", "vote"]), mafia: new Set(["revealed", "night", "vote"]) };
 
-function client(code: string, token: string, onId: (pid: string) => void, onNoSetup: () => void) {
+function client(
+  code: string,
+  token: string,
+  onId: (pid: string) => void,
+  onNoSetup: () => void,
+  onError?: (err: string) => void,
+) {
   return createClient({
     authCallback: async (_params, cb) => {
       try {
@@ -25,11 +31,19 @@ function client(code: string, token: string, onId: (pid: string) => void, onNoSe
           onNoSetup();
           return cb("nosetup", null);
         }
+        if (!r.ok) {
+          const body = (await r.json().catch(() => ({}))) as { error?: string };
+          const err = body.error || `HTTP ${r.status}`;
+          onError?.(err);
+          return cb(err, null);
+        }
         const tr = (await r.json()) as TokenRequest;
         if (tr.clientId) onId(tr.clientId);
         cb(null, tr);
       } catch (e) {
-        cb(String(e), null);
+        const err = String(e);
+        onError?.(err);
+        cb(err, null);
       }
     },
   });
@@ -57,11 +71,22 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
     // Restore after a refresh (1 hour); players show as dropped until their phones say hello again.
     const saved = loadSession<GameState | MState>(saveKey);
     const restored = saved ? ({ ...saved, players: saved.players.map((p) => ({ ...p, connected: false })) } as GameState | MState) : null;
-    const rt = client(code, token, setMe, () => setStatus("nosetup"));
+    const rt = client(code, token, setMe, () => setStatus("nosetup"), () => setStatus("offline"));
     ably.current = rt;
     const inbox = rt.channels.get(`room:${code}:host`);
-    rt.connection.on("connected", () => setStatus("open"));
+
+    const onConnect = () => {
+      setStatus("open");
+      void inbox.presence.enter({ host: true }).catch(() => {});
+      setTick((t) => t + 1);
+    };
+
+    if (rt.connection.state === "connected") onConnect();
+    rt.connection.on("connected", onConnect);
     rt.connection.on("disconnected", () => setStatus("offline"));
+    rt.connection.on("suspended", () => setStatus("offline"));
+    rt.connection.on("failed", () => setStatus("offline"));
+
     inbox.subscribe("hello", (m) => {
       if (!m.clientId) return;
       setState((s) => {
@@ -71,6 +96,7 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
       });
       setTick((t) => t + 1);
     });
+
     inbox.subscribe("action", (m) => {
       const a = (m.data as { action?: AnyAction })?.action;
       if (!m.clientId || !a || typeof a !== "object") return;
@@ -78,11 +104,29 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
       if (!GUEST_ONLY[game].has(x.type) || (x.id ?? x.voter) !== m.clientId) return; // guests act only for themselves
       dispatch(a);
     });
-    inbox.presence.subscribe("leave", (m) => m.clientId && dispatch({ type: "connected", id: m.clientId, connected: false } as AnyAction));
-    void inbox.presence.enter({ host: true });
+
+    inbox.presence.subscribe((m) => {
+      if (!m.clientId) return;
+      const isHostMember = (m.data as { host?: boolean })?.host;
+      if (m.action === "enter" || m.action === "present" || m.action === "update") {
+        if (!isHostMember) {
+          const playerName = String((m.data as { name?: unknown })?.name ?? "Player");
+          dispatch({ type: "join", id: m.clientId, name: playerName } as AnyAction);
+          setTick((t) => t + 1);
+        }
+      } else if (m.action === "leave") {
+        if (!isHostMember) {
+          dispatch({ type: "connected", id: m.clientId, connected: false } as AnyAction);
+        }
+      }
+    });
+
+    void inbox.presence.enter({ host: true }).catch(() => {});
     // eslint-disable-next-line react-hooks/set-state-in-effect -- room state is created when the connection is set up
     setState(restored ?? (game === "imposter" ? newGame() : newMafia()));
-    return () => rt.close();
+    return () => {
+      rt.close();
+    };
   }, [code, token, name, game, saveKey, dispatch]);
 
   // Host plays too.
@@ -95,8 +139,11 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
   useEffect(() => {
     const rt = ably.current;
     if (!state || !rt || !me) return;
-    for (const p of state.players)
-      if (p.id !== me && p.connected) void rt.channels.get(`room:${code}:p:${p.id}`).publish("state", { game, host: me, ...viewOf(game, state, p.id) });
+    for (const p of state.players) {
+      if (p.id !== me && p.connected) {
+        void rt.channels.get(`room:${code}:p:${p.id}`).publish("state", { game, host: me, ...viewOf(game, state, p.id) }).catch(() => {});
+      }
+    }
     saveSession(saveKey, state);
   }, [state, tick, me, code, game, saveKey]);
 
@@ -107,58 +154,136 @@ export function useHostRoom(code: string, token: string, name: string, game: Gam
 // ---------- guest: says hello, sends actions, receives its own view ----------
 export function useGuestRoom(code: string, token: string, name: string) {
   const [msg, setMsg] = useState<RoomMsg | null>(null);
-  const [me, setMe] = useState("");
+  const [me, setMe] = useState(() => (typeof window !== "undefined" ? loadSession<string>(`imposter:pid:${code}:${token}`) ?? "" : ""));
   const [status, setStatus] = useState<RoomStatus>("connecting");
   const inbox = useRef<RealtimeChannel | null>(null);
+  const msgRef = useRef<RoomMsg | null>(null);
 
   useEffect(() => {
-    if (!code || !token || !name || !me) return;
-    const rt = client(code, token, () => {}, () => setStatus("nosetup"));
-    const own = rt.channels.get(`room:${code}:p:${me}`);
+    msgRef.current = msg;
+  }, [msg]);
+
+  useEffect(() => {
+    if (!code || !token || !name) return;
+    let cancelled = false;
+    let missingTimer: ReturnType<typeof setTimeout> | undefined;
+    let retryInterval: ReturnType<typeof setInterval> | undefined;
+    const subscribed = new Set<string>();
+
+    const setupPrivate = (pid: string, clientRt: PubSubClient) => {
+      if (subscribed.has(pid)) return;
+      subscribed.add(pid);
+      const own = clientRt.channels.get(`room:${code}:p:${pid}`);
+      own.subscribe("state", (m) => {
+        if (cancelled) return;
+        msgRef.current = m.data as RoomMsg;
+        setMsg(m.data as RoomMsg);
+        setStatus("open");
+        clearInterval(retryInterval);
+        clearTimeout(missingTimer);
+      });
+    };
+
+    const rt = client(
+      code,
+      token,
+      (pid) => {
+        if (cancelled) return;
+        saveSession(`imposter:pid:${code}:${token}`, pid);
+        setMe(pid);
+        setupPrivate(pid, rt);
+      },
+      () => {
+        if (!cancelled) setStatus("nosetup");
+      },
+      (err) => {
+        if (!cancelled) {
+          if (err.includes("bad code") || err.includes("bad secret")) setStatus("missing");
+          else setStatus("offline");
+        }
+      },
+    );
+
     const host = rt.channels.get(`room:${code}:host`);
     inbox.current = host;
-    own.subscribe("state", (m) => {
-      setMsg(m.data as RoomMsg);
-      setStatus("open");
-    });
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    // On every (re)connect: rejoin presence and say hello, so the host re-seats us.
-    const hello = async () => {
-      await host.presence.enter({ name });
-      await host.publish("hello", { name });
-      const members = await host.presence.get();
-      if (!members.some((p) => (p.data as { host?: boolean })?.host)) {
-        setStatus("waiting");
-        clearTimeout(timer);
-        timer = setTimeout(() => setStatus((s) => (s === "waiting" ? "missing" : s)), 8000);
+
+    const cachedPid = loadSession<string>(`imposter:pid:${code}:${token}`);
+    if (cachedPid) setupPrivate(cachedPid, rt);
+
+    const sayHello = async () => {
+      try {
+        await host.presence.enter({ name });
+        await host.publish("hello", { name });
+        const members = await host.presence.get();
+        if (cancelled) return;
+        const hasHost = members.some((p) => (p.data as { host?: boolean })?.host);
+        if (!hasHost && !msgRef.current) {
+          setStatus("waiting");
+          clearTimeout(missingTimer);
+          missingTimer = setTimeout(() => {
+            if (!cancelled && !msgRef.current) setStatus("missing");
+          }, 8000);
+        }
+      } catch (err) {
+        console.warn("Guest sayHello error:", err);
       }
     };
-    rt.connection.on("connected", () => void hello().catch(() => setStatus("offline")));
-    rt.connection.on("disconnected", () => setStatus("offline"));
+
+    // React immediately if host enters presence or leaves
+    host.presence.subscribe((m) => {
+      if (cancelled) return;
+      if ((m.data as { host?: boolean })?.host) {
+        if (m.action === "enter" || m.action === "present") {
+          clearTimeout(missingTimer);
+          if (!msgRef.current) setStatus("connecting");
+          void host.publish("hello", { name }).catch(() => {});
+        } else if (m.action === "leave") {
+          if (!msgRef.current) {
+            setStatus("waiting");
+            clearTimeout(missingTimer);
+            missingTimer = setTimeout(() => {
+              if (!cancelled && !msgRef.current) setStatus("missing");
+            }, 8000);
+          }
+        }
+      }
+    });
+
+    const onConnect = () => {
+      void sayHello();
+      clearInterval(retryInterval);
+      retryInterval = setInterval(() => {
+        if (cancelled) return;
+        if (!msgRef.current && rt.connection.state === "connected") {
+          void host.publish("hello", { name }).catch(() => {});
+        }
+      }, 2000);
+    };
+
+    if (rt.connection.state === "connected") onConnect();
+    rt.connection.on("connected", onConnect);
+    rt.connection.on("disconnected", () => {
+      if (!cancelled) setStatus("offline");
+      clearInterval(retryInterval);
+    });
+    rt.connection.on("suspended", () => {
+      if (!cancelled) setStatus("offline");
+      clearInterval(retryInterval);
+    });
+    rt.connection.on("failed", () => {
+      if (!cancelled) setStatus("offline");
+      clearInterval(retryInterval);
+    });
+
     return () => {
-      clearTimeout(timer);
+      cancelled = true;
+      clearTimeout(missingTimer);
+      clearInterval(retryInterval);
+      subscribed.clear();
       rt.close();
     };
-  }, [code, token, name, me]);
+  }, [code, token, name]);
 
-  // Learn our player id first (it names our private channel).
-  useEffect(() => {
-    if (!code || !token || me) return;
-    const cached = loadSession<string>(`imposter:pid:${code}:${token}`);
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reuse this tab's id after a refresh
-    if (cached) return setMe(cached);
-    void fetch(`/api/ably?t=${token}&code=${code}`, { cache: "no-store" })
-      .then(async (r) => {
-        if (r.status === 503) return setStatus("nosetup");
-        const tr = (await r.json()) as TokenRequest;
-        if (tr.clientId) {
-          saveSession(`imposter:pid:${code}:${token}`, tr.clientId);
-          setMe(tr.clientId);
-        }
-      })
-      .catch(() => setStatus("offline"));
-  }, [code, token, me]);
-
-  const act = useCallback((a: AnyAction) => void inbox.current?.publish("action", { action: a }), []);
+  const act = useCallback((a: AnyAction) => void inbox.current?.publish("action", { action: a }).catch(() => {}), []);
   return { msg, status, me, act };
 }

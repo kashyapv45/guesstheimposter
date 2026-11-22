@@ -132,10 +132,15 @@ export default function RoomClient() {
 
   if (!msg)
     return (
-      <Screen title="Connecting…" kicker={`Room ${formatCode(code)}`}>
-        <p className="py-10 text-center font-mono text-sm uppercase tracking-widest">
-          {status === "waiting" ? "Waiting for the host…" : status === "offline" ? "Reconnecting…" : "Opening the room…"}
-        </p>
+      <Screen title={status === "offline" ? "Reconnecting…" : "Connecting…"} kicker={`Room ${formatCode(code)}`}>
+        <div className="py-10 text-center space-y-4">
+          <p className="font-mono text-sm uppercase tracking-widest">
+            {status === "waiting" ? "Waiting for the host…" : status === "offline" ? "Connection lost. Reconnecting…" : "Opening the room…"}
+          </p>
+          <Link href="/" className="font-mono text-xs underline opacity-70 hover:opacity-100">
+            ← Party Kit
+          </Link>
+        </div>
       </Screen>
     );
 

@@ -30,7 +30,7 @@ export async function GET(req: Request) {
   const capability =
     codeFor(t) === code
       ? { [`${room}:host`]: ["subscribe", "presence"], [`${room}:p:*`]: ["publish"] }
-      : { [`${room}:host`]: ["publish", "presence"], [`${room}:p:${pid}`]: ["subscribe"] };
+      : { [`${room}:host`]: ["publish", "presence", "presence-subscribe"], [`${room}:p:${pid}`]: ["subscribe"] };
   const tokenRequest = await createHttpClient({ key: KEY }).auth.createTokenRequest({
     clientId: pid,
     capability: JSON.stringify(capability),
