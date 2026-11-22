@@ -6,6 +6,7 @@ import { Button, ConfirmSheet, Screen, Sleeve, Timer, VinylReveal } from "@/comp
 import { newGame, reduce, secretFor } from "@/lib/game";
 import { useBackGuard } from "@/lib/useBackGuard";
 import { useTheme } from "@/lib/theme";
+import { useWakeLock } from "@/lib/useWakeLock";
 import { noteFor } from "@/lib/words";
 import { useWordDeck } from "@/lib/useWordDeck";
 
@@ -14,9 +15,13 @@ export default function PassAndPlay() {
   const [kit] = useTheme();
   const [s, dispatch] = useReducer(reduce, undefined, () => newGame());
   const [name, setName] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [ready, setReady] = useState(false); // "I'm <name>" confirmed on a pass-the-phone screen
   const [error, setError] = useState("");
   const playerName = (id: string) => s.players.find((p) => p.id === id)?.name ?? "?";
+
+  useWakeLock(true);
 
   const start = () => {
     const w = deck.draw(s.settings.categories);
@@ -55,11 +60,65 @@ export default function PassAndPlay() {
           <ul className="mb-3 space-y-2">
             {s.players.map((p) => (
               <li key={p.id} className="flex items-center gap-2">
-                <span className="h-4 w-4 rounded-full border-[length:var(--bw)] border-edge" style={{ background: p.color }} />
-                <span className="flex-1 truncate font-bold">{p.name}</span>
-                <button aria-label={`Remove ${p.name}`} onClick={() => dispatch({ type: "leave", id: p.id })} className="h-10 w-10 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field">
-                  ✕
-                </button>
+                <span className="h-4 w-4 shrink-0 rounded-full border-[length:var(--bw)] border-edge" style={{ background: p.color }} />
+                {editingId === p.id ? (
+                  <form
+                    className="flex flex-1 items-center gap-1.5"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (editName.trim()) dispatch({ type: "rename", id: p.id, name: editName });
+                      setEditingId(null);
+                    }}
+                  >
+                    <input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      maxLength={20}
+                      autoFocus
+                      aria-label="New name"
+                      className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2 py-1 text-sm font-bold"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!editName.trim()}
+                      aria-label="Save name"
+                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2 text-sm font-bold text-white disabled:opacity-40"
+                    >
+                      ✓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(null)}
+                      aria-label="Cancel rename"
+                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2 text-sm"
+                    >
+                      ✕
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <span className="flex-1 truncate font-bold">{p.name}</span>
+                    <button
+                      type="button"
+                      aria-label={`Rename ${p.name}`}
+                      onClick={() => {
+                        setEditingId(p.id);
+                        setEditName(p.name);
+                      }}
+                      className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-sm opacity-70 hover:opacity-100"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${p.name}`}
+                      onClick={() => dispatch({ type: "leave", id: p.id })}
+                      className="h-10 w-10 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field"
+                    >
+                      ✕
+                    </button>
+                  </>
+                )}
               </li>
             ))}
           </ul>

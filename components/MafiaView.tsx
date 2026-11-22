@@ -1,6 +1,7 @@
 "use client";
 // Mafia screens for every phase. The app is the moderator; each phone only knows what its player may know.
 import type { MAction, MRole, MState } from "@/lib/mafia";
+import { hapticConfirm } from "@/lib/haptics";
 import { PlayerList } from "./GameView";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
@@ -88,7 +89,14 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
               )}
               <div className="grid gap-2">
                 {options.map((id) => (
-                  <Button key={id} variant="ghost" onClick={() => act({ type: "night", id: me, target: id })}>
+                  <Button
+                    key={id}
+                    variant="ghost"
+                    onClick={() => {
+                      hapticConfirm();
+                      act({ type: "night", id: me, target: id });
+                    }}
+                  >
                     {name(id)}
                     {id === me && " (you)"}
                   </Button>
@@ -99,7 +107,13 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
             <Sleeve dark>
               <p className="font-serif text-xl font-bold">Close your eyes.</p>
               <p className="mb-3 opacity-70">The town sleeps. Tap so the night can move on.</p>
-              <Button variant="secondary" onClick={() => act({ type: "night", id: me, target: null })}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  hapticConfirm();
+                  act({ type: "night", id: me, target: null });
+                }}
+              >
                 I&apos;m asleep
               </Button>
             </Sleeve>
@@ -171,7 +185,14 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
                 {state.alive
                   .filter((id) => id !== me)
                   .map((id) => (
-                    <Button key={id} variant="ghost" onClick={() => act({ type: "vote", id: me, target: id })}>
+                    <Button
+                      key={id}
+                      variant="ghost"
+                      onClick={() => {
+                        hapticConfirm();
+                        act({ type: "vote", id: me, target: id });
+                      }}
+                    >
                       {name(id)}
                     </Button>
                   ))}

@@ -11,15 +11,18 @@ import { cleanCode, formatCode, isValidCode, randomId } from "@/lib/roomCode";
 import { guestKey, loadSession, saveSession } from "@/lib/session";
 import { useBackGuard } from "@/lib/useBackGuard";
 import { useGuestRoom, useHostRoom, type Game } from "@/lib/useRoom";
+import { useWakeLock } from "@/lib/useWakeLock";
 
 // Seat in this tab, kept for 1 hour without play. `host` marks the phone that runs the room.
-type Saved = { token: string; name: string; host?: Game };
+type Saved = { token: string; name: string; host?: Game; hostKey?: string };
 const GAME_NAME: Record<Game, string> = { imposter: "Guess the Imposter", mafia: "Mafia" };
 
 export default function RoomClient() {
   const [code, setCode] = useState("");
   const [create, setCreate] = useState<Game | undefined>();
   const [token, setToken] = useState("");
+  const [hostToken, setHostToken] = useState("");
+  const [promotedState, setPromotedState] = useState<unknown>(null);
   const [name, setName] = useState("");
   const [hostGame, setHostGame] = useState<Game | undefined>();
   const [joined, setJoined] = useState(false);
@@ -41,15 +44,26 @@ export default function RoomClient() {
     if (saved?.name) {
       setName(saved.name);
       setHostGame(saved.host);
+      if (saved.hostKey) setHostToken(saved.hostKey);
       setJoined(true);
     }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  const handlePromoteHost = (game: Game, key: string, lastState: unknown) => {
+    saveSession<Saved>(guestKey(code), { token, name, host: game, hostKey: key });
+    setHostToken(key);
+    setPromotedState(lastState);
+    setHostGame(game);
+  };
+
   const hosting = joined && !!hostGame;
-  const host = useHostRoom(hosting ? code : "", hosting ? token : "", name, hostGame ?? "imposter");
-  const guest = useGuestRoom(joined && !hostGame ? code : "", joined && !hostGame ? token : "", name);
+  const host = useHostRoom(hosting ? code : "", hosting ? token : "", name, hostGame ?? "imposter", hostToken || undefined, promotedState);
+  const guest = useGuestRoom(joined && !hostGame ? code : "", joined && !hostGame ? token : "", name, handlePromoteHost);
   const { msg, status, me, act } = hosting ? host : guest;
+
+  // Keep screen awake while inside an active room
+  useWakeLock(joined && status !== "offline");
   const send = (a: Action | MAction) => {
     act(a);
     saveSession<Saved>(guestKey(code), { token, name, host: hostGame }); // activity keeps the seat
@@ -145,7 +159,17 @@ export default function RoomClient() {
     );
 
   const isHost = msg.host === me;
-  const banner = status === "offline" && <p className="sticky top-0 z-40 bg-amber py-1 text-center font-mono text-xs uppercase text-on-accent">Reconnecting…</p>;
+  const banner = (
+    <>
+      {status === "offline" && <p className="sticky top-0 z-40 bg-amber py-1 text-center font-mono text-xs uppercase text-on-accent">Reconnecting…</p>}
+      {!hosting && guest.hostMissingSeconds != null && (
+        <p className="sticky top-0 z-40 bg-amber py-1 text-center font-mono text-xs uppercase text-on-accent">
+          Host disconnected · Selecting new host in {Math.floor(guest.hostMissingSeconds / 60)}:
+          {String(guest.hostMissingSeconds % 60).padStart(2, "0")}
+        </p>
+      )}
+    </>
+  );
 
   if (msg.game === "mafia") {
     const state = msg.state as MState;

@@ -21,16 +21,18 @@ export async function GET(req: Request) {
   const q = new URL(req.url).searchParams;
   const t = q.get("t") ?? "";
   const code = q.get("code") ?? "";
+  const claimHost = q.get("claimHost") ?? "";
   if (!SECRET.test(t)) return fail("bad secret");
   if (code === "new") return Response.json({ code: codeFor(t) });
   if (!isValidCode(code)) return fail("bad code");
+  if (claimHost && !SECRET.test(claimHost)) return fail("bad claimHost");
 
   const pid = playerId(t);
   const room = `room:${code}`;
-  const capability =
-    codeFor(t) === code
-      ? { [`${room}:host`]: ["subscribe", "presence"], [`${room}:p:*`]: ["publish"] }
-      : { [`${room}:host`]: ["publish", "presence", "presence-subscribe"], [`${room}:p:${pid}`]: ["subscribe"] };
+  const isHost = codeFor(t) === code || (!!claimHost && codeFor(claimHost) === code);
+  const capability = isHost
+    ? { [`${room}:host`]: ["subscribe", "presence"], [`${room}:p:*`]: ["publish"] }
+    : { [`${room}:host`]: ["publish", "presence", "presence-subscribe"], [`${room}:p:${pid}`]: ["subscribe"] };
   const tokenRequest = await createHttpClient({ key: KEY }).auth.createTokenRequest({
     clientId: pid,
     capability: JSON.stringify(capability),

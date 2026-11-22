@@ -43,6 +43,7 @@ export type GameState = {
 
 export type Action =
   | { type: "join"; id: string; name: string }
+  | { type: "rename"; id: string; name: string }
   | { type: "leave"; id: string }
   | { type: "connected"; id: string; connected: boolean }
   | { type: "settings"; settings: Partial<Settings> }
@@ -124,6 +125,11 @@ export function reduce(s: GameState, a: Action): GameState {
       if (s.players.length >= MAX_PLAYERS) return s; // late joiners sit out until the next deal
       const color = COLORS[s.players.length % COLORS.length];
       return { ...s, players: [...s.players, { id: a.id, name, color, connected: true }] };
+    }
+    case "rename": {
+      const name = a.name.trim().slice(0, 20);
+      if (!name) return s;
+      return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, name } : p)) };
     }
     case "leave":
       return s.phase === "lobby" ? { ...s, players: s.players.filter((p) => p.id !== a.id) } : s;

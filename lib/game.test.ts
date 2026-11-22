@@ -84,3 +84,13 @@ test("a tie triggers one runoff, a second tie lets imposters escape", () => {
   assert.equal(again.outcome!.winner, "imposters");
 });
 
+test("player rename updates name without changing color or id", () => {
+  let s = reduce(newGame(), { type: "join", id: "p1", name: "Alice" });
+  assert.equal(s.players[0].name, "Alice");
+  const color = s.players[0].color;
+  s = reduce(s, { type: "rename", id: "p1", name: "Bob" });
+  assert.equal(s.players[0].name, "Bob");
+  assert.equal(s.players[0].color, color);
+});
+
+

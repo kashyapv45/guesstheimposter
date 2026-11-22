@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import type { Secret } from "@/lib/game";
+import { hapticEnd, hapticReveal, hapticTap, hapticUrgent } from "@/lib/haptics";
 import { useTheme } from "@/lib/theme";
 import { HeroObject } from "./kit";
 
@@ -130,7 +131,12 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
   const round = theme.shape === "round";
   const show = (v: boolean) => {
     setHeld(v);
-    if (v) onReveal?.();
+    if (v) {
+      hapticReveal(isAlert);
+      onReveal?.();
+    } else {
+      hapticTap();
+    }
   };
   return (
     <div className="flex flex-col items-center gap-3">
@@ -176,6 +182,7 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
 export function Timer({ endAt, total, caption, onExpire }: { endAt: number | null; total: number; caption?: string; onExpire?: () => void }) {
   const [now, setNow] = useState(() => Date.now());
   const fired = useRef<number | null>(null);
+  const lastVibratedSecond = useRef<number | null>(null);
   useEffect(() => {
     if (endAt == null) return;
     const t = setInterval(() => setNow(Date.now()), 250);
@@ -184,6 +191,13 @@ export function Timer({ endAt, total, caption, onExpire }: { endAt: number | nul
   const left = endAt == null ? 0 : Math.max(0, Math.ceil((endAt - now) / 1000));
   useEffect(() => {
     if (endAt == null) return;
+    if (left <= 5 && left > 0 && lastVibratedSecond.current !== left) {
+      lastVibratedSecond.current = left;
+      hapticUrgent();
+    } else if (left === 0 && lastVibratedSecond.current !== 0) {
+      lastVibratedSecond.current = 0;
+      hapticEnd();
+    }
     if (left === 0 && fired.current !== endAt) {
       fired.current = endAt;
       onExpire?.();
