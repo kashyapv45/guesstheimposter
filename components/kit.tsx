@@ -10,6 +10,8 @@ const SPIN = "motion-safe:animate-[spin_4s_linear_infinite]";
 export function HeroObject(p: Props) {
   const [theme] = useTheme();
   switch (theme.id) {
+    case "scratch":
+      return <ScratchCard {...p} />;
     case "zine":
       return <Sticker {...p} />;
     case "citypop":
@@ -21,6 +23,69 @@ export function HeroObject(p: Props) {
     default:
       return <Record kit={theme.id} {...p} />;
   }
+}
+
+function ScratchCard({ size, spinning = true, label, color = "var(--amber)" }: Props) {
+  const s = size * 0.88;
+  const foilSize = s * 0.52;
+  const coinSize = foilSize * 0.72;
+
+  return (
+    <div className="grid place-items-center" style={{ width: size, height: size }}>
+      <div
+        className={`scratch-card relative flex flex-col items-center justify-between overflow-hidden p-3 text-center ${spinning ? "motion-safe:animate-[float_4s_ease-in-out_infinite]" : ""}`}
+        style={{ width: s, height: s }}
+      >
+        {/* Decorative dashed ticket inner border */}
+        <div className="pointer-events-none absolute inset-1.5 rounded-[calc(var(--radius)-6px)] border border-dashed border-edge/60" />
+
+        {/* Decorative corner sparkles */}
+        <span className="pointer-events-none absolute left-2.5 top-2 font-mono text-[9px] text-ink/30 select-none">✦</span>
+        <span className="pointer-events-none absolute right-2.5 top-2 font-mono text-[9px] text-ink/30 select-none">✦</span>
+        <span className="pointer-events-none absolute bottom-2 left-2.5 font-mono text-[9px] text-ink/30 select-none">✦</span>
+        <span className="pointer-events-none absolute bottom-2 right-2.5 font-mono text-[9px] text-ink/30 select-none">✦</span>
+
+        {/* Header Ribbon / Banner */}
+        <div className="relative z-10 flex w-full items-center justify-center gap-1.5">
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-edge" />
+          <div
+            className="rounded-full px-2.5 py-0.5 font-serif text-[10px] font-bold uppercase tracking-wider text-on-accent shadow-xs"
+            style={{ background: color }}
+          >
+            Lucky Scratch
+          </div>
+          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-edge" />
+        </div>
+
+        {/* Center Metallic Latex Scratch Foil */}
+        <div
+          className="scratch-foil relative z-10 grid place-items-center rounded-full border-2 border-dashed border-[#a6b1bd]"
+          style={{ width: foilSize, height: foilSize }}
+        >
+          {/* Inner Golden Lucky Coin */}
+          <div
+            className="scratch-coin grid place-items-center rounded-full border border-amber-300 text-center font-bold text-[#422c06]"
+            style={{ width: coinSize, height: coinSize }}
+          >
+            {label ?? (
+              <div className="flex flex-col items-center justify-center leading-none">
+                <span className="text-sm">🪙</span>
+                <span className="font-mono text-[7px] uppercase tracking-wider">777</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer ticket number */}
+        <div className="relative z-10 flex w-full flex-col items-center gap-0.5">
+          <div className="w-full border-t border-dashed border-edge/70" />
+          <p className="font-mono text-[8px] font-bold tracking-widest text-ink/50 select-none">
+            ★ NO. 777-WIN ★
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const DISC: Partial<Record<ThemeId, string>> = { diner: "disc-diner", psych: "disc-psych" };

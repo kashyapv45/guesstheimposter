@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 // UI kits. Each has a palette/fonts block in app/globals.css under [data-theme="<id>"]
 // and a signature object in components/kit.tsx (the home hero and the press-and-hold reveal).
 export const THEMES = [
+  { id: "scratch", name: "Pastel Scratch Card", blurb: "Soft pastels, silver scratch foil, lucky coin", swatch: ["#FFB7B2", "#B5EAD7", "#C7CEEA", "#FFDAC1"], noun: "scratch card", shape: "square", deal: "Scratch & deal", back: "Back to the tickets" },
   { id: "crate", name: "1970s Crate Digger", blurb: "Kraft sleeves, cream paper, burnt-orange stamps", swatch: ["#f4efe6", "#d8c3a5", "#d95d39", "#e9b44c"], noun: "record", shape: "round", deal: "Drop the needle", back: "Back to the crate" },
   { id: "hifi", name: "Midnight Hi-Fi", blurb: "Brushed obsidian, amber tube glow, chrome tonearm", swatch: ["#111114", "#f59e0b", "#10b981", "#ef4444"], noun: "record", shape: "round", deal: "Drop the needle", back: "Back to the crate" },
   { id: "zine", name: "Neo-Brutalist Zine", blurb: "Thick ink borders, hard shadows, sticker badges", swatch: ["#fffdf5", "#111111", "#ffd23f", "#ff6b57"], noun: "sticker", shape: "square", deal: "Stamp it", back: "Back to the stack" },
@@ -17,7 +18,7 @@ export const THEMES = [
 export type ThemeId = (typeof THEMES)[number]["id"];
 export type Theme = (typeof THEMES)[number];
 export const THEME_KEY = "imposter:theme";
-const DEFAULT: ThemeId = "hifi";
+const DEFAULT: ThemeId = "scratch";
 const ids = THEMES.map((t) => t.id) as string[];
 
 const listeners = new Set<() => void>();

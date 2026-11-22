@@ -43,7 +43,7 @@ export type MAction =
 export const MIN_PLAYERS = 4;
 export const MAX_PLAYERS = 16;
 export const MAFIA_DEFAULTS: MSettings = { mafia: null, doctor: true, detective: true, revealOnDeath: true, daySeconds: 0 };
-const COLORS = ["#D95D39", "#E9B44C", "#2A9D8F", "#8E5572", "#3D5A80", "#7FB069", "#E07A5F", "#6D597A", "#BC4749", "#457B9D", "#F2CC8F", "#264653"];
+const COLORS = ["#FFB7B2", "#B5EAD7", "#C7CEEA", "#FFDAC1", "#E2F0CB", "#B5D8FA", "#F3C4FB", "#FFE5A3", "#FDE2E4", "#A2E8DD", "#D8B4E2", "#B5E2FA"];
 
 export const recommendMafia = (n: number) => (n >= 9 ? 3 : n >= 6 ? 2 : 1);
 export function mafiaCount(s: MSettings, n: number) {
