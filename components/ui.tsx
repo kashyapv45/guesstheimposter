@@ -88,7 +88,7 @@ export function Toggle({ label, on, onChange, hint }: { label: string; on: boole
 }
 
 export function Stepper({ label, value, min, max, step = 1, onChange, format = String }: { label: string; value: number; min: number; max: number; step?: number; onChange: (v: number) => void; format?: (v: number) => string }) {
-  const btn = "h-11 w-11 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-xl font-bold disabled:opacity-30";
+  const btn = "h-11 w-11 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-xl font-black disabled:opacity-30";
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="font-bold">{label}</span>

@@ -20,7 +20,7 @@ export function HeroObject({ size, spinning = true, label, color = "var(--amber)
         className={`frost-card relative flex flex-col items-center justify-between overflow-hidden p-3 text-center ${spinning ? "motion-safe:animate-[float_4s_ease-in-out_infinite]" : ""}`}
         style={{ width: s, height: s }}
       >
-        <div className="flex w-full items-center justify-between px-1 font-mono text-[9px] uppercase tracking-widest text-ink/55 select-none">
+        <div className="flex w-full items-center justify-between px-1 font-mono text-[9px] font-bold uppercase tracking-widest text-ink/65 select-none">
           <span>✦</span>
           <span>Frosted</span>
           <span>✦</span>
@@ -30,7 +30,7 @@ export function HeroObject({ size, spinning = true, label, color = "var(--amber)
           className="frost-badge grid place-items-center rounded-full text-center font-bold text-ink"
           style={{ width: medalSize, height: medalSize }}
         >
-          {label ?? <span className="font-serif text-xl">✦</span>}
+          {label ?? <span className="font-serif text-xl font-black">✦</span>}
         </div>
 
         <div className="flex items-center gap-1.5 select-none">

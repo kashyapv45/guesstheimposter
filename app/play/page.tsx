@@ -82,7 +82,7 @@ export default function PassAndPlay() {
                       type="submit"
                       disabled={!editName.trim()}
                       aria-label="Save name"
-                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2 text-sm font-bold text-on-accent disabled:opacity-40"
+                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2.5 text-base font-black text-on-accent disabled:opacity-40"
                     >
                       ✓
                     </button>
@@ -90,7 +90,7 @@ export default function PassAndPlay() {
                       type="button"
                       onClick={() => setEditingId(null)}
                       aria-label="Cancel rename"
-                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2 text-sm"
+                      className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2.5 text-base font-black"
                     >
                       ✕
                     </button>
@@ -105,7 +105,7 @@ export default function PassAndPlay() {
                         setEditingId(p.id);
                         setEditName(p.name);
                       }}
-                      className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-sm opacity-70 hover:opacity-100"
+                      className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-base font-black opacity-85 hover:opacity-100"
                     >
                       ✎
                     </button>
@@ -113,7 +113,7 @@ export default function PassAndPlay() {
                       type="button"
                       aria-label={`Remove ${p.name}`}
                       onClick={() => dispatch({ type: "leave", id: p.id })}
-                      className="h-10 w-10 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field"
+                      className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-base font-black opacity-85 hover:opacity-100"
                     >
                       ✕
                     </button>

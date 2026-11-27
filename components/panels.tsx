@@ -70,7 +70,7 @@ export function CratePicker({ selected, onChange, deck }: { selected: string[]; 
                   {left} / {total} left
                 </span>
               </button>
-              <button aria-label={`Reshuffle ${c.name}`} title="Reshuffle crate" onClick={() => deck.reshuffle(c.id)} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-lg">
+              <button aria-label={`Reshuffle ${c.name}`} title="Reshuffle crate" onClick={() => deck.reshuffle(c.id)} className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field font-mono text-xl font-black">
                 ↺
               </button>
             </li>
