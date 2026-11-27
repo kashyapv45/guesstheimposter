@@ -17,7 +17,7 @@ export function Screen({ title, kicker, children, actions, corner }: { title: st
       </header>
       <div className="flex-1 space-y-4 py-4">{children}</div>
       {actions && (
-        <div className="sticky bottom-0 -mx-4 space-y-2 border-t-2 border-edge/10 bg-chassis/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <div className="sticky bottom-0 -mx-4 space-y-2 border-t border-edge/50 bg-chassis/70 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl">
           {actions}
         </div>
       )}
@@ -43,7 +43,7 @@ export function Button({ variant = "primary", className = "", ...p }: ButtonHTML
 
 export function Sleeve({ title, dark, children, className = "" }: { title?: string; dark?: boolean; children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-[var(--radius)] border-[length:var(--bw)] border-edge p-4 shadow-[var(--card-shadow)] ${dark ? "bg-well text-well-ink" : "brushed bg-panel"} ${className}`}>
+    <section className={`rounded-[var(--radius)] border-[length:var(--bw)] border-edge p-4 shadow-[var(--card-shadow)] ${dark ? "bg-well text-well-ink backdrop-blur-md" : "brushed bg-panel"} ${className}`}>
       {title && <h2 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] opacity-70">{title}</h2>}
       {children}
     </section>
@@ -128,7 +128,6 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
   const isAlert = alert ?? secret?.role === "imposter";
   const [held, setHeld] = useState(false);
   const [theme] = useTheme();
-  const round = theme.shape === "round";
   const show = (v: boolean) => {
     setHeld(v);
     if (v) {
@@ -157,11 +156,11 @@ export function VinylReveal({ secret, color, onReveal, content, alert }: { secre
         onKeyUp={() => show(false)}
         onBlur={() => held && show(false)}
         onContextMenu={(e) => e.preventDefault()}
-        className={`relative touch-none select-none [-webkit-touch-callout:none] ${round ? "rounded-full" : "rounded-[var(--radius)]"}`}
+        className="relative touch-none select-none rounded-[var(--radius)] [-webkit-touch-callout:none]"
       >
         <HeroObject color={color} size={260} spinning={!held} label={!held && <span className="font-mono text-[10px] font-bold uppercase leading-tight">Hold<br />me</span>} />
         {held && (
-          <div className={`absolute z-20 grid place-items-center content-center gap-1 border-4 p-4 text-center ${round ? "inset-[12%] rounded-full" : "inset-[4%] rounded-[var(--radius)]"} ${isAlert ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
+          <div className={`absolute z-20 inset-[4%] grid place-items-center content-center gap-1 rounded-[var(--radius)] border-4 p-4 text-center ${isAlert ? "border-crimson bg-crimson text-white shadow-[0_0_48px_rgba(239,68,68,.8)]" : "border-amber/60 bg-field shadow-[0_0_30px_rgb(var(--glow)/.25)]"}`}>
             {content ?? (secret && <SecretText secret={secret} />)}
           </div>
         )}

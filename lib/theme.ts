@@ -1,31 +1,28 @@
 "use client";
 import { useSyncExternalStore } from "react";
 
-// UI kits. Each has a palette/fonts block in app/globals.css under [data-theme="<id>"]
-// and a signature object in components/kit.tsx (the home hero and the press-and-hold reveal).
+// Single Frosted Glass UI kit. Palette/blur tokens live in app/globals.css under [data-theme="frost"]
+// and the signature object lives in components/kit.tsx.
 export const THEMES = [
-  { id: "scratch", name: "Pastel Scratch Card", blurb: "Soft pastels, silver scratch foil, lucky coin", swatch: ["#FFB7B2", "#B5EAD7", "#C7CEEA", "#FFDAC1"], noun: "scratch card", shape: "square", deal: "Scratch & deal", back: "Back to the tickets" },
-  { id: "crate", name: "1970s Crate Digger", blurb: "Kraft sleeves, cream paper, burnt-orange stamps", swatch: ["#f4efe6", "#d8c3a5", "#d95d39", "#e9b44c"], noun: "record", shape: "round", deal: "Drop the needle", back: "Back to the crate" },
-  { id: "hifi", name: "Midnight Hi-Fi", blurb: "Brushed obsidian, amber tube glow, chrome tonearm", swatch: ["#111114", "#f59e0b", "#10b981", "#ef4444"], noun: "record", shape: "round", deal: "Drop the needle", back: "Back to the crate" },
-  { id: "zine", name: "Neo-Brutalist Zine", blurb: "Thick ink borders, hard shadows, sticker badges", swatch: ["#fffdf5", "#111111", "#ffd23f", "#ff6b57"], noun: "sticker", shape: "square", deal: "Stamp it", back: "Back to the stack" },
-  { id: "citypop", name: "80s Tokyo City Pop", blurb: "Pastel turquoise, sunset coral, glossy sheen", swatch: ["#fdf1e8", "#3cc6c0", "#ff7f6a", "#1f3a5f"], noun: "album", shape: "square", deal: "Press play", back: "Back to the shelf" },
-  { id: "diner", name: "50s Diner Jukebox", blurb: "Cherry red, checkerboard, chrome, neon turquoise", swatch: ["#fdf6ec", "#c8102e", "#2ec4b6", "#9aa3a9"], noun: "45", shape: "round", deal: "Drop a nickel", back: "Back to the booth" },
-  { id: "motown", name: "Motown Master Tape", blurb: "Reel-to-reel, walnut woodgrain, studio labels", swatch: ["#2a1a10", "#6b4426", "#d4a24c", "#f3e6cf"], noun: "tape", shape: "square", deal: "Roll tape", back: "Back to the studio" },
-  { id: "mpc", name: "90s MPC & Wax", blurb: "Matte sampler pads, LCD green, stencil accents", swatch: ["#0e0f0d", "#7cff4f", "#ff5a36", "#e8e3d3"], noun: "pad", shape: "square", deal: "Drop the beat", back: "Back to the crates" },
-  { id: "psych", name: "60s Acid Folk", blurb: "Marbled discs, tangerine, avocado and plum", swatch: ["#f6e7c8", "#f28c28", "#6b8e23", "#5b2a6e"], noun: "record", shape: "round", deal: "Drop the needle", back: "Back to the crate" },
+  {
+    id: "frost",
+    name: "Frosted Glass",
+    blurb: "Translucent glass cards, soft ambient blur, luminous edges",
+    swatch: ["#E8EFF9", "#A5B4FC", "#86EFAC", "#FDA4AF"],
+    noun: "glass card",
+    shape: "square",
+    deal: "Deal the cards",
+    back: "Back to the lobby",
+  },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
 export type Theme = (typeof THEMES)[number];
 export const THEME_KEY = "imposter:theme";
-const DEFAULT: ThemeId = "scratch";
-const ids = THEMES.map((t) => t.id) as string[];
+const DEFAULT: ThemeId = "frost";
 
 const listeners = new Set<() => void>();
-const current = (): ThemeId => {
-  const t = document.documentElement.dataset.theme ?? "";
-  return (ids.includes(t) ? t : DEFAULT) as ThemeId;
-};
+const current = (): ThemeId => DEFAULT;
 
 function setTheme(id: ThemeId) {
   document.documentElement.dataset.theme = id;
@@ -41,8 +38,8 @@ export function useTheme(): [Theme, (id: ThemeId) => void] {
     current,
     () => DEFAULT,
   );
-  return [THEMES.find((t) => t.id === id)!, setTheme];
+  return [THEMES[0] ?? THEMES.find((t) => t.id === id)!, setTheme];
 }
 
-// Runs in <head> before paint so a saved kit doesn't flash the default one. Unknown/old ids are ignored.
-export const themeBootScript = `try{var t=localStorage.getItem("${THEME_KEY}");if(${JSON.stringify(ids)}.indexOf(t)>-1)document.documentElement.dataset.theme=t}catch(e){}`;
+// Runs in <head> before paint so the single frosted glass theme is always applied.
+export const themeBootScript = `try{document.documentElement.dataset.theme="frost";localStorage.setItem("${THEME_KEY}","frost")}catch(e){}`;

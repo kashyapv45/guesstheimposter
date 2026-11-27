@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo_Black, Black_Ops_One, Bungee, Fraunces, JetBrains_Mono, Righteous, Shrikhand, Space_Grotesk } from "next/font/google";
+import { Fraunces, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { themeBootScript } from "@/lib/theme";
 import "./globals.css";
 
 const serif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 const sans = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
-// Kit display fonts: not preloaded, so a phone only downloads the one its kit uses.
-const archivo = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-archivo", preload: false });
-const righteous = Righteous({ weight: "400", subsets: ["latin"], variable: "--font-righteous", preload: false });
-const bungee = Bungee({ weight: "400", subsets: ["latin"], variable: "--font-bungee", preload: false });
-const blackops = Black_Ops_One({ weight: "400", subsets: ["latin"], variable: "--font-blackops", preload: false });
-const shrikhand = Shrikhand({ weight: "400", subsets: ["latin"], variable: "--font-shrikhand", preload: false });
-const fonts = [serif, sans, mono, archivo, righteous, bungee, blackops, shrikhand].map((f) => f.variable).join(" ");
+const fonts = [serif, sans, mono].map((f) => f.variable).join(" ");
 
 export const metadata: Metadata = {
   title: "Guess the Imposter",
@@ -22,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FAF7F5",
+  themeColor: "#E8EFF9",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -30,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme="scratch" suppressHydrationWarning className={fonts}>
+    <html lang="en" data-theme="frost" suppressHydrationWarning className={fonts}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
