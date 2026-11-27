@@ -12,6 +12,7 @@ export type Settings = {
   discussionSeconds: number;
   turnSeconds: number;
   preliminaryVote?: boolean;
+  allowRename?: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   discussionSeconds: 180,
   turnSeconds: 30,
   preliminaryVote: false,
+  allowRename: true,
 };
 
 export type Player = { id: string; name: string; color: string; connected: boolean };

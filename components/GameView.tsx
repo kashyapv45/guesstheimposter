@@ -11,12 +11,14 @@ export function PlayerList({
   players,
   showLinks,
   me,
+  canRename,
   onRename,
   onRemove,
 }: {
   players: Seat[];
   showLinks?: boolean;
   me?: string;
+  canRename?: (id: string) => boolean;
   onRename?: (id: string, name: string) => void;
   onRemove?: (id: string) => void;
 }) {
@@ -69,7 +71,7 @@ export function PlayerList({
                 {p.id === me && <span className="ml-1 font-mono text-xs font-normal opacity-60">(you)</span>}
               </span>
               {showLinks && <span role="img" aria-label={p.connected ? "connected" : "disconnected"} className={`h-2.5 w-2.5 shrink-0 rounded-full ${p.connected ? "bg-emerald shadow-[0_0_8px_var(--emerald)]" : "bg-edge"}`} />}
-              {onRename && (
+              {onRename && (!canRename || canRename(p.id)) && (
                 <button
                   type="button"
                   aria-label={`Rename ${p.name}`}
@@ -200,7 +202,12 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
     return (
       <Screen title="In the crate" kicker={state.roundNo ? `After round ${state.roundNo}` : "Waiting room"}>
         <Sleeve title={`Players (${state.players.length})`}>
-          <PlayerList players={state.players} />
+          <PlayerList
+            players={state.players}
+            me={me}
+            canRename={(id) => id === me}
+            onRename={state.settings.allowRename !== false ? (id, newName) => act({ type: "rename", id, name: newName }) : undefined}
+          />
         </Sleeve>
         <p className="text-center font-mono text-sm uppercase tracking-widest">Waiting for the host to drop the needle…</p>
       </Screen>

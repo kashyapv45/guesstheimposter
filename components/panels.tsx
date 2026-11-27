@@ -39,6 +39,12 @@ export function SettingsPanel({ settings, players, onChange }: { settings: Setti
           on={!!settings.preliminaryVote}
           onChange={(preliminaryVote) => onChange({ preliminaryVote })}
         />
+        <Toggle
+          label="Allow players to rename"
+          hint="Players can change their own name in the lobby"
+          on={settings.allowRename !== false}
+          onChange={(allowRename) => onChange({ allowRename })}
+        />
       </div>
     </Sleeve>
   );

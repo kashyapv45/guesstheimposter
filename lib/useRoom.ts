@@ -21,8 +21,8 @@ export type RoomStatus = "connecting" | "open" | "waiting" | "missing" | "nosetu
 type AnyAction = IAction | MAction;
 
 const GUEST_ONLY: Record<Game, Set<string>> = {
-  imposter: new Set(["revealed", "vote", "unvote"]),
-  mafia: new Set(["revealed", "night", "vote", "unvote"]),
+  imposter: new Set(["revealed", "vote", "unvote", "rename"]),
+  mafia: new Set(["revealed", "night", "vote", "unvote", "rename"]),
 };
 
 function client(
@@ -132,7 +132,11 @@ export function useHostRoom(
       if (!m.clientId || !a || typeof a !== "object" || kickedRef.current.has(m.clientId)) return;
       const x = a as { type: string; id?: string; voter?: string };
       if (!GUEST_ONLY[game].has(x.type) || (x.id ?? x.voter) !== m.clientId) return; // guests act only for themselves
-      dispatch(a);
+      setState((s) => {
+        if (!s) return s;
+        if (x.type === "rename" && (s as { settings?: { allowRename?: boolean } }).settings?.allowRename === false) return s;
+        return game === "imposter" ? reduceImposter(s as GameState, a as IAction) : reduceMafia(s as MState, a as MAction);
+      });
     });
 
     inbox.presence.subscribe((m) => {

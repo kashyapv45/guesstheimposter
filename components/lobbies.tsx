@@ -122,6 +122,12 @@ export function MafiaLobby({ code, me, state, act }: { code: string; me: string;
             on={!!s.preliminaryVote}
             onChange={(preliminaryVote) => set({ preliminaryVote })}
           />
+          <Toggle
+            label="Allow players to rename"
+            hint="Players can change their own name in the lobby"
+            on={s.allowRename !== false}
+            onChange={(allowRename) => set({ allowRename })}
+          />
           <Toggle label="Day timer" on={s.daySeconds > 0} onChange={(on) => set({ daySeconds: on ? 180 : 0 })} />
           {s.daySeconds > 0 && <Stepper label="Seconds" value={s.daySeconds} min={60} max={600} step={30} onChange={(v) => set({ daySeconds: v })} />}
         </div>

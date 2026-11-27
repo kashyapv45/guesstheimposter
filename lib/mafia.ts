@@ -4,7 +4,7 @@ import { shuffle } from "./deck.ts";
 export type MRole = "mafia" | "doctor" | "detective" | "villager";
 export type MPhase = "lobby" | "reveal" | "night" | "morning" | "day" | "preliminary" | "vote" | "verdict" | "over";
 export type MPlayer = { id: string; name: string; color: string; connected: boolean };
-export type MSettings = { mafia: number | null; doctor: boolean; detective: boolean; revealOnDeath: boolean; daySeconds: number; hostIsNarrator?: boolean; preliminaryVote?: boolean };
+export type MSettings = { mafia: number | null; doctor: boolean; detective: boolean; revealOnDeath: boolean; daySeconds: number; hostIsNarrator?: boolean; preliminaryVote?: boolean; allowRename?: boolean };
 export type Check = { target: string; mafia: boolean };
 export type NightReport = {
   died: string | null;
@@ -57,7 +57,7 @@ export type MAction =
 
 export const MIN_PLAYERS = 4;
 export const MAX_PLAYERS = 16;
-export const MAFIA_DEFAULTS: MSettings = { mafia: null, doctor: true, detective: true, revealOnDeath: true, daySeconds: 0, hostIsNarrator: true, preliminaryVote: false };
+export const MAFIA_DEFAULTS: MSettings = { mafia: null, doctor: true, detective: true, revealOnDeath: true, daySeconds: 0, hostIsNarrator: true, preliminaryVote: false, allowRename: true };
 const COLORS = ["#FFB7B2", "#B5EAD7", "#C7CEEA", "#FFDAC1", "#E2F0CB", "#B5D8FA", "#F3C4FB", "#FFE5A3", "#FDE2E4", "#A2E8DD", "#D8B4E2", "#B5E2FA"];
 
 export const recommendMafia = (n: number) => (n >= 9 ? 3 : n >= 6 ? 2 : 1);

@@ -49,7 +49,12 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
     return (
       <Screen title="Mafia" kicker={state.phase === "lobby" ? "Waiting room" : "Game in progress"}>
         <Sleeve title={`Players (${state.players.length})`}>
-          <PlayerList players={state.players} />
+          <PlayerList
+            players={state.players}
+            me={me}
+            canRename={(id) => id === me}
+            onRename={state.phase === "lobby" && state.settings.allowRename !== false ? (id, newName) => act({ type: "rename", id, name: newName }) : undefined}
+          />
         </Sleeve>
         <p className="text-center font-mono text-sm uppercase tracking-widest">
           {state.phase === "lobby" ? "Waiting for the host to deal the roles…" : "This game started before you joined. You'll play the next one."}
@@ -422,7 +427,7 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
         <Timer endAt={state.timerEnd} total={state.settings.daySeconds} caption="Talk it out" />
         {state.preliminaryVotes && <PreliminaryResults votes={state.preliminaryVotes} nameOf={name} />}
         <Sleeve title={`Still in (${state.alive.length})`}>
-          <PlayerList players={state.players.filter((p) => state.alive.includes(p.id))} />
+          <PlayerList players={state.players.filter((p) => state.alive.includes(p.id))} me={me} />
         </Sleeve>
         {myRole === "detective" && alive && (state.checks[me]?.length ?? 0) > 0 && (
           <Sleeve title="Your notes">
@@ -510,7 +515,10 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
             .filter((p) => state.roles[p.id])
             .map((p) => (
               <li key={p.id} className="flex justify-between gap-2">
-                <span className={`truncate ${state.alive.includes(p.id) ? "" : "line-through opacity-60"}`}>{p.name}</span>
+                <span className={`truncate ${state.alive.includes(p.id) ? "" : "line-through opacity-60"}`}>
+                  {p.name}
+                  {p.id === me && " (you)"}
+                </span>
                 <span className={`font-mono text-sm font-bold ${state.roles[p.id] === "mafia" ? "text-crimson" : ""}`}>{ROLE[state.roles[p.id]].name}</span>
               </li>
             ))}
