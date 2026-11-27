@@ -56,6 +56,7 @@ export type Action =
   | { type: "nextTurn"; now: number }
   | { type: "startPreliminaryVote" }
   | { type: "batchPreliminaryVote"; votes: Record<string, string> }
+  | { type: "usePreliminaryAsFinal" }
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
   | { type: "unvote"; voter: string }
@@ -213,6 +214,17 @@ export function reduce(s: GameState, a: Action): GameState {
         }
       }
       return resolveIfDone({ ...s, votes }, true);
+    }
+    case "usePreliminaryAsFinal": {
+      if (s.phase !== "discuss" || !s.round || !s.preliminaryVotes) return s;
+      const votes: Record<string, string> = {};
+      for (const id of s.round.order) {
+        const target = s.preliminaryVotes[id];
+        if (target && target !== id && s.round.order.includes(target)) {
+          votes[id] = target;
+        }
+      }
+      return resolveIfDone({ ...s, phase: "vote", votes, candidates: null, timerEnd: null }, true);
     }
     case "closeVote":
       return resolveIfDone(s, true);

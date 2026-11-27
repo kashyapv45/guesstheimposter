@@ -228,6 +228,11 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
                     {state.preliminaryVotes ? "Re-run preliminary vote" : "Start preliminary vote"}
                   </Button>
                 )}
+                {state.preliminaryVotes && (
+                  <Button variant="teal" onClick={() => act({ type: "usePreliminaryAsFinal" })}>
+                    Use preliminary votes as final votes
+                  </Button>
+                )}
                 <Button onClick={() => act({ type: "startVote" })}>{state.settings.preliminaryVote ? "Start final vote" : "Start the vote"}</Button>
               </>
             )
@@ -266,6 +271,7 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
             targets={state.alive}
             nameOf={name}
             allowSkip
+            initialVotes={state.preliminaryVotes ?? undefined}
             submitLabel="Submit all votes"
             onSubmit={(votes) => act({ type: "batchVote", votes })}
           />
@@ -403,6 +409,11 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
                   {state.preliminaryVotes ? "Re-run preliminary vote" : "Start preliminary vote"}
                 </Button>
               )}
+              {state.preliminaryVotes && (
+                <Button variant="teal" onClick={() => act({ type: "usePreliminaryAsFinal" })}>
+                  Use preliminary votes as final votes
+                </Button>
+              )}
               <Button onClick={() => act({ type: "startVote" })}>{state.settings.preliminaryVote ? "Start final vote" : "Start the vote"}</Button>
             </>
           )
@@ -463,6 +474,7 @@ export function MafiaView({ state, me, isHost, act }: { state: MState; me: strin
             targets={state.alive}
             nameOf={name}
             allowSkip
+            initialVotes={state.preliminaryVotes ?? undefined}
             submitLabel="Submit all votes"
             onSubmit={(votes) => act({ type: "batchVote", votes })}
           />

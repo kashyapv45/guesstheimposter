@@ -124,5 +124,19 @@ test("preliminary vote and host batchVote resolve round", () => {
   assert.deepEqual(s.outcome, { eliminated: imp, winner: "crew" });
 });
 
+test("usePreliminaryAsFinal resolves round directly from preliminary votes", () => {
+  let s = reduce(newGame({ ...DEFAULT_SETTINGS, preliminaryVote: true }), { type: "join", id: "p0", name: "P0" });
+  for (let i = 1; i < 4; i++) s = reduce(s, { type: "join", id: `p${i}`, name: `P${i}` });
+  s = reduce(s, { type: "start", secret, now: 0, seed: 42 });
+  s = reduce(s, { type: "discuss", now: 0 });
+  s = reduce(s, { type: "startPreliminaryVote" });
+  const imp = ids(s, "imposter")[0];
+  const crew = ids(s, "crew");
+  s = reduce(s, { type: "batchPreliminaryVote", votes: { [imp]: crew[0], [crew[0]]: imp, [crew[1]]: imp, [crew[2]]: imp } });
+  s = reduce(s, { type: "usePreliminaryAsFinal" });
+  assert.equal(s.phase, "result");
+  assert.deepEqual(s.outcome, { eliminated: imp, winner: "crew" });
+});
+
 
 

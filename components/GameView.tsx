@@ -134,6 +134,7 @@ export function HostBatchVote({
   targets,
   nameOf,
   allowSkip,
+  initialVotes,
   submitLabel,
   onSubmit,
 }: {
@@ -141,10 +142,11 @@ export function HostBatchVote({
   targets: string[];
   nameOf: (id: string) => string;
   allowSkip?: boolean;
+  initialVotes?: Record<string, string>;
   submitLabel: string;
   onSubmit: (votes: Record<string, string>) => void;
 }) {
-  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [draft, setDraft] = useState<Record<string, string>>(() => initialVotes ?? {});
   const allPicked = voters.every((id) => !!draft[id]);
   return (
     <Sleeve title="Host vote entry">
@@ -247,6 +249,11 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
                   {state.preliminaryVotes ? "Re-run preliminary vote" : "Start preliminary vote"}
                 </Button>
               )}
+              {state.preliminaryVotes && (
+                <Button variant="teal" onClick={() => act({ type: "usePreliminaryAsFinal" })}>
+                  Use preliminary votes as final votes
+                </Button>
+              )}
               <Button onClick={() => act({ type: "startVote" })}>{state.settings.preliminaryVote ? "Start final vote" : "Start the vote"}</Button>
             </>
           )
@@ -320,6 +327,7 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
             voters={round.order}
             targets={targets}
             nameOf={name}
+            initialVotes={state.candidates ? undefined : (state.preliminaryVotes ?? undefined)}
             submitLabel="Submit all votes"
             onSubmit={(votes) => act({ type: "batchVote", votes })}
           />

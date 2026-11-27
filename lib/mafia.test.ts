@@ -142,3 +142,19 @@ test("host nightPick supports doctor self-save, detective check, full host repor
   assert.equal(s.winner, "town");
 });
 
+test("usePreliminaryAsFinal in mafia resolves town vote directly", () => {
+  let s = reduceMafia(newMafia(), { type: "settings", settings: { hostIsNarrator: true, preliminaryVote: true } });
+  for (let i = 0; i < 5; i++) s = reduceMafia(s, { type: "join", id: `p${i}`, name: `P${i}` });
+  s = reduceMafia(s, { type: "start", seed: 7, hostId: "p0" });
+  s = reduceMafia(s, { type: "nightfall" });
+  const [m] = who(s, "mafia");
+  s = reduceMafia(s, { type: "force" });
+  s = reduceMafia(s, { type: "discuss", now: 0 });
+  s = reduceMafia(s, { type: "startPreliminaryVote" });
+  const prelim = Object.fromEntries(s.alive.map((id) => [id, id === m ? "skip" : m]));
+  s = reduceMafia(s, { type: "batchPreliminaryVote", votes: prelim });
+  s = reduceMafia(s, { type: "usePreliminaryAsFinal" });
+  assert.equal(s.phase, "over");
+  assert.equal(s.winner, "town");
+});
+

@@ -47,6 +47,7 @@ export type MAction =
   | { type: "discuss"; now: number }
   | { type: "startPreliminaryVote" }
   | { type: "batchPreliminaryVote"; votes: Record<string, string> }
+  | { type: "usePreliminaryAsFinal" }
   | { type: "startVote" }
   | { type: "vote"; id: string; target: string }
   | { type: "unvote"; id: string }
@@ -271,6 +272,17 @@ export function reduceMafia(s: MState, a: MAction): MState {
         }
       }
       return resolveVote({ ...s, votes }, true);
+    }
+    case "usePreliminaryAsFinal": {
+      if (s.phase !== "day" || !s.preliminaryVotes) return s;
+      const votes: Record<string, string> = {};
+      for (const id of s.alive) {
+        const target = s.preliminaryVotes[id];
+        if (target && target !== id && (target === "skip" || s.alive.includes(target))) {
+          votes[id] = target;
+        }
+      }
+      return resolveVote({ ...s, phase: "vote", votes, timerEnd: null }, true);
     }
     case "force":
       return resolveVote(resolveNight(s, true), true);
