@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HeroObject } from "@/components/kit";
@@ -12,7 +11,7 @@ export default function PartyKit() {
   const host = (game: "imposter" | "mafia") => router.push(`/room/new?create=${game}`);
 
   return (
-    <Screen title="Party Kit" kicker="Side A · 33⅓ RPM" corner={<Link href="/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-panel text-lg">⚙</Link>}>
+    <Screen title="Party Kit" kicker="Frosted Glass Edition">
       <div className="flex justify-center py-1">
         <HeroObject size={180} label={<span className="font-serif text-[9px] leading-[1.15] tracking-tight">PARTY<br />KIT</span>} />
       </div>
