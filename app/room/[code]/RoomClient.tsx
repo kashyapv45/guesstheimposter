@@ -66,7 +66,15 @@ export default function RoomClient() {
   useWakeLock(joined && status !== "offline");
   const send = (a: Action | MAction) => {
     act(a);
-    saveSession<Saved>(guestKey(code), { token, name, host: hostGame }); // activity keeps the seat
+    let nextName = name;
+    if (a.type === "rename" && a.id === me) {
+      const trimmed = a.name.trim().slice(0, 20);
+      if (trimmed) {
+        nextName = trimmed;
+        setName(trimmed);
+      }
+    }
+    saveSession<Saved>(guestKey(code), { token, name: nextName, host: hostGame, ...(hostToken ? { hostKey: hostToken } : {}) }); // activity keeps the seat
   };
 
   const open = async () => {
@@ -134,6 +142,16 @@ export default function RoomClient() {
       </Screen>
     );
 
+  if (status === "kicked")
+    return (
+      <Screen title="Removed from room" kicker={`Room ${formatCode(code)}`}>
+        <Sleeve>
+          <p>The host removed you from this room.</p>
+        </Sleeve>
+        <Link href="/" className="font-mono text-xs underline">← Party Kit</Link>
+      </Screen>
+    );
+
   if (status === "missing")
     return (
       <Screen title="Room not found" kicker={`Room ${formatCode(code)}`}>
@@ -176,7 +194,7 @@ export default function RoomClient() {
     return (
       <>
         {banner}
-        {state.phase === "lobby" && isHost ? <MafiaLobby code={code} state={state} act={send} /> : <MafiaView state={state} me={me} isHost={isHost} act={send} />}
+        {state.phase === "lobby" && isHost ? <MafiaLobby code={code} me={me} state={state} act={send} /> : <MafiaView state={state} me={me} isHost={isHost} act={send} />}
       </>
     );
   }
@@ -184,7 +202,7 @@ export default function RoomClient() {
   return (
     <>
       {banner}
-      {state.phase === "lobby" && isHost ? <ImposterLobby code={code} state={state} act={send} /> : <GameView state={state} secret={msg.secret} me={me} isHost={isHost} act={send} />}
+      {state.phase === "lobby" && isHost ? <ImposterLobby code={code} me={me} state={state} act={send} /> : <GameView state={state} secret={msg.secret} me={me} isHost={isHost} act={send} />}
     </>
   );
   })();

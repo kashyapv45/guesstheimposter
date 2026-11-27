@@ -33,6 +33,12 @@ export function SettingsPanel({ settings, players, onChange }: { settings: Setti
           )}
           {settings.timerMode === "turn" && <Stepper label="Seconds each" value={settings.turnSeconds} min={15} max={45} step={5} onChange={(v) => onChange({ turnSeconds: v })} />}
         </div>
+        <Toggle
+          label="Preliminary vote"
+          hint="Run a preliminary vote for debate before the final vote"
+          on={!!settings.preliminaryVote}
+          onChange={(preliminaryVote) => onChange({ preliminaryVote })}
+        />
       </div>
     </Sleeve>
   );

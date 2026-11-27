@@ -3,7 +3,7 @@ import { shuffle } from "./deck.ts";
 
 export type Role = "crew" | "imposter";
 export type TimerMode = "off" | "discussion" | "turn";
-export type Phase = "lobby" | "reveal" | "discuss" | "vote" | "result";
+export type Phase = "lobby" | "reveal" | "discuss" | "preliminary" | "vote" | "result";
 
 export type Settings = {
   categories: string[];
@@ -11,6 +11,7 @@ export type Settings = {
   timerMode: TimerMode;
   discussionSeconds: number;
   turnSeconds: number;
+  preliminaryVote?: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS: Settings = {
   timerMode: "off",
   discussionSeconds: 180,
   turnSeconds: 30,
+  preliminaryVote: false,
 };
 
 export type Player = { id: string; name: string; color: string; connected: boolean };
@@ -33,6 +35,7 @@ export type GameState = {
   settings: Settings;
   round: Round | null;
   revealed: string[];
+  preliminaryVotes: Record<string, string> | null;
   votes: Record<string, string>;
   candidates: string[] | null; // set during a tie-break runoff
   outcome: Outcome | null;
@@ -51,9 +54,12 @@ export type Action =
   | { type: "revealed"; id: string }
   | { type: "discuss"; now: number }
   | { type: "nextTurn"; now: number }
+  | { type: "startPreliminaryVote" }
+  | { type: "batchPreliminaryVote"; votes: Record<string, string> }
   | { type: "startVote" }
   | { type: "vote"; voter: string; target: string }
   | { type: "unvote"; voter: string }
+  | { type: "batchVote"; votes: Record<string, string> }
   | { type: "closeVote" } // host: count the votes cast so far (someone left for good)
   | { type: "abort" } // end the round early (back button), keep the players
   | { type: "next" };
@@ -65,7 +71,7 @@ export const MAX_PLAYERS = 16;
 
 export function newGame(settings: Settings = DEFAULT_SETTINGS): GameState {
   return {
-    phase: "lobby", players: [], settings, round: null, revealed: [], votes: {}, candidates: null,
+    phase: "lobby", players: [], settings, round: null, revealed: [], preliminaryVotes: null, votes: {}, candidates: null,
     outcome: null, turn: 0, timerEnd: null, roundNo: 0,
   };
 }
@@ -122,7 +128,7 @@ export function reduce(s: GameState, a: Action): GameState {
     case "join": {
       const name = a.name.trim().slice(0, 20) || "Player";
       if (s.players.some((p) => p.id === a.id))
-        return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, name, connected: true } : p)) };
+        return { ...s, players: s.players.map((p) => (p.id === a.id ? { ...p, connected: true } : p)) };
       if (s.players.length >= MAX_PLAYERS) return s; // late joiners sit out until the next deal
       const color = COLORS[s.players.length % COLORS.length];
       return { ...s, players: [...s.players, { id: a.id, name, color, connected: true }] };
@@ -151,7 +157,7 @@ export function reduce(s: GameState, a: Action): GameState {
       const order = shuffle(ids, rand);
       order.unshift(...order.splice(order.findIndex((id) => roles[id] === "crew"), 1)); // a crew member opens
       return {
-        ...s, phase: "reveal", round: { ...a.secret, roles, order }, revealed: [], votes: {}, candidates: null,
+        ...s, phase: "reveal", round: { ...a.secret, roles, order }, revealed: [], preliminaryVotes: null, votes: {}, candidates: null,
         outcome: null, turn: 0, timerEnd: null, roundNo: s.roundNo + 1,
       };
     }
@@ -162,15 +168,28 @@ export function reduce(s: GameState, a: Action): GameState {
       if (s.phase !== "reveal") return s;
       const t = s.settings;
       const secs = t.timerMode === "discussion" ? t.discussionSeconds : t.timerMode === "turn" ? t.turnSeconds : 0;
-      return { ...s, phase: "discuss", turn: 0, timerEnd: secs ? a.now + secs * 1000 : null };
+      return { ...s, phase: "discuss", preliminaryVotes: null, turn: 0, timerEnd: secs ? a.now + secs * 1000 : null };
     }
     case "nextTurn": {
       if (s.phase !== "discuss" || s.settings.timerMode !== "turn" || !s.round) return s;
       const turn = s.turn + 1;
       return { ...s, turn, timerEnd: turn < s.round.order.length ? a.now + s.settings.turnSeconds * 1000 : null };
     }
+    case "startPreliminaryVote":
+      return s.phase === "discuss" ? { ...s, phase: "preliminary", votes: {}, timerEnd: null } : s;
+    case "batchPreliminaryVote": {
+      if (s.phase !== "preliminary" || !s.round) return s;
+      const preliminaryVotes: Record<string, string> = {};
+      for (const id of s.round.order) {
+        const target = a.votes[id];
+        if (target && target !== id && s.round.order.includes(target)) {
+          preliminaryVotes[id] = target;
+        }
+      }
+      return { ...s, phase: "discuss", preliminaryVotes, votes: {} };
+    }
     case "startVote":
-      return s.phase === "discuss" ? { ...s, phase: "vote", votes: {}, candidates: null, timerEnd: null } : s;
+      return s.phase === "discuss" || s.phase === "preliminary" ? { ...s, phase: "vote", votes: {}, candidates: null, timerEnd: null } : s;
     case "vote": {
       if (s.phase !== "vote" || !s.round || !s.round.roles[a.voter] || a.voter === a.target) return s;
       const allowed = s.candidates ?? s.round.order;
@@ -183,13 +202,25 @@ export function reduce(s: GameState, a: Action): GameState {
       delete votes[a.voter];
       return { ...s, votes };
     }
+    case "batchVote": {
+      if (s.phase !== "vote" || !s.round) return s;
+      const allowed = s.candidates ?? s.round.order;
+      const votes: Record<string, string> = {};
+      for (const id of s.round.order) {
+        const target = a.votes[id];
+        if (target && target !== id && allowed.includes(target)) {
+          votes[id] = target;
+        }
+      }
+      return resolveIfDone({ ...s, votes }, true);
+    }
     case "closeVote":
       return resolveIfDone(s, true);
     case "abort":
-      return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
+      return { ...s, phase: "lobby", round: null, revealed: [], preliminaryVotes: null, votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
     case "next":
       if (s.phase !== "result") return s;
-      return { ...s, phase: "lobby", round: null, revealed: [], votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
+      return { ...s, phase: "lobby", round: null, revealed: [], preliminaryVotes: null, votes: {}, candidates: null, outcome: null, turn: 0, timerEnd: null };
   }
 }
 

@@ -86,3 +86,59 @@ test("player can unvote or change vote in town vote", () => {
   assert.equal(s.votes[voter], target2);
 });
 
+test("player rename in mafia updates name without changing color or id", () => {
+  let s = reduceMafia(newMafia(), { type: "join", id: "p1", name: "Alice" });
+  const color = s.players[0].color;
+  s = reduceMafia(s, { type: "rename", id: "p1", name: "Hostess" });
+  assert.equal(s.players[0].name, "Hostess");
+  assert.equal(s.players[0].color, color);
+});
+
+test("hostIsNarrator excludes host from playing roles and gives narrator full view", () => {
+  let s = reduceMafia(newMafia(), { type: "settings", settings: { hostIsNarrator: true } });
+  for (let i = 0; i < 5; i++) s = reduceMafia(s, { type: "join", id: `p${i}`, name: `P${i}` });
+  s = reduceMafia(s, { type: "start", seed: 7, hostId: "p0" });
+  assert.equal(s.phase, "reveal");
+  assert.equal(s.narrator, "p0");
+  assert.equal(s.roles["p0"], undefined);
+  assert.ok(!s.alive.includes("p0"));
+  assert.equal(s.alive.length, 4);
+  assert.equal(Object.keys(viewMafia(s, "p0").roles).length, 4);
+});
+
+test("host nightPick supports doctor self-save, detective check, full host report, and batchVote", () => {
+  let s = reduceMafia(newMafia(), { type: "settings", settings: { hostIsNarrator: true, preliminaryVote: true } });
+  for (let i = 0; i < 5; i++) s = reduceMafia(s, { type: "join", id: `p${i}`, name: `P${i}` });
+  s = reduceMafia(s, { type: "start", seed: 7, hostId: "p0" });
+  s = reduceMafia(s, { type: "nightfall" });
+  const [m] = who(s, "mafia");
+  const [doc] = who(s, "doctor");
+  const [det] = who(s, "detective");
+  // Mafia targets Doctor, Doctor saves himself, Detective checks Mafia
+  s = reduceMafia(s, { type: "nightPick", role: "mafia", target: doc });
+  s = reduceMafia(s, { type: "nightPick", role: "doctor", target: doc });
+  s = reduceMafia(s, { type: "nightPick", role: "detective", target: m });
+  s = reduceMafia(s, { type: "force" });
+  assert.equal(s.phase, "morning");
+  assert.equal(s.report?.died, null);
+  assert.equal(s.report?.mafiaTarget, doc);
+  assert.equal(s.report?.doctorTarget, doc);
+  assert.equal(s.report?.detectiveTarget, m);
+  assert.equal(s.report?.detectiveMafia, true);
+  // Regular player view redacts host report details
+  assert.equal(viewMafia(s, doc).report?.mafiaTarget, undefined);
+  assert.equal(viewMafia(s, "p0").report?.mafiaTarget, doc);
+  // Preliminary vote + batchVote
+  s = reduceMafia(s, { type: "discuss", now: 0 });
+  s = reduceMafia(s, { type: "startPreliminaryVote" });
+  s = reduceMafia(s, { type: "batchPreliminaryVote", votes: { [m]: "skip", [doc]: m, [det]: m } });
+  assert.equal(s.phase, "day");
+  assert.equal(s.preliminaryVotes?.[doc], m);
+  s = reduceMafia(s, { type: "startVote" });
+  const town = s.alive.filter((id) => id !== m);
+  const votes = Object.fromEntries(s.alive.map((id) => [id, id === m ? town[0] : m]));
+  s = reduceMafia(s, { type: "batchVote", votes });
+  assert.equal(s.phase, "over");
+  assert.equal(s.winner, "town");
+});
+

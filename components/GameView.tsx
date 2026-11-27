@@ -1,22 +1,191 @@
 "use client";
 // The in-round screens for networked play (host and guests share it; host gets extra controls).
+import { useState } from "react";
 import type { Action, GameState, Secret } from "@/lib/game";
-import { hapticConfirm, hapticTap } from "@/lib/haptics";
+import { hapticConfirm } from "@/lib/haptics";
 import { ResultView } from "./panels";
 import { Button, Screen, Sleeve, Timer, VinylReveal } from "./ui";
 
 type Seat = { id: string; name: string; color: string; connected: boolean };
-export function PlayerList({ players, showLinks }: { players: Seat[]; showLinks?: boolean }) {
+export function PlayerList({
+  players,
+  showLinks,
+  me,
+  onRename,
+  onRemove,
+}: {
+  players: Seat[];
+  showLinks?: boolean;
+  me?: string;
+  onRename?: (id: string, name: string) => void;
+  onRemove?: (id: string) => void;
+}) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   return (
     <ul className="space-y-2">
       {players.map((p) => (
         <li key={p.id} className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-full border-[length:var(--bw)] border-edge" style={{ background: p.color }} />
-          <span className="flex-1 truncate font-bold">{p.name}</span>
-          {showLinks && <span role="img" aria-label={p.connected ? "connected" : "disconnected"} className={`h-2.5 w-2.5 shrink-0 rounded-full ${p.connected ? "bg-emerald shadow-[0_0_8px_var(--emerald)]" : "bg-edge"}`} />}
+          <span className="h-4 w-4 shrink-0 rounded-full border-[length:var(--bw)] border-edge" style={{ background: p.color }} />
+          {editingId === p.id && onRename ? (
+            <form
+              className="flex min-w-0 flex-1 items-center gap-1.5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const trimmed = editName.trim();
+                if (trimmed) onRename(p.id, trimmed);
+                setEditingId(null);
+              }}
+            >
+              <input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                maxLength={20}
+                autoFocus
+                aria-label="New name"
+                className="min-w-0 flex-1 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2 py-1 text-sm font-bold"
+              />
+              <button
+                type="submit"
+                disabled={!editName.trim()}
+                aria-label="Save name"
+                className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-emerald px-2 text-sm font-bold text-on-accent disabled:opacity-40"
+              >
+                ✓
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingId(null)}
+                aria-label="Cancel rename"
+                className="h-9 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2 text-sm"
+              >
+                ✕
+              </button>
+            </form>
+          ) : (
+            <>
+              <span className="flex-1 truncate font-bold">
+                {p.name}
+                {p.id === me && <span className="ml-1 font-mono text-xs font-normal opacity-60">(you)</span>}
+              </span>
+              {showLinks && <span role="img" aria-label={p.connected ? "connected" : "disconnected"} className={`h-2.5 w-2.5 shrink-0 rounded-full ${p.connected ? "bg-emerald shadow-[0_0_8px_var(--emerald)]" : "bg-edge"}`} />}
+              {onRename && (
+                <button
+                  type="button"
+                  aria-label={`Rename ${p.name}`}
+                  onClick={() => {
+                    setEditingId(p.id);
+                    setEditName(p.name);
+                  }}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-sm opacity-70 hover:opacity-100"
+                >
+                  ✎
+                </button>
+              )}
+              {onRemove && p.id !== me && (
+                <button
+                  type="button"
+                  aria-label={`Remove ${p.name}`}
+                  onClick={() => onRemove(p.id)}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field text-sm opacity-70 hover:opacity-100"
+                >
+                  ✕
+                </button>
+              )}
+            </>
+          )}
         </li>
       ))}
     </ul>
+  );
+}
+
+export function PreliminaryResults({ votes, nameOf }: { votes: Record<string, string>; nameOf: (id: string) => string }) {
+  const tally = new Map<string, number>();
+  for (const t of Object.values(votes)) tally.set(t, (tally.get(t) ?? 0) + 1);
+  const sorted = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+  return (
+    <Sleeve title="Preliminary vote · Debate">
+      <div className="space-y-3 text-sm">
+        {sorted.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {sorted.map(([t, n]) => (
+              <span key={t} className="rounded-full border border-edge bg-field px-2.5 py-0.5 font-mono text-xs font-bold">
+                {t === "skip" ? "Skip" : nameOf(t)}: {n}
+              </span>
+            ))}
+          </div>
+        )}
+        <ul className="space-y-1 opacity-85">
+          {Object.entries(votes).map(([voter, target], i) => (
+            <li key={voter} className="flex justify-between gap-2">
+              <span className="truncate">{i + 1}. {nameOf(voter)}</span>
+              <span className="font-mono text-xs font-bold">→ {target === "skip" ? "Skip" : nameOf(target)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Sleeve>
+  );
+}
+
+export function HostBatchVote({
+  voters,
+  targets,
+  nameOf,
+  allowSkip,
+  submitLabel,
+  onSubmit,
+}: {
+  voters: string[];
+  targets: string[];
+  nameOf: (id: string) => string;
+  allowSkip?: boolean;
+  submitLabel: string;
+  onSubmit: (votes: Record<string, string>) => void;
+}) {
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const allPicked = voters.every((id) => !!draft[id]);
+  return (
+    <Sleeve title="Host vote entry">
+      <div className="space-y-3">
+        <ol className="space-y-2.5">
+          {voters.map((voterId, i) => {
+            const opts = targets.filter((t) => t !== voterId);
+            return (
+              <li key={voterId} className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field/60 p-2.5">
+                <span className="text-sm font-bold">
+                  {i + 1}. {nameOf(voterId)} voting for
+                </span>
+                <select
+                  aria-label={`${nameOf(voterId)} voting for`}
+                  value={draft[voterId] ?? ""}
+                  onChange={(e) => setDraft((d) => ({ ...d, [voterId]: e.target.value }))}
+                  className="min-w-[10rem] rounded-[var(--radius-sm)] border-[length:var(--bw)] border-edge bg-field px-2.5 py-1.5 text-sm font-bold text-ink"
+                >
+                  <option value="">Choose from list…</option>
+                  {opts.map((t) => (
+                    <option key={t} value={t}>
+                      {nameOf(t)}
+                    </option>
+                  ))}
+                  {allowSkip && <option value="skip">Skip vote</option>}
+                </select>
+              </li>
+            );
+          })}
+        </ol>
+        <Button
+          disabled={!allPicked}
+          onClick={() => {
+            hapticConfirm();
+            onSubmit(draft);
+          }}
+        >
+          {submitLabel}
+        </Button>
+      </div>
+    </Sleeve>
   );
 }
 
@@ -73,7 +242,12 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
                   Next player
                 </Button>
               )}
-              <Button onClick={() => act({ type: "startVote" })}>Start the vote</Button>
+              {state.settings.preliminaryVote && (
+                <Button variant="secondary" onClick={() => act({ type: "startPreliminaryVote" })}>
+                  {state.preliminaryVotes ? "Re-run preliminary vote" : "Start preliminary vote"}
+                </Button>
+              )}
+              <Button onClick={() => act({ type: "startVote" })}>{state.settings.preliminaryVote ? "Start final vote" : "Start the vote"}</Button>
             </>
           )
         }
@@ -85,6 +259,7 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
           onExpire={() => isHost && turnMode && act({ type: "nextTurn", now: Date.now() })}
         />
         {state.settings.timerMode !== "off" && state.timerEnd == null && <p className="text-center font-mono text-sm uppercase">Time&apos;s up. Open floor!</p>}
+        {state.preliminaryVotes && <PreliminaryResults votes={state.preliminaryVotes} nameOf={name} />}
         <Sleeve title="Clue order">
           <ol className="space-y-1">
             {round.order.map((id, i) => (
@@ -105,51 +280,53 @@ export function GameView({ state, secret, me, isHost, act }: { state: GameState;
     );
   }
 
-  if (state.phase === "vote") {
-    const mine = state.votes[me];
-    const options = (state.candidates ?? round.order).filter((id) => id !== me);
+  if (state.phase === "preliminary") {
     return (
-      <Screen title={state.candidates ? "Runoff vote" : "Vote"} kicker={`${Object.keys(state.votes).length} / ${round.order.length} voted`}>
+      <Screen
+        title="Preliminary vote"
+        kicker="For debate before final vote"
+        actions={isHost && <Button variant="ghost" onClick={() => act({ type: "startVote" })}>Skip to final vote</Button>}
+      >
+        {isHost ? (
+          <HostBatchVote
+            voters={round.order}
+            targets={round.order}
+            nameOf={name}
+            submitLabel="Show preliminary results"
+            onSubmit={(votes) => act({ type: "batchPreliminaryVote", votes })}
+          />
+        ) : (
+          <Sleeve dark>
+            <p className="font-serif text-xl font-bold">Preliminary vote in progress.</p>
+            <p className="opacity-70">Tell the host who you suspect — the host is entering everyone&apos;s votes.</p>
+          </Sleeve>
+        )}
+      </Screen>
+    );
+  }
+
+  if (state.phase === "vote") {
+    const targets = state.candidates ?? round.order;
+    return (
+      <Screen title={state.candidates ? "Runoff vote" : "Final vote"} kicker={`Round ${state.roundNo}`}>
         {state.candidates && (
           <Sleeve>
             <p>Tie! Vote again between {state.candidates.map(name).join(" and ")}.</p>
           </Sleeve>
         )}
-        {isHost && Object.keys(state.votes).length < round.order.length && (
-          <Button variant="secondary" onClick={() => act({ type: "closeVote" })}>
-            Count the votes now
-          </Button>
-        )}
-        {mine ? (
-          <Sleeve dark>
-            <p className="font-serif text-xl font-bold">You voted for {name(mine)}.</p>
-            <p className="mb-3 opacity-70">Waiting for everyone else…</p>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                hapticTap();
-                act({ type: "unvote", voter: me });
-              }}
-            >
-              Change vote
-            </Button>
-          </Sleeve>
+        {isHost ? (
+          <HostBatchVote
+            key={state.candidates ? state.candidates.join(",") : "final"}
+            voters={round.order}
+            targets={targets}
+            nameOf={name}
+            submitLabel="Submit all votes"
+            onSubmit={(votes) => act({ type: "batchVote", votes })}
+          />
         ) : (
-          <Sleeve title="Who's the imposter?">
-            <div className="grid gap-2">
-              {options.map((id) => (
-                <Button
-                  key={id}
-                  variant="ghost"
-                  onClick={() => {
-                    hapticConfirm();
-                    act({ type: "vote", voter: me, target: id });
-                  }}
-                >
-                  {name(id)}
-                </Button>
-              ))}
-            </div>
+          <Sleeve dark>
+            <p className="font-serif text-xl font-bold">Final vote in progress.</p>
+            <p className="opacity-70">Waiting for the host to enter everyone&apos;s votes…</p>
           </Sleeve>
         )}
       </Screen>

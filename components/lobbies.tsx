@@ -36,7 +36,7 @@ export function CodeCard({ code, game }: { code: string; game: string }) {
   );
 }
 
-export function ImposterLobby({ code, state, act }: { code: string; state: GameState; act: (a: Action) => void }) {
+export function ImposterLobby({ code, me, state, act }: { code: string; me: string; state: GameState; act: (a: Action) => void }) {
   const deck = useWordDeck();
   const [kit] = useTheme();
   const [error, setError] = useState("");
@@ -63,7 +63,13 @@ export function ImposterLobby({ code, state, act }: { code: string; state: GameS
     >
       <CodeCard code={code} game="Guess the Imposter" />
       <Sleeve title={`Players (${state.players.length} / 16)`}>
-        <PlayerList players={state.players} showLinks />
+        <PlayerList
+          players={state.players}
+          showLinks
+          me={me}
+          onRename={(id, name) => act({ type: "rename", id, name })}
+          onRemove={(id) => act({ type: "leave", id })}
+        />
       </Sleeve>
       <SettingsPanel settings={state.settings} players={ready} onChange={(settings) => act({ type: "settings", settings })} />
       <CratePicker deck={deck} selected={state.settings.categories} onChange={(categories) => act({ type: "settings", settings: { categories } })} />
@@ -71,10 +77,10 @@ export function ImposterLobby({ code, state, act }: { code: string; state: GameS
   );
 }
 
-export function MafiaLobby({ code, state, act }: { code: string; state: MState; act: (a: MAction) => void }) {
-  const ready = state.players.filter((p) => p.connected).length;
-  const n = Math.max(MIN_PLAYERS, ready);
+export function MafiaLobby({ code, me, state, act }: { code: string; me: string; state: MState; act: (a: MAction) => void }) {
   const s = state.settings;
+  const ready = state.players.filter((p) => p.connected && (!s.hostIsNarrator || p.id !== me)).length;
+  const n = Math.max(MIN_PLAYERS, ready);
   const max = Math.max(1, Math.floor((n - 1) / 2));
   const set = (settings: Partial<MState["settings"]>) => act({ type: "settings", settings });
   return (
@@ -82,22 +88,40 @@ export function MafiaLobby({ code, state, act }: { code: string; state: MState; 
       title="Mafia"
       kicker="Online room · you're the host"
       actions={
-        <Button disabled={ready < MIN_PLAYERS} onClick={() => act({ type: "start", seed: (Math.random() * 2 ** 32) >>> 0 })}>
-          {ready < MIN_PLAYERS ? `Need ${MIN_PLAYERS - ready} more player${MIN_PLAYERS - ready === 1 ? "" : "s"}` : "Deal the roles"}
+        <Button disabled={ready < MIN_PLAYERS} onClick={() => act({ type: "start", seed: (Math.random() * 2 ** 32) >>> 0, hostId: me })}>
+          {ready < MIN_PLAYERS ? `Need ${MIN_PLAYERS - ready} more contestant${MIN_PLAYERS - ready === 1 ? "" : "s"}` : "Deal the roles"}
         </Button>
       }
     >
       <CodeCard code={code} game="Mafia" />
       <Sleeve title={`Players (${state.players.length} / ${MAX_PLAYERS})`}>
-        <PlayerList players={state.players} showLinks />
+        <PlayerList
+          players={state.players}
+          showLinks
+          me={me}
+          onRename={(id, name) => act({ type: "rename", id, name })}
+          onRemove={(id) => act({ type: "leave", id })}
+        />
       </Sleeve>
       <Sleeve title="Settings">
         <div className="space-y-4">
-          <Toggle label="Auto mafia count" hint={`Recommended for ${n} players: ${recommendMafia(n)}`} on={s.mafia == null} onChange={(auto) => set({ mafia: auto ? null : mafiaCount(s, n) })} />
+          <Toggle
+            label="Host is Narrator"
+            hint="Host narrates and sees all roles instead of playing as a contestant"
+            on={!!s.hostIsNarrator}
+            onChange={(hostIsNarrator) => set({ hostIsNarrator })}
+          />
+          <Toggle label="Auto mafia count" hint={`Recommended for ${n} contestants: ${recommendMafia(n)}`} on={s.mafia == null} onChange={(auto) => set({ mafia: auto ? null : mafiaCount(s, n) })} />
           {s.mafia != null && <Stepper label="Mafia" value={Math.min(s.mafia, max)} min={1} max={max} onChange={(v) => set({ mafia: v })} />}
           <Toggle label="Doctor" hint="Saves one player each night" on={s.doctor} onChange={(doctor) => set({ doctor })} />
           <Toggle label="Detective" hint="Checks one player each night" on={s.detective} onChange={(detective) => set({ detective })} />
           <Toggle label="Reveal roles on death" on={s.revealOnDeath} onChange={(revealOnDeath) => set({ revealOnDeath })} />
+          <Toggle
+            label="Preliminary vote"
+            hint="Run a preliminary vote so players can debate before the final vote"
+            on={!!s.preliminaryVote}
+            onChange={(preliminaryVote) => set({ preliminaryVote })}
+          />
           <Toggle label="Day timer" on={s.daySeconds > 0} onChange={(on) => set({ daySeconds: on ? 180 : 0 })} />
           {s.daySeconds > 0 && <Stepper label="Seconds" value={s.daySeconds} min={60} max={600} step={30} onChange={(v) => set({ daySeconds: v })} />}
         </div>

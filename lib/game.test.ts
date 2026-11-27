@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { draw, reshuffle, type DeckStore } from "./deck.ts";
-import { newGame, reduce, type Action, type GameState } from "./game.ts";
+import { DEFAULT_SETTINGS, newGame, reduce, type Action, type GameState } from "./game.ts";
 
 const secret = { word: "Espresso", category: "foods-drinks", categoryName: "Foods & Drinks" };
 
@@ -102,6 +102,26 @@ test("player can unvote or change vote before resolution", () => {
   assert.equal(v.votes[a], undefined);
   v = reduce(v, { type: "vote", voter: a, target: c });
   assert.equal(v.votes[a], c);
+});
+
+test("preliminary vote and host batchVote resolve round", () => {
+  let s = reduce(newGame({ ...DEFAULT_SETTINGS, preliminaryVote: true }), { type: "join", id: "p0", name: "P0" });
+  s = reduce(s, { type: "join", id: "p1", name: "P1" });
+  s = reduce(s, { type: "join", id: "p2", name: "P2" });
+  s = reduce(s, { type: "join", id: "p3", name: "P3" });
+  s = reduce(s, { type: "start", secret, now: 0, seed: 42 });
+  s = reduce(s, { type: "discuss", now: 0 });
+  s = reduce(s, { type: "startPreliminaryVote" });
+  assert.equal(s.phase, "preliminary");
+  const imp = ids(s, "imposter")[0];
+  const crew = ids(s, "crew");
+  s = reduce(s, { type: "batchPreliminaryVote", votes: { [imp]: crew[0], [crew[0]]: imp, [crew[1]]: imp, [crew[2]]: imp } });
+  assert.equal(s.phase, "discuss");
+  assert.equal(s.preliminaryVotes?.[crew[0]], imp);
+  s = reduce(s, { type: "startVote" });
+  s = reduce(s, { type: "batchVote", votes: { [imp]: crew[0], [crew[0]]: imp, [crew[1]]: imp, [crew[2]]: imp } });
+  assert.equal(s.phase, "result");
+  assert.deepEqual(s.outcome, { eliminated: imp, winner: "crew" });
 });
 
 

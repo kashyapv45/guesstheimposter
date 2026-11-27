@@ -7,7 +7,7 @@ import { createClient, type PubSubClient, type RealtimeChannel, type TokenReques
 import { useCallback, useEffect, useRef, useState } from "react";
 import { newGame, reduce as reduceImposter, viewFor, type Action as IAction, type GameState, type Secret } from "./game";
 import { newMafia, reduceMafia, viewMafia, type MAction, type MState } from "./mafia";
-import { loadSession, saveSession } from "./session";
+import { clearSession, guestKey, loadSession, saveSession } from "./session";
 
 export type Game = "imposter" | "mafia";
 export type RoomMsg = {
@@ -17,7 +17,7 @@ export type RoomMsg = {
   state: unknown;
   secret: Secret | null;
 };
-export type RoomStatus = "connecting" | "open" | "waiting" | "missing" | "nosetup" | "offline";
+export type RoomStatus = "connecting" | "open" | "waiting" | "missing" | "nosetup" | "offline" | "kicked";
 type AnyAction = IAction | MAction;
 
 const GUEST_ONLY: Record<Game, Set<string>> = {
@@ -78,6 +78,8 @@ export function useHostRoom(
   const [status, setStatus] = useState<RoomStatus>("connecting");
   const [tick, setTick] = useState(0); // forces a resend when a player says hello again
   const ably = useRef<PubSubClient | null>(null);
+  const kickedRef = useRef<Set<string>>(new Set());
+  const hasName = !!name;
 
   const dispatch = useCallback(
     (a: AnyAction) => setState((s) => (s ? (game === "imposter" ? reduceImposter(s as GameState, a as IAction) : reduceMafia(s as MState, a as MAction)) : s)),
@@ -85,17 +87,18 @@ export function useHostRoom(
   );
 
   useEffect(() => {
-    if (!code || !token || !name) return;
+    if (!code || !token || !hasName) return;
     // Restore after a refresh (1 hour); players show as dropped until their phones say hello again.
     const saved = loadSession<GameState | MState>(saveKey);
     const restored = saved ? ({ ...saved, players: saved.players.map((p) => ({ ...p, connected: false })) } as GameState | MState) : null;
     const rt = client(code, token, setMe, () => setStatus("nosetup"), () => setStatus("offline"), claimHost);
     ably.current = rt;
     const inbox = rt.channels.get(`room:${code}:host`);
+    const leaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
     const onConnect = () => {
       setStatus("open");
-      void inbox.presence.enter({ host: true }).catch(() => {});
+      void inbox.presence.enter({ host: true }).catch(() => { });
       setTick((t) => t + 1);
     };
 
@@ -107,6 +110,15 @@ export function useHostRoom(
 
     inbox.subscribe("hello", (m) => {
       if (!m.clientId) return;
+      const t = leaveTimers.get(m.clientId);
+      if (t) {
+        clearTimeout(t);
+        leaveTimers.delete(m.clientId);
+      }
+      if (kickedRef.current.has(m.clientId)) {
+        void rt.channels.get(`room:${code}:p:${m.clientId}`).publish("kicked", {}).catch(() => { });
+        return;
+      }
       setState((s) => {
         if (!s) return s;
         const a = { type: "join", id: m.clientId!, name: String((m.data as { name?: unknown })?.name ?? "Player") } as AnyAction;
@@ -117,7 +129,7 @@ export function useHostRoom(
 
     inbox.subscribe("action", (m) => {
       const a = (m.data as { action?: AnyAction })?.action;
-      if (!m.clientId || !a || typeof a !== "object") return;
+      if (!m.clientId || !a || typeof a !== "object" || kickedRef.current.has(m.clientId)) return;
       const x = a as { type: string; id?: string; voter?: string };
       if (!GUEST_ONLY[game].has(x.type) || (x.id ?? x.voter) !== m.clientId) return; // guests act only for themselves
       dispatch(a);
@@ -125,21 +137,46 @@ export function useHostRoom(
 
     inbox.presence.subscribe((m) => {
       if (!m.clientId) return;
+      const pid = m.clientId;
       const isHostMember = (m.data as { host?: boolean })?.host;
       if (m.action === "enter" || m.action === "present" || m.action === "update") {
         if (!isHostMember) {
+          const t = leaveTimers.get(pid);
+          if (t) {
+            clearTimeout(t);
+            leaveTimers.delete(pid);
+          }
+          if (kickedRef.current.has(pid)) return;
           const playerName = String((m.data as { name?: unknown })?.name ?? "Player");
-          dispatch({ type: "join", id: m.clientId, name: playerName } as AnyAction);
+          dispatch({ type: "join", id: pid, name: playerName } as AnyAction);
           setTick((t) => t + 1);
         }
       } else if (m.action === "leave") {
-        if (!isHostMember) {
-          dispatch({ type: "connected", id: m.clientId, connected: false } as AnyAction);
+        if (!isHostMember && !leaveTimers.has(pid)) {
+          // Short grace period so brief phone/tab switches don't immediately flicker disconnected.
+          leaveTimers.set(
+            pid,
+            setTimeout(() => {
+              leaveTimers.delete(pid);
+              dispatch({ type: "connected", id: pid, connected: false } as AnyAction);
+            }, 5000),
+          );
         }
       }
     });
 
-    void inbox.presence.enter({ host: true }).catch(() => {});
+    const onWake = () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      if (rt.connection.state !== "connected") rt.connection.connect();
+      else {
+        void inbox.presence.enter({ host: true }).catch(() => { });
+        setTick((t) => t + 1);
+      }
+    };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("online", onWake);
+
+    void inbox.presence.enter({ host: true }).catch(() => { });
     // If promoted from guest, reset to lobby with kept players so the game can continue cleanly
     const initial = initialState
       ? game === "imposter"
@@ -149,9 +186,13 @@ export function useHostRoom(
     // eslint-disable-next-line react-hooks/set-state-in-effect -- room state is created when the connection is set up
     setState(initial);
     return () => {
+      document.removeEventListener("visibilitychange", onWake);
+      window.removeEventListener("online", onWake);
+      for (const t of leaveTimers.values()) clearTimeout(t);
+      leaveTimers.clear();
       rt.close();
     };
-  }, [code, token, name, game, saveKey, dispatch, claimHost, initialState]);
+  }, [code, token, hasName, game, saveKey, dispatch, claimHost, initialState]);
 
   // Host plays too.
   useEffect(() => {
@@ -170,14 +211,29 @@ export function useHostRoom(
           host: me,
           hostKey: claimHost ?? token,
           ...viewOf(game, state, p.id),
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
     saveSession(saveKey, state);
   }, [state, tick, me, code, game, saveKey, claimHost, token]);
 
+  const act = useCallback(
+    (a: AnyAction) => {
+      if (a.type === "leave" && a.id !== me) {
+        kickedRef.current.add(a.id);
+        void ably.current?.channels.get(`room:${code}:p:${a.id}`).publish("kicked", {}).catch(() => { });
+      }
+      if (a.type === "start" && game === "mafia") {
+        dispatch({ ...a, hostId: (a as { hostId?: string }).hostId ?? me } as AnyAction);
+        return;
+      }
+      dispatch(a);
+    },
+    [code, dispatch, game, me],
+  );
+
   const msg: RoomMsg | null = state && me ? { game, host: me, ...viewOf(game, state, me) } : null;
-  return { msg, status, me, act: dispatch };
+  return { msg, status, me, act };
 }
 
 // ---------- guest: says hello, sends actions, receives its own view ----------
@@ -193,8 +249,13 @@ export function useGuestRoom(
   const [hostMissingSeconds, setHostMissingSeconds] = useState<number | null>(null);
   const inbox = useRef<RealtimeChannel | null>(null);
   const msgRef = useRef<RoomMsg | null>(null);
+  const meRef = useRef(me);
   const hostKeyRef = useRef<string | null>(null);
   const onPromoteHostRef = useRef(onPromoteHost);
+
+  useEffect(() => {
+    meRef.current = me;
+  }, [me]);
 
   useEffect(() => {
     msgRef.current = msg;
@@ -232,7 +293,7 @@ export function useGuestRoom(
             if (!guestMembers.length) return;
             guestMembers.sort((a, b) => a.clientId.localeCompare(b.clientId));
             const electedId = guestMembers[0].clientId;
-            if (me === electedId && hostKeyRef.current && msgRef.current) {
+            if (meRef.current === electedId && hostKeyRef.current && msgRef.current) {
               onPromoteHostRef.current?.(msgRef.current.game, hostKeyRef.current, msgRef.current.state);
             }
           } catch (err) {
@@ -266,6 +327,19 @@ export function useGuestRoom(
         clearInterval(retryInterval);
         clearTimeout(missingTimer);
         stopHostCountdown();
+      });
+      own.subscribe("kicked", () => {
+        if (cancelled) return;
+        cancelled = true;
+        clearInterval(retryInterval);
+        clearTimeout(missingTimer);
+        stopHostCountdown();
+        void clientRt.channels.get(`room:${code}:host`).presence.leave().catch(() => { });
+        clearSession(guestKey(code));
+        clearSession(`imposter:pid:${code}:${token}`);
+        setMsg(null);
+        setStatus("kicked");
+        clientRt.close();
       });
     };
 
@@ -328,7 +402,7 @@ export function useGuestRoom(
           clearTimeout(missingTimer);
           stopHostCountdown();
           if (!msgRef.current) setStatus("connecting");
-          void host.publish("hello", { name }).catch(() => {});
+          void host.publish("hello", { name }).catch(() => { });
         } else if (m.action === "leave") {
           if (!msgRef.current) {
             setStatus("waiting");
@@ -349,7 +423,7 @@ export function useGuestRoom(
       retryInterval = setInterval(() => {
         if (cancelled) return;
         if (!msgRef.current && rt.connection.state === "connected") {
-          void host.publish("hello", { name }).catch(() => {});
+          void host.publish("hello", { name }).catch(() => { });
         }
       }, 2000);
     };
@@ -369,16 +443,29 @@ export function useGuestRoom(
       clearInterval(retryInterval);
     });
 
+    const onWake = () => {
+      if (cancelled) return;
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      if (rt.connection.state !== "connected") rt.connection.connect();
+      else void sayHello();
+    };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("focus", onWake);
+    window.addEventListener("online", onWake);
+
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", onWake);
+      window.removeEventListener("focus", onWake);
+      window.removeEventListener("online", onWake);
       clearTimeout(missingTimer);
       clearInterval(retryInterval);
       stopHostCountdown();
       subscribed.clear();
       rt.close();
     };
-  }, [code, token, name, me]);
+  }, [code, token, name]);
 
-  const act = useCallback((a: AnyAction) => void inbox.current?.publish("action", { action: a }).catch(() => {}), []);
+  const act = useCallback((a: AnyAction) => void inbox.current?.publish("action", { action: a }).catch(() => { }), []);
   return { msg, status, me, act, hostMissingSeconds };
 }
