@@ -254,12 +254,18 @@ export function useGuestRoom(
   const inbox = useRef<RealtimeChannel | null>(null);
   const msgRef = useRef<RoomMsg | null>(null);
   const meRef = useRef(me);
+  const nameRef = useRef(name);
+  const hasName = !!name;
   const hostKeyRef = useRef<string | null>(null);
   const onPromoteHostRef = useRef(onPromoteHost);
 
   useEffect(() => {
     meRef.current = me;
   }, [me]);
+
+  useEffect(() => {
+    nameRef.current = name;
+  }, [name]);
 
   useEffect(() => {
     msgRef.current = msg;
@@ -271,7 +277,7 @@ export function useGuestRoom(
   }, [onPromoteHost]);
 
   useEffect(() => {
-    if (!code || !token || !name) return;
+    if (!code || !token || !hasName) return;
     let cancelled = false;
     let missingTimer: ReturnType<typeof setTimeout> | undefined;
     let retryInterval: ReturnType<typeof setInterval> | undefined;
@@ -375,8 +381,8 @@ export function useGuestRoom(
 
     const sayHello = async () => {
       try {
-        await host.presence.enter({ name });
-        await host.publish("hello", { name });
+        await host.presence.enter({ name: nameRef.current });
+        await host.publish("hello", { name: nameRef.current });
         const members = await host.presence.get();
         if (cancelled) return;
         const hasHost = members.some((p) => (p.data as { host?: boolean })?.host);
@@ -406,7 +412,7 @@ export function useGuestRoom(
           clearTimeout(missingTimer);
           stopHostCountdown();
           if (!msgRef.current) setStatus("connecting");
-          void host.publish("hello", { name }).catch(() => { });
+          void host.publish("hello", { name: nameRef.current }).catch(() => { });
         } else if (m.action === "leave") {
           if (!msgRef.current) {
             setStatus("waiting");
@@ -427,7 +433,7 @@ export function useGuestRoom(
       retryInterval = setInterval(() => {
         if (cancelled) return;
         if (!msgRef.current && rt.connection.state === "connected") {
-          void host.publish("hello", { name }).catch(() => { });
+          void host.publish("hello", { name: nameRef.current }).catch(() => { });
         }
       }, 2000);
     };
@@ -468,7 +474,7 @@ export function useGuestRoom(
       subscribed.clear();
       rt.close();
     };
-  }, [code, token, name]);
+  }, [code, token, hasName]);
 
   const act = useCallback((a: AnyAction) => void inbox.current?.publish("action", { action: a }).catch(() => { }), []);
   return { msg, status, me, act, hostMissingSeconds };
